@@ -21,3 +21,7 @@ Set and be reminded of expiration dates or just things expiring in general. Litt
 
 Its code is also sourced on GitHub (feel free to make a PR for adding something useful).
 * GitHub: https://github.com/KDCinfo/expired-to-be
+
+[CHROME WEB STORE]
+
+https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan
