@@ -786,12 +786,15 @@ function getDelay(selectName, selectNum) {
 }
 
 function clearTimers() {
-  chrome.alarms.clearAll( () => {
-    chrome.storage.sync.clear( () => {
-      ourState = [];
-      showList();
+  if (window.confirm('Click OK if you are certain you\'d like to remove all expiration items and alarms?')) {
+    chrome.alarms.clearAll( () => {
+      chrome.storage.sync.clear( () => {
+        ourState = [];
+        showList();
+        updateForm();
+      });
     });
-  });
+  }
 }
 
 function clearItem(itemId) { // deleteAlarm

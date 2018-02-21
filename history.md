@@ -343,6 +343,18 @@ Done with the Expiration To Be app.
 @11:30 PM
   - Created and uploaded to Chrome Store.
 
+@11:45 PM
+  - Committed all code to GitHub.
+
+@1:30 AM
+  - Made first update to extension on Chrome Store.
+    (filled in outer edges of extension panel with orange to complement the outer orange border.)
+
+@2:05 AM
+  - Made second update to extension on Chrome Store.
+    (added confirmation alert on "Clear All" button.)
+    (also on clear all, added zeroing out of the form's ID.)
+
 ## To Do Accomplishments
 
 [2018-02-13 - 2018-02-20]

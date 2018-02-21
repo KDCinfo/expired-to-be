@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Expired To Be",
-  "version": "1.1",
+  "version": "1.2",
   "icons": { "16": "icon16.png",
              "32": "icon32.png",
              "48": "icon48.png",
@@ -10,11 +10,11 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtnigGUFUWdFDRQ7OAUQrv2xI/4wo9UF7cpICJkfYqaK+eXZAon0b+939yov9I9YY+VzBui4gaKybEnh4ufWViJP8PX7jWz5W1J7QWqbpqGw0p3rFbMo/YoPKnwhJ2R2/987WuucwC9I5jJMkP9RgpDgCym0lojxn9GvPRWicUz0S6dMC4ONtk/W8D4hO5N/V32bezNscdpe9BmH6vXMqXKM35h3i7FarNwPKJwvKDHgRsXeRWRuTv6eEhsh3aD9iScKpfhe0Sh0mK5geMOXO75Wtnr6DvfHDFLjuplqQRxBHPHEac5nLhmNdhVbQF1UmoG/t1+buYDY4U7WrciRJnwIDAQAB",
   "background": {
     "scripts": ["eventPage.js"],
     "persistent": false
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtnigGUFUWdFDRQ7OAUQrv2xI/4wo9UF7cpICJkfYqaK+eXZAon0b+939yov9I9YY+VzBui4gaKybEnh4ufWViJP8PX7jWz5W1J7QWqbpqGw0p3rFbMo/YoPKnwhJ2R2/987WuucwC9I5jJMkP9RgpDgCym0lojxn9GvPRWicUz0S6dMC4ONtk/W8D4hO5N/V32bezNscdpe9BmH6vXMqXKM35h3i7FarNwPKJwvKDHgRsXeRWRuTv6eEhsh3aD9iScKpfhe0Sh0mK5geMOXO75Wtnr6DvfHDFLjuplqQRxBHPHEac5nLhmNdhVbQF1UmoG/t1+buYDY4U7WrciRJnwIDAQAB",
   "permissions": [
     "storage",
     "alarms"
