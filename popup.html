@@ -1,0 +1,334 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked,
+ because the "browser_action" field in manifest.json
+ contains the "default_popup" key with value "popup.html".
+ -->
+<html>
+  <head>
+    <title>Character Counts</title>
+    <meta name="description" content="This extension allows the setting and reminders of 'things expiring'.">
+    <style type="text/css">
+      html {
+        background-color: rgba(255, 166, 0, 0.25);
+      }
+      body {
+        /*background-color: rgb(247, 251, 255);*/
+        background-color: #ffffff;
+        border: 4px solid orange;
+          border-radius: 16px;
+        box-shadow: inset 4px 4px 7px lightgrey;
+
+        font-family: 'Sarpanch', sans-serif;
+        font-family: 'Baloo Thambi', cursive;
+        font-family: 'Baumans', cursive;
+
+        font-size: 12px;
+        margin: 0;
+        max-width: 550px;
+        min-height: 300px;
+        min-width: 500px;
+        opacity: 1;
+        padding: 0;
+        transition: all 1.5s cubic-bezier(0.1, 1, 0.55, 1);
+        white-space: nowrap;
+      }
+      #topBox {
+        /*background-color: rgb(230, 240, 255);*/
+        background-color: rgba(50, 160, 255, .2);
+        border-radius: 10px 10px 0 0;
+        height: 155px;
+        outline: 0px solid green;
+        margin: 4px;
+        padding: 10px;
+        position: relative;
+        width: 95%;
+      }
+      h1 {
+        color: rgba(50, 160, 255, 1);
+        margin: 0 0 0.5em;
+        text-shadow: 3px 3px 5px lightgrey;
+      }
+      a,
+      a:visited {
+        color: blue;
+      }
+      a:hover {
+        color: green;
+      }
+      #container {
+        margin: 10px;
+        transition: all 1.5s cubic-bezier(0.1, 1, 0.55, 1);
+      }
+      #containerError {
+        display: none;
+      }
+      #containerError,
+      #containerErrorTxt {
+        white-space: normal;
+      }
+      .div-left,
+      .div-right {
+        display: inline-block;
+        width: 58%;
+      }
+      .div-right {
+        width: 38%;
+      }
+      #expires-table {
+        border-collapse: collapse;
+          border-bottom: 1px solid orange;
+          border-top: 1px solid orange;
+        margin: 1.5em 0 1em;
+        padding: 1em 0;
+        width: 100%;
+      }
+      #expires-table tr {
+        /*border-top: 1px dotted orange;*/
+        /*padding: 0.5em 0;*/
+      }
+      #expires-table tr[class^="x2b-listitem"].is-edit {
+        border-left: 5px solid rgb(50, 160, 255);
+        /*background-color: rgb(230, 240, 255);*/
+        background-color: rgba(50, 160, 255, .2);
+      }
+      #expires-table tr[class^="x2b-listitem"]:hover {
+        background-color: orange;
+      }
+      #expires-table thead tr th {
+        white-space: normal;
+        vertical-align: bottom;
+      }
+      #expires-table tr td {
+        padding: 0.5em;
+        position: relative;
+      }
+        td {
+          text-align: center;
+        }
+        td button {
+          font-size: 1em;
+          height: 18px;
+          line-height: 1;
+        }
+      #expires-table tr.expired {
+        /*background-color: #ffa07a;*/
+        /*background-color: lightsalmon;*/
+        background-color: rgba(255, 160, 122, 0.25);
+      }
+      #expires-table tr th span {
+        color: rgba(50, 160, 255, 1);
+      }
+      #expires-table tr > td:first-child {
+        min-width: 100px;
+      }
+      #expires-table tr > td.cellCol1,
+      #expires-table tr > td.cellCol2 {
+        padding-left: 0;
+        text-align: left;
+      }
+        #expires-table tr > td.cellCol1 {
+          padding-left: 5px;/* Overwrite above */
+        }
+      #expires-table tr.expired > td.cellCol1 span {
+        background-color: rgba(255, 80, 50, 0.65);
+        color: #ffffff;
+        content: 'Expired!';
+        font-weight: bold;
+        height: 10px;
+        line-height: 0.7;
+        padding: 0.5em;
+        position: absolute;
+          top: 5px;
+          right: 0;
+          z-index: 1;
+      }
+      #expires-table tr td span.container-active-alarm {
+        position: relative;
+      }
+      #expires-table tr td span.alarm-stat { /* .has-alarm */
+        position: absolute;
+          height: 10px;
+          width: 10px;
+          top: -8px;
+          right: -7px;
+          z-index: 0;
+        text-align: center;
+      }
+      #expires-table tr td span.alarm-stat::after { /* .has-alarm */
+        background-color: transparent;
+        color: rgba(50, 160, 255, 1);
+        content: '\2600';
+        font-size: 16px;
+        line-height: 0.5;
+        margin: 0;
+        outline: 0px solid green;
+        padding: 0;
+        position: absolute;
+          height: 10px;
+          width: 10px;
+          left: -5px;
+          top: 3px;
+      }
+      #msgs-parent {
+        position: relative;
+        text-align: center;
+      }
+      #msgs-div {
+        border-top: 0px dotted rgba(255, 160, 0, 0.25);
+        color: rgba(40, 150, 255, 1);
+        display: block;
+        font-size: 14px;
+        margin: 1em 0 0 1em;
+        max-width: 380px;
+        min-height: 45px;
+        padding: 0 0 0.5em 0.5em;
+        position: relative;
+        text-align: left;
+        transition: all 0.5s cubic-bezier(0.1, 1, 0.55, 1);
+        white-space: normal;
+      }
+      #msgs-div::before {
+        color: rgba(40, 150, 255, 1);
+        outline: 0px dotted lightpink;
+        padding: 0 5px;
+        position: absolute;
+          z-index: 3;
+        text-align: center;
+
+        /*Swap out below for alt left bars*/
+        content: '\23A1';/*! Yes: 23A1 23AD 0283 222E 257F 299A 29D8 29D9 |No: 222B 2757*/
+        font-size: 42px; font-weight: normal; left: -17px; top: 7px;
+      }
+        /* Couldn't Decide;
+           23A1 - 1 : font-size: 42px; font-weight: normal; left: -17px; top: 7px;
+           23AD - 2 : font-size: 36px; font-weight: bold; left: -20px; top: 16px;
+           0283 - 3 : font-size: 36px; font-weight: bold; left: -20px; top: -5px;
+        */
+      .msg-transition {
+        opacity: 0.1;
+        transition: all 0.5s cubic-bezier(0.1, 1, 0.55, 1);
+      }
+      input.toggle-active {/*.active-is-true*/
+        position: relative;
+          z-index: 1;
+      }
+      input:focus {
+        outline: rgba(50, 160, 255, 1);
+      }
+      button.input-save {
+        background-color: rgba(255, 166, 0, 0.75);
+        font-weight: bold;
+        margin-right: 1em;
+        padding: 0.25em 1em;
+      }
+
+      /* Utilities */
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        outline: 1px dotted rgba(50, 160, 255, 1);
+      }
+      .hidden {
+        display: none;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .text-left {
+        text-align: left;
+      }
+      footer {
+        margin-top: 1rem;
+        font-style: italic;
+        font-size: 11px;
+      }
+      .open-source {
+        float: right;
+        margin-right: 5px;
+      }
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our
+      - Content Security Policy documentation[1] for details and explanation.
+      -
+      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
+    -->
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div id="containerError">
+      Doh!
+      Are you on a Chrome page by chance?
+      For instance, are you on the Chrome store page?
+      Unfortunately, Chrome extensions aren't allowed to interact with an actual Chrome page.
+      <p>The error provided was:</p>
+      <p id="containerErrorTxt"></p>
+      <p>
+        If that wasn't the case, please feel free to <a target="characterCounts" href="https://github.com/KDCinfo/character-counts/issues">open an issue</a> on GitHub.
+      </p>
+    </div>
+
+    <div id="topBox">
+      <h1>Expired To Be</h1>
+      <form id="dates-div">
+        <div class="div-left">
+          <label>Expiration Date:<br/>
+            <input
+              type="date"
+              class="input-date"
+              placeholder="yyyy-mm-dd"
+              pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+              required
+            />
+            <span class="validity"></span>
+          </label>
+        </div>
+        <div class="div-right">
+          <label>Lead Time for Notification:<br/>
+            <input class="input-select-num" type="number" min="1" max="10" value="1" size="3" required />
+            <select class="input-select-name" required>
+              <option value="days">day(s) [1-70]</option>
+              <option value="weeks" selected>week(s) [1-10]</option>
+              <!-- <option value="month">month(s) [1-6]</option> -->
+            </select>
+          </label>
+        </div>
+        <br/><br/>
+        <div class="div-left">
+          <label>Title / Name <small>(25 chars)</small>:<br/>
+            <input
+              type="text"
+              class="input-title"
+              id="entryTitle"
+              name="entryTitle"
+              maxLength=25
+              size=25
+              autoFocus=true
+              required
+            />
+          </label>
+        </div>
+        <div class="div-right">
+          <input type="hidden" class="input-id" value="0" required size="3" />
+          <button class="input-save">Save</button>
+          <button class="input-reset" type="reset">Reset</button>
+          <button class="input-new">New</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="container">
+      <div id="msgs-parent"><div id="msgs-div">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
+
+      <div><table id="expires-table"></table></div>
+
+      <footer>
+        <div style="display: none;"><button id="input-clear-all">Clear All</button> <small>(this will erase everything!)</small></div>
+        <span class="open-source">Expired To Be is <a target="expiredToBe" href="https://github.com/KDCinfo/expired-to-be">Open Source on GitHub</a>.</span>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+Created the following files:
+
+Extension: \*.crx
+Key File: \*.pem
+
+Keep your key file in a safe place. You will need it to create new versions of your extension.
+
+----------
+
+[PROJECT CREATION]
+
+Extension Creation:
+    Ubuntu 16.04 LTS
+        Runs inside a VirtualBox VM
+    Windows 10
+        VS Code and Sublime Text 3
+
+[CHROME STORE DETAILED DESCRIPTION]
+
+Set and be reminded of expiration dates or just things expiring in general. Little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink. As a developer, I spend most of my life in Chrome, which is why I decided to create this as a browser extension.
+
+Its code is also sourced on GitHub (feel free to make a PR for adding something useful).
+* GitHub: https://github.com/KDCinfo/expired-to-be
