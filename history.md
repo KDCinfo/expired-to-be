@@ -4,7 +4,7 @@
 
 ## Detailed Development History
 
-2018-02-06 - Tuesday
+### 2018-02-06 - Tuesday
 
 * Began project: Copied over folders and files from 'Character Counts' (my first Chrome extension) and began editing.
 
@@ -14,7 +14,7 @@
     Then notifications.
     and localState.
 
-2018-02-07 - Wednesday
+### 2018-02-07 - Wednesday
 
 @2:30 AM
     - Made it a couple hours... gonna head back to bed.
@@ -29,13 +29,13 @@ Watching through a GraphQL video now.
     - I wanna get back to my Chrome Extension, but this is good stuff Maynard!!
 Bookmarked the GraphQL video (below) (it's near 50 min... another time...)
 
-2018-02-08 - Thursday
+### 2018-02-08 - Thursday
 
 @6:45 PM
     Read a little on Quokka... (very little; one screen's worth).
         Just can't get into it right now.
 
-2018-02-09 - Friday
+### 2018-02-09 - Friday
 
 Tried using Quokka...
     - Live updates only available in the Pro edition.
@@ -100,7 +100,7 @@ Tried using Quokka...
         Don't need notifications... those are for the System Tray notifications.
         Somehow or some why the syncing ain't syncing.
 
-2018-02-10 - Saturday
+### 2018-02-10 - Saturday
 
 My biggest dilemma is how to notify the user of an alarm.
     - Notifications
@@ -135,7 +135,7 @@ My biggest dilemma is how to notify the user of an alarm.
         With any tab open, or no tabs open (the next time Chrome is opened),
             the numbers should calculate and appear. :D
 
-2018-02-11 - Sunday
+### 2018-02-11 - Sunday
 
 @8:50 PM
   - Got time differences figured out.
@@ -155,7 +155,7 @@ My biggest dilemma is how to notify the user of an alarm.
     DOM Nodes
     ourState (local state; should be same as storage)
 
-2018-02-12 - Monday
+### 2018-02-12 - Monday
 
 @10:10 PM
   - Making good progress.
@@ -170,7 +170,7 @@ My biggest dilemma is how to notify the user of an alarm.
 
   Ready for bed.
 
-2018-02-13 - Tuesday
+### 2018-02-13 - Tuesday
 
 @5:45 PM
   - Completed 'active' toggle from list.
@@ -227,7 +227,7 @@ A few more @TODO's and I think I'm home free.
 Still to do --> Change 'active' to 'alarm' and refactor all 'active' code.
   - Also, if in "edit" mode on an item; provide a way to create a 'new' item.
 
-2018-02-14 - Wednesday
+### 2018-02-14 - Wednesday
 
 - Fixed "between" time display formatting issue.
 
@@ -278,27 +278,27 @@ put in a placeholder first, and update it based on either a resolve or reject (r
     - Created a Reset button and set to reset form with current current itemId.
     - Created a New button and set to set form to all default values.
 
-2018-02-15 - Thursday
+### 2018-02-15 - Thursday
 
   - Sick.
 
 @8:05 PM
   - Tried doing that Promise in the eventsPage.js, but either I can't think straight or I'm just not seeing it once I get into the code.
 
-2018-02-16 - Friday
+### 2018-02-16 - Friday
 
 Worked on Expired To Be
   - Going good now. Found a SO solution that I was able to couple with 'darko's example code, and after a dozen or more attempts, I found how they all work together, and it makes perfect sense. (I eventually figured out all the async calls and knit them together with a small custom internal messaging system.)
   - Have eventsPage.js done; I think.
   - Also did a little matrix for status'.
 
-2018-02-17 - Saturday
+### 2018-02-17 - Saturday
 
 @12:30 PM
   - Did GistBox + 3 JS challenges
   - Worked remote all night with nephew on fixing his laptop.
 
-2018-02-18 - Sunday
+### 2018-02-18 - Sunday
 
 @11:00 PM
   - Been making good progress most of the day.
@@ -310,50 +310,6 @@ I think all the logic is done.
   - Leaving off on:
     function setItemEdit(itemId) {
   - And need message notification system.
-
-2018-02-19 - Monday
-
-Done with the Expiration To Be app.
-  - Even took a few hours and made it a little more presentable than I thought I'd be able to.
-  - Made a screenshot.
-
-  - Just need to do write-ups, commit, publish, and promote everywhere.
-
-@5:00 AM
-  - Bed. Sleep.
-
-2018-02-20 - Tuesday
-
-@1:30 AM
-    - Code is complete.
-    - Manual testing complete.
-    - Code backed up.
-    - Superfluous code stripping in process.
-
-@5:00 AM
-    - Completed applying a semi-acceptable design.
-    - Finished cleaning up code.
-
-@9:30 PM
-  - Split out `history` page from readme and caught it up to now.
-
-@10:30 PM
-  - Created public GitHub repo: expired-to-be
-
-@11:30 PM
-  - Created and uploaded to Chrome Store.
-
-@11:45 PM
-  - Committed all code to GitHub.
-
-@1:30 AM
-  - Made first update to extension on Chrome Store.
-    (filled in outer edges of extension panel with orange to complement the outer orange border.)
-
-@2:05 AM
-  - Made second update to extension on Chrome Store.
-    (added confirmation alert on "Clear All" button.)
-    (also on clear all, added zeroing out of the form's ID.)
 
 ## To Do Accomplishments
 
@@ -399,3 +355,65 @@ Done with the Expiration To Be app.
         // @TODONE: change .extension to .runtime
            // (1 place; eventPage.js -> chrome.runtime.onMessage)
 ```
+
+## Detailed Development History (continued)
+
+[2018-02-19 - 20__-__-__]
+
+### 2018-02-19 - Monday
+
+Done with the Expiration To Be app.
+  - Even took a few hours and made it a little more presentable than I thought I'd be able to.
+  - Made a screenshot.
+
+  - Just need to do write-ups, commit, publish, and promote everywhere.
+
+@5:00 AM
+  - Bed. Sleep.
+
+### 2018-02-20 - Tuesday
+
+@1:30 AM
+    - Code is complete.
+    - Manual testing complete.
+    - Code backed up.
+    - Superfluous code stripping in process.
+
+@5:00 AM
+    - Completed applying a semi-acceptable design.
+    - Finished cleaning up code.
+
+@9:30 PM
+  - Split out `history` page from readme and caught it up to now.
+
+@10:30 PM
+  - Created public GitHub repo: expired-to-be
+
+@11:30 PM
+  - Created and uploaded to Chrome Store.
+
+@11:45 PM
+  - Committed all code to GitHub.
+
+@1:30 AM
+  - Made first update to extension on Chrome Store.
+    (filled in outer edges of extension panel with orange to complement the outer orange border.)
+
+@2:05 AM
+  - Made second update to extension on Chrome Store.
+    (added confirmation alert on "Clear All" button.)
+    (also on clear all, added zeroing out of the form's ID.)
+
+### 2018-02-21 - Wednesday
+
+New issue was posted on GitHub.
+
+  - Looks to be iOS-related. Need to recreate.
+  - I got Chrome installed on my iPad, but no extensions (it's considered mobile; even if Requesting Desktop Site). Google search said it's possible: Perhaps something has changed since those results.
+  - I installed Chromium on Ubuntu. 4 hours later got it working. Looks "okay".
+  - Posted response in GitHub about CSS or font being the issue.
+  - Tried another Unicode character. I determined that, because of the major placement dislocation of the iOS version, I cannot, in any good way, make any of these work (without an environment to work in). I then just considered applying a left border; thick; 5px should work. I then adjusted the padding: Made it the same as the 'Item Edited' indicator in the table below, so consistency is good.
+  - Tested on Ubuntu and Windows. Should be solid with a border-left.
+  - Updated the Chrome web store.
+  - Updated issue ticket and closed.
+  - Committed files to GitHub. `Issue resolved. Decorative Unicode character replaced with CSS border-left: 5px;`
