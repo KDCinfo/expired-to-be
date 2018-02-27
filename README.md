@@ -24,6 +24,8 @@ This extension will provide notification reminders at a time of your choosing (w
   - Expiration items are stored in the browser's own storage. There are no connections to any 3rd party dependencies.
   - Chrome's 'storage' is synchronized (synced), meaning alarms are available on any of your synced devices that allow your Chrome extensions.
   - Chrome Extension Notifications: Icon badge text will show when items expire, and they will clear when the expired item is either deactivated, or updated with a new valid reminder date.
+  - You can export your existing expiration items.
+  - You can import over 500 items (the app will walk through saving each item from the list you provide).
 
 ## Version History
 
