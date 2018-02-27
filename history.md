@@ -412,8 +412,171 @@ New issue was posted on GitHub.
   - I got Chrome installed on my iPad, but no extensions (it's considered mobile; even if Requesting Desktop Site). Google search said it's possible: Perhaps something has changed since those results.
   - I installed Chromium on Ubuntu. 4 hours later got it working. Looks "okay".
   - Posted response in GitHub about CSS or font being the issue.
-  - Tried another Unicode character. I determined that, because of the major placement dislocation of the iOS version, I cannot, in any good way, make any of these work (without an environment to work in). I then just considered applying a left border; thick; 5px should work. I then adjusted the padding: Made it the same as the 'Item Edited' indicator in the table below, so consistency is good.
+  - Tried another Unicode character: I determined that, because of the major displacement with the iOS version, I cannot, in any good way, make any of these work (without an environment to work in). I then just considered applying a left border; thick; 5px should work. I then adjusted the padding: Made it the same as the 'Item Edited' indicator in the table below, so consistency is good.
   - Tested on Ubuntu and Windows. Should be solid with a border-left.
   - Updated the Chrome web store.
   - Updated issue ticket and closed.
   - Committed files to GitHub. `Issue resolved. Decorative Unicode character replaced with CSS border-left: 5px;`
+
+### 2018-02-22 - Thursday
+
+@2:30 - 4:00 PM
+  - Started on Expired To Be - "Export List" layout.
+
+  > Will be a drop-up menu;
+
+  > Clear All button will join it in its current location.
+
+@6:15 PM
+  - Research: Security → XSS → JS + DOM
+
+@8:30 PM
+  - Went through more XSS research.
+  - Implemented 2 Escape functions.
+    Testing characters (25): <_>-\/!@#$%^&*();'?+"[`~]
+    The web's `escape` and `unescape` (which I found on Sat; 2 days hence), does the same thing as these two functions, but does not handle the `/` (forward slash) as recommended by OWASP. Additional details provided in the code.
+  - Moving back to Export... XSS research had me tied up all day.
+
+@12:45 AM
+  - Got Expired To Be "drop-up menu" working.
+    - Menu Layout Oops: Somehow missed 'padding: 0'
+        and was just seeing '-webkit-margin-left-start' and such.
+    - Researched best approaches to transforming the menu's height.
+        Went with `scale(1, 0)` and `scale(1, 1)`
+          `transform: scale(1, 0); transform-origin: bottom left;`.
+    - Researched best approaches to clicking outside of the menu button and menu areas.
+        [https://css-tricks.com/dangers-stopping-event-propagation/](https://css-tricks.com/dangers-stopping-event-propagation/)
+
+### 2018-02-23 - Friday
+
+@12:55 PM
+  - Got storage "get" separated out into its own closure object named `x2bStorage`.
+
+@2:15 PM
+  - Got popup.html to come up on iPad.
+
+  > Loaded up another VM and set to go through wireless adapter.
+
+  > iPad doesn't like using the hostname, so using IP address (192.168.43.xxx).
+  - Need to fix errors.
+
+@4:00 PM
+  - iPad now shows page with a sample item object.
+  - Had to use alerts to know when code was broke.
+  - iPad doesn't like passing undefined objects (i.e., chrome, chrome.storage, chrome.alarms).
+
+@12:30 AM
+  - Got x2bStorage setup for `get` and halfway with `set` (and `clearItem`).
+  - Feels like I made a lot of progress, 
+      and it feels like I haven't 'cause I've been working on this for the last 2-3 hours or so.
+  Need to finish this part up so I can do the export, so I can then do the SPA page
+    (React is doubtful; more likely just plain HTML/CSS/JS).
+
+### 2018-02-24 - Saturday
+
+Wrote out my environment setup:
+
+> My laptop connects to both an ethernet (switch/fw/modem) and wireless (my mobile hotspot). I host two Ubuntu Server 16.04 VMs:
+
+  1. Wired (Ubuntu with Desktop Interface)
+     - Uses wired LAN adapter, which goes through the ethernet.
+     - Can hit the internet (do updates, hit sites, etc.)
+     - My iPad cannot hit the VM (different networks).
+
+  2. Wireless (Ubuntu Terminal Server)
+     - Goes through VBox host-only; wireless adapter,
+     - which goes through my phone's hotspot.
+     - Can not hit the internet.
+     - My iPad can hit the VM (because it's on the same (wireless) network).
+
+@6:10 PM
+  - Been working on outlining Expired To Be
+    (primarily storage, alarms, and notifications).
+  - Have a draw.io diagram flow half done.
+
+@10:05 PM
+  - Wrote out entire functional diagram in draw.io and published with Google Drive. URL is in popup.js at top and in Readme.md.
+  - Changed entire interface font (didn't realize how bad the font was until I saw it on the iPad - all cursive and 90% illegible). Can't wait to get this updated in the Chrome Store.
+
+@2:20 AM
+  - Figured out my iPad problem.
+    Tested localStorage; it worked.
+    Was a problem with my code.
+      The `} else {` wasn't returning a `Promise`.
+      Failing silently... ... ... (albeit not really 'failing', just how it works.)
+  - Also figured out issue with clearing an item.
+    My lack of understanding between Storage and localStorage.
+    `Storage` (initial case) represents the parent API element of
+      localStorage and sessionStorage.
+    `storage` (lowercase) is a param in 2 custom helper functions at the bottom of the app.
+
+### 2018-02-25 - Sunday
+
+@5:50 PM
+  - Fixed a couple more additional found bugs.
+  - Finished [Happy Paths file](assets/x2b-happy-paths.md).
+  - Updated `Readme.md`.
+  - Updated `history.md`.
+
+@3:55 AM
+  - Calling it a night.
+  - Got Export working.
+  - Got Import working.
+    Need to close import stuff on List Options menu open or close.
+    A few other @TODO: items I sprinkled in the code.
+
+### 2018-02-26 - Monday
+
+@1:40 PM
+  - Wrote out RAM consumption levels post-reboot.
+
+    GB | Event
+    -- | -----
+    3.9 - 4 | before reboot
+    2.9 - 3 | clean
+    4.6 | vm #1 (ubuntu with desktop)
+    5.1 | vm logged in
+    6.4 | vm #2 (ubuntu terminal-only)
+    6.6 | vm logged in
+    6.8 | opened windows file explorer
+    6.9 | z: and y: mapped drive connects
+    6.8 | closed explorer
+    7.1 | sublime text 3 (9 +1 untitled +1 small find results)
+    8.5 | chrome (3 windows; +6 +4 +2 = 12 tabs; a light day)
+
+  - Cleaned up some 'import' code. Messages are better and more relevant.
+
+@4:00 PM
+  - Got import fully working.
+    - All @TODO items are done except 2.
+    - Started on import progress bar.
+
+  - @TODONE:
+    x Allow importing of ID's if unique.
+    x Tested import max length (cut it down to 12)
+    x Close 'n' elements when List Options is opened (or closed, or both).
+    x When opening List Options; hide the import stuff (if open)
+    x Put small 3-4px radius on List Options popup and 2-3 input fields.
+
+  - @TODECIDE: Should we allow for duplicate names?
+    - Currently it does (ID's are used for uniqueness).
+    - Should it inform/ask the user if an item already exists?
+    - Perhaps they have a long list and didn't know.
+    - How would this affect import? Can't just assign a new 'title'.
+    - Could do pref setting for Insert (fail dupes) or always Overwrite.
+    - Decision: Allow duplicates; @TODO: Add sorting.
+
+@12:05 AM
+  - Import - Progress bar is complete.
+  - Import - Added link to import 2 samples.
+  - List Options menu - Added background <div> to allow for RGBA.
+
+@2:35 AM
+  - Went through code. Cleared out: [@TODO:], [console.log], [alert]
+    + Quite a few @TODO:'s remain as placeholders for future releases.
+
+## @TODO:
+
+  - Implement 'alarms' interface for non-extension users.
+  - Implement 'notifications' based on 'alarms' interface.
+  - Add sorting.

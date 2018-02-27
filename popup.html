@@ -6,8 +6,8 @@
  -->
 <html>
   <head>
-    <title>Character Counts</title>
-    <meta name="description" content="This extension allows the setting and reminders of 'things expiring'.">
+    <title>Expired To Be</title>
+    <meta name="description" content="This extension allows the setting and reminders of 'expiring things'.">
     <style type="text/css">
       html {
         background-color: orange;
@@ -18,11 +18,10 @@
         border: 4px solid orange;
           border-radius: 16px;
         box-shadow: inset 4px 4px 7px lightgrey;
-
-        font-family: 'Sarpanch', sans-serif;
-        font-family: 'Baloo Thambi', cursive;
-        font-family: 'Baumans', cursive;
-
+        font-family: Verdana;
+        font-family: Arial;
+        font-family: sans-serif;
+        font-family: Helvetica;
         font-size: 12px;
         margin: 0;
         max-width: 550px;
@@ -189,26 +188,22 @@
         transition: all 0.5s cubic-bezier(0.1, 1, 0.55, 1);
         white-space: normal;
       }
-      #msgs-div::before {
-        color: rgba(40, 150, 255, 1);
+      #msgs-div::before {/* obsolete */
+        color: rgb(40, 150, 255);
         outline: 0px dotted lightpink;
         padding: 0 5px;
         position: absolute;
           z-index: 3;
         text-align: center;
-
-        /*Swap out below for alt left bars*/
-        content: '';/*! Yes: 23A1 23AD 0283 222E 257F 299A 29D8 29D9 |No: 222B 2757*/
+        content: '';
         font-size: 42px; font-weight: normal; left: -17px; top: 7px;
       }
-        /* Couldn't Decide;
-           23A1 - 1 : font-size: 42px; font-weight: normal; left: -17px; top: 7px;
-           23AD - 2 : font-size: 36px; font-weight: bold; left: -20px; top: 16px;
-           0283 - 3 : font-size: 36px; font-weight: bold; left: -20px; top: -5px;
-        */
       .msg-transition {
         opacity: 0.1;
         transition: all 0.5s cubic-bezier(0.1, 1, 0.55, 1);
+      }
+      input {
+        border-radius: 2px;
       }
       input.toggle-active {/*.active-is-true*/
         position: relative;
@@ -219,12 +214,21 @@
       }
       button.input-save {
         background-color: rgba(255, 166, 0, 0.75);
+        border-radius: 4px;
         font-weight: bold;
         margin-right: 1em;
         padding: 0.25em 1em;
       }
 
       /* Utilities */
+      .opacity0 {
+        opacity: 0;
+        transition: all 0.5s ease-out;
+      }
+      .opacity100 {
+        opacity: 1;
+        transition: all 0.5s ease-in;
+      }
       button {
         cursor: pointer;
       }
@@ -241,16 +245,110 @@
         text-align: left;
       }
       footer {
-        margin-top: 1rem;
-        font-style: italic;
         font-size: 11px;
+        margin-top: 1rem;
+        position: relative;
       }
-      .open-source {
-        float: right;
-        margin-right: 5px;
-      }
+        .input-options {
+          display: inline-block;
+          position: relative;
+        }
+          .footer-menu-div {
+            background-color: #ffffff;
+            border-radius: 5px;
+            position: absolute;
+              left: 0;
+              bottom: 3em;
+              z-index: 5;
+            transform: scale(1, 0);
+            transform-origin: bottom left;
+            transition: all 0.5s ease-out;
+          }
+            .footer-menu-ul {
+              background-color: rgba(214, 236, 255, 0.5);
+              border-radius: 5px;
+              box-shadow: 2px 2px 5px rgb(40, 150, 255);
+              list-style: none;
+              margin: 0;
+              overflow: hidden;
+              padding: 0.75em 0 0;
+            }
+              .footer-menu-div.open {
+                transition: all 0.5s ease-in;
+                transform: scale(1, 1);
+              }
+              .footer-menu-ul li {
+                margin: 1.0em 1.5em;
+                min-height: 30px;
+                padding: 0;
+              }
+                #input-import {
+                  display: block;
+                  height: 60px;
+                  opacity: 1;
+                  position: relative;
+                    z-index: 7;
+                  transition: all 0.5s ease-in;
+                  width: 400px;
+                }
+                #input-import.closed {
+                  /*display: none;*/
+                  height: 0;
+                  opacity: 0;
+                  transition: all 0.5s ease-out;
+                  width: 0;
+                }
+                #fillSampleJSON,
+                #input-import-action {
+                  float: right;
+                }
+                .input-options-with-items {
+                  display: none;
+                }
+                #import-notes {
+                  padding: 0.5em 0 0 0;
+                  white-space: normal;
+                  width: 400px;
+                }
+                  #import-notes span {
+                    display: inline-block;
+                    width: 75%;
+                  }
+                #import-progress {
+                  margin: 0 auto;
+                  outline: 1px solid rgba(50, 160, 255, 0.5);
+                  width: 400px;
+                }
+                  #import-progress-bar {
+                    background-color: orange;
+                    height: 20px;
+                    transition: all 0.2s ease-in;
+                    width: 20%;
+                  }
+                #import-error {
+                  color: #cc0000;
+                  white-space: normal;
+                  width: 400px;
+                }
+          .input-options .footer-menu-toggle-button {
+            border: 1px solid rgb(40, 150, 255);
+              border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            padding: .5em 1.5em;
+          }
+          .footer-menu-toggle-button:hover {
+            background-color: rgba(40, 150, 255, 0.2);
+          }
+        .open-source {
+          display: inline-block;
+          font-style: italic;
+          margin-right: 5px;
+          position: absolute;
+            right: 0;
+            bottom: 2px;
+        }
     </style>
-
     <!--
       - JavaScript and HTML must be in separate files: see our
       - Content Security Policy documentation[1] for details and explanation.
@@ -268,7 +366,7 @@
       <p>The error provided was:</p>
       <p id="containerErrorTxt"></p>
       <p>
-        If that wasn't the case, please feel free to <a target="characterCounts" href="https://github.com/KDCinfo/character-counts/issues">open an issue</a> on GitHub.
+        If that wasn't the case, please feel free to <a target="expiredToBe" href="https://github.com/KDCinfo/expired-to-be/issues">open an issue</a> on GitHub.
       </p>
     </div>
 
@@ -290,12 +388,12 @@
         <div class="div-right">
           <label>Lead Time for Notification:<br/>
             <input class="input-select-num" type="number" min="1" max="10" value="1" size="3" required />
-            <select class="input-select-name" required>
-              <option value="days">day(s) [1-70]</option>
-              <option value="weeks" selected>week(s) [1-10]</option>
-              <!-- <option value="month">month(s) [1-6]</option> -->
-            </select>
           </label>
+          <select class="input-select-name" required>
+            <option value="days">day(s) [1-70]</option>
+            <option value="weeks" selected>week(s) [1-10]</option>
+            <!-- <option value="month">month(s) [1-6]</option> -->
+          </select>
         </div>
         <br/><br/>
         <div class="div-left">
@@ -324,10 +422,44 @@
     <div id="container">
       <div id="msgs-parent"><div id="msgs-div">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
 
+      <div id="import-progress" class="opacity0 hidden"><div id="import-progress-bar"></div></div>
+
       <div><table id="expires-table"></table></div>
 
       <footer>
-        <div style="display: none;"><button id="input-clear-all">Clear All</button> <small>(this will erase everything!)</small></div>
+        <div class="input-options">
+          <div class="footer-menu-div">
+            <ul class="footer-menu-ul">
+              <li class="input-options-with-items">
+                <button id="input-export-all">Export All</button>
+                <a id="input-export-download" style="display:none"></a>
+              </li>
+              <li>
+                <button id="input-import-button">Import Items<span class="show-import-elements hidden"> (close)</span></button>
+                <textarea
+                  placeholder='[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]'
+                  id="input-import"
+                  rows="4"
+                  cols="40"
+                  class="closed"
+                ></textarea>
+                <span class="hidden">[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]</span>
+                <div id="import-error" class="show-import-elements hidden"></div>
+                <div id="import-notes" class="show-import-elements hidden">
+                  <span>Enter a JSON-like string to import. NOTE: Use double quotes for strings. Do NOT include `active` status. You can include `ID`, but it will be reassigned if that ID already exists.</span>
+                  <a id="fillSampleJSON" class="show-import-elements hidden" href="#samples">Click for 2 samples.</a>
+                  <button id="input-import-action" class="show-import-elements hidden">Import JSON</button>
+                </div>
+              </li>
+              <li class="input-options-with-items">
+                <button id="input-clear-all">Clear All</button>&nbsp;<small>(this will erase everything!)</small>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-menu-toggle-button">
+            List Options
+          </div>
+        </div>
         <span class="open-source">Expired To Be is <a target="expiredToBe" href="https://github.com/KDCinfo/expired-to-be">Open Source on GitHub</a>.</span>
       </footer>
     </div>

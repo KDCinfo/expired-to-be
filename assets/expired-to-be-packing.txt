@@ -10,7 +10,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 [PROJECT CREATION]
 
 Extension Creation:
-    Ubuntu 16.04 LTS
+    Ubuntu 16.04.3 LTS
         Runs inside a VirtualBox VM
     Windows 10
         VS Code and Sublime Text 3
