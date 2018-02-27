@@ -27,7 +27,7 @@ This extension will provide notification reminders at a time of your choosing (w
 
 ## Version History
 
-See ['X2B Version History' at bottom of page](#X2B-Version-History)
+See ['X2B Version History' at bottom of page](#x2b-version-history)
 
 ## Functional Diagram
 
