@@ -1500,9 +1500,11 @@ function setDate() {
         thisMonth = today.getMonth() + 1,
         nextMonth = (thisMonth === 12) ? 1 : thisMonth + 1,
         padMonth = ((nextMonth < 10) ? '0' : '') + nextMonth,
+        thisDay = today.getDate(),
+        padDay = ((thisDay < 10) ? '0' : '') + thisDay,
         thisYear = (thisMonth === 12) ? today.getFullYear() + 1 : today.getFullYear();
 
-  return thisYear + '-' + padMonth + '-' + today.getDate();
+  return thisYear + '-' + padMonth + '-' + padDay;
 }
 
 /**
