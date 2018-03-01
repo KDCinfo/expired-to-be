@@ -82,6 +82,10 @@ See [History file](history.md)
   - Finished [Happy Paths file](assets/x2b-happy-paths.md).
   - Got entire app to work standalone, on any browser -- There just aren't any alarms or notifications to let you know when an item's expiration lead time has matured. And, it's not hosted anywhere... yet (will be going through GitHub pages and Travis CLI with ver 1.5).
 
+### 1.4.1
+
+  - Padded 'day' for proper `date` input field compatibility.
+
 ### 2.0 (WIP)
 
 Browser-Level Notifications (in lieu of installing the Chrome extension)
