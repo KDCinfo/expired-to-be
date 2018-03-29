@@ -1,9 +1,11 @@
+[![Build Status](https://travis-ci.org/KDCinfo/expired-to-be.svg?branch=master)](https://travis-ci.org/KDCinfo/expired-to-be)
+
 # Expired To Be
 
 Expired To Be provides notification reminders for your expiring items at a time of your choosing. It is available as:
 
   - A Chrome browser extension (available for free from the [Chrome Web Store](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan))
-  - A standalone web app (available via a [(GitHub-hosted) web page](https://github.com/KDCinfo/expired-to-be))
+  - A standalone web app (available via a [(GitHub-hosted) web page](https://KDCinfo.github.io/expired-to-be/))
 
 ## Overview
 
@@ -34,7 +36,7 @@ The primary notification for when an item expires is an orange number count that
 
 ## X2B [A Web App]
 
-The web version of the app can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
+The [web version of the app](https://KDCinfo.github.io/expired-to-be/) can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
 
 **Important Note**: Unlike the Chrome Extension, which is always running so long as your browser is running, the web-based version of the app (its browser tab) must remain open for the timers (alarms) to continue to run. You can absolutely continue your browsing activities in other tabs and other windows, but the X2B page will need to stay open in the background. If you close the browser tab that Expired To Be is open in, you are effectively closing the Expired To Be web app, and the timers won't be able to run. However, in the case you do close the tab, all is not lost... each time you visit the page, all active timers are restored, and any active expired items will trigger.
 
@@ -92,6 +94,8 @@ See [Happy Paths file](assets/x2b-happy-paths.md)
 See [History file](history.md)
 
 ## Helpful Sites and Pages
+
+  * [Travis CI (Prod Build)](https://travis-ci.org/KDCinfo/expired-to-be)
 
   * [Done (for now) TimerBox (timers) Component](https://github.com/KDCinfo/done-for-now/blob/master/src/components/TimerBox.tsx)
   The Done (for now) TimerBox component (and all its subcomponents) was forked and updated to accommodate (one-time daily) alarms. The (recurring) `timer` code still exists in Expired To Be, and could be enabled within a week or two (see `TimerAlertPrompt.tsx`).
