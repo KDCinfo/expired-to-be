@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+ /**
+ * Expired To Be |  https://github.com/KDCinfo/expired-to-be
+ *
+ * This app allows you to enter and be reminded of expiration dates.
+ * It will provide notification reminders with lead times of your choosing.
+ *
+ * Developer: Keith D Commiskey (https://kdcinfo.com)
+ * Initial Development: 2018-02 - 2018-03
+ *
+ * The Expired To Be app can be used in one of two ways:
+ * - Chrome Extension:
+ * - Hosted Web App (SPA)
+ */
+ -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/icon32.png" id="dynamic-favicon">
+    <title>Expired To Be: Expiration Reminders</title>
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/extensions/chrome/popup.css">
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="web-root"></div>
+    <div id="root"></div>
+    <script>
+      function htmlEscape(str) {
+        const ourStr = str
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\//g, '&#x2F;'); // forward slash is included as it helps end an HTML entity
+        return ourStr;
+      }
+
+      function htmlUnescape(str){
+        const ourStr = str
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&')
+          .replace(/&#x2F;/g, '/');
+        return ourStr;
+      }
+
+      //
+      // Expired To Be [Web App] - STATE MANAGEMENT
+      //
+
+      function ExpiredToBe() {
+        if (!(this instanceof ExpiredToBe)) {
+          return new ExpiredToBe();
+        }
+        this.items = []; // Item objects (item ID and whichEvent) to be passed to our TimerBox `alarms` API.
+        this.alarms = [];
+        this.prefs = {
+          prefNotification: 'alerts', // alerts|modals|notifications|none (only passive)
+          prefAlarmMsg: 'An alarm has expired.',
+          prefCycle: 0,       // 0 = 'daily'; Snooze is not currently integrated (cycle only affects Timers).
+          prefHours: 9,       // [0-23] 0 = Midnight (tonight), 1 AM, etc.
+          prefMins: 0,        // [0-55] 0 = Top of the hour.
+          prefSnoozeTime: 5,  // Used for Timers (not currently integrated).
+          showPanel: false,   // The Alarms panel (visual display) is currently only intended for informative output.
+          allowTimers: false  // Timers are coded but not currently integrated as they are on 'Done (for now)'.
+        };
+        this.notifyError = '';
+        // Item to Process:
+        // item[] = {
+        //   whichEvent: 'add',        whichEvent: 'remove',  //   whichEvent: 'update',
+        //   expiredId: timeId,        expiredId: timeId,     //   expiredId: timeId
+        //   entryTitle: alarmId,                             //   entryTitle: alarmId
+        //   entryPresetTargetTime: 0,                        //   resetTargetTime: 0,
+        //   entryHours: numberHours,                         //   entryHours: numberHours
+        //   entryMinutes: 0,                                 //   entryMinutes: 0
+        //   entryCycle: 0 // daily [hr:1 | min:2]            //   entryCycle: 0
+        // };
+        this.removeLocalAlarm = (itemId) => {
+          let thisAlarms = this.alarms.slice();
+          thisAlarms = thisAlarms.filter(elem => elem.id !== itemId);
+          this.alarms = thisAlarms;
+        };
+        this.clearErrMsg = () => {
+          this.notifyError = '';
+          this.updateErrorMsg();
+        };
+        this.updateErrorMsg = () => {
+          document.getElementById('notify-error').innerText = htmlUnescape(this.notifyError);
+        };
+        this.getPermReturn = (isAlarm = false) => {
+
+          return new Promise( (resolve, reject) => {
+            this.clearErrMsg();
+
+            // Return Strings: none|granted|denied|default
+
+            if (!('Notification' in window)) {
+              resolve('none'); // Device does not support desktop notification
+
+            } else if (isAlarm) {
+              resolve(Notification.permission);
+
+            } else if (Notification.permission === 'granted') {
+              // Let's check whether notification permissions have alredy been granted
+              // If it's okay let's create a notification
+              // var notification = new Notification('Hi there!');
+              resolve('granted');
+
+            } else if (Notification.permission === 'default') {
+              // Otherwise, we need to ask the user for permission
+              // else if (Notification.permission !== 'denied' || Notification.permission === 'default') {
+
+              try {
+
+                Notification.requestPermission().then(permission => {
+
+                  if (permission === 'denied' || permission === 'granted') {
+                    // User denied|granted permissions
+                    resolve(permission);
+                  }
+
+                  if (permission === 'default') {
+
+                    if (window.Notification.permission === 'denied') {
+                      // The browser has decided to automatically deny permission.
+                      // https://stackoverflow.com/questions/47263967/chrome-treats-default-result-from-notification-requestpermission-as-denied#answer-47516416
+                      resolve('autodeny');
+                    }
+                    resolve(permission);
+                  } else {
+                    resolve(permission);
+                  }
+                });
+
+              } catch (error) {
+                // Safari doesn't return a promise for requestPermissions and it throws a TypeError.
+                // It takes a callback as the first argument instead.
+                if (error instanceof TypeError) {
+                  Notification.requestPermission(permission => {
+                    resolve(permission);
+                  });
+
+                } else {
+                  throw error;
+                  resolve('none');
+                }
+              }
+            } else if (Notification.permission === 'default') {
+              if (Notification.permission === 'denied') {
+                resolve('denied');
+              }
+              resolve('default');
+
+            } else {
+              resolve('denied');
+            }
+          });
+        };
+        return {
+          currentItems: () => this.items,
+          alarmItems: () => this.alarms,
+          getPrefs: () => this.prefs,
+          setPref: (ourPrefs) => {
+            let whichData = Object.assign({}, this.prefs, ourPrefs);
+            this.prefs = whichData;
+          },
+          setAlarms: (ourAlarms) => {
+            this.alarms = ourAlarms;
+          },
+          getAlarm: (itemId) => this.alarms.find(
+            alarm => parseInt(alarm.title.substr(4), 10) === itemId
+          ),
+          refreshAlarms: () => {
+            showList(); // @TONOTE: This doesn't exist yet, but it will when [popup.js] is loaded.
+          },
+          removeAlarm: (itemId) => {
+            this.removeLocalAlarm(itemId);
+          },
+          processItem: (itemObj) => {
+            if (itemObj.whichEvent === 'remove') {
+              this.removeLocalAlarm(itemObj.expiredId);
+            } else if (itemObj.whichEvent === 'clearall') {
+              this.alarms.length = 0;
+            }
+            this.items.push(itemObj);
+          },
+          removeItem: (itemId) => {
+            let thisIdx = this.items.findIndex( item => item.id === itemId );
+            let newItems = this.items.slice();
+            newItems.splice(thisIdx, 1);
+            this.items = newItems;
+          },
+          //
+          // Get Web Notifications API Permissions
+          //
+          // https://developer.mozilla.org/en-US/docs/Web/API/Notification/permission
+          // https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari#answer-39282539
+          //
+          getPermissions: (isAlarm = false) => {
+            // Let's check if the browser supports notifications
+            return this.getPermReturn().then( thisPerm => {
+              return thisPerm; // 2018-03-23 - Gotta return something so you have something to be returned. :P
+            });
+          },
+          setError: (errMsg) => {
+            this.notifyError = htmlEscape(errMsg);
+            this.updateErrorMsg();
+          },
+          clearErrors: () => {
+            this.clearErrMsg();
+          },
+          updatePassiveNotification: () => {
+            runPassiveNotification('1');
+          },
+          triggerAlarm: (timerId) => {
+
+            this.getPermReturn(true).then( thisPerm => {
+
+              // updatePassiveNotification(); // props call to `updatePassiveNotification` is done separate and first.
+              if (thisPerm === 'granted') {
+                let msgTxt = 'One of your Expiration items is set to expire!',
+                    msg = new Notification( 'Expired To Be', {
+                              body: msgTxt + ' Your Expiration items are at: https://kdcinfo.com/expired-to-be',
+                              icon: 'icon32.png'
+                          });
+
+                msg.addEventListener( 'click', event => {
+                  // message(msgTxt, true);
+                  parent.focus();
+                  window.focus();
+                  event.target.close();
+                });
+              } else {
+                message('An expiration alarm was triggered, ' +
+                        'but notification permissions have been revoked since the alarm was originally set.', true);
+              }
+            });
+          }
+        };
+      }
+      window.ourExpirations = new ExpiredToBe();
+    </script>
+  </body>
+</html>

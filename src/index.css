@@ -1,0 +1,486 @@
+body {
+  font-family: sans-serif;
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 0;
+}
+.app {
+  text-align: center;
+}
+
+.app-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.app-title {
+  font-size: 1.5em;
+}
+
+.app-intro {
+  font-size: large;
+}
+
+/* Web App */
+
+h1 {
+  display: inline-block;
+}
+#webapp-help {
+  display: inline-block;
+  position: absolute;
+    right: 10px;
+    top: 10px;
+}
+  #app-message {
+    background-color: #ffffff;
+    border-radius: 5px;
+    max-width: 400px;
+    min-width: 300px;
+    outline: 0px;
+    position: absolute;
+      right: 0;
+      top: 28px;
+      z-index: 99;
+    transform: scale(1, 0);
+    transform-origin: top right;
+    transition: all 0.5s ease-out;
+
+    box-shadow: 2px 2px 5px rgb(40, 150, 255);
+    margin: 0;
+    overflow: hidden;
+    padding: 0.75em 0 0;
+  }
+  #app-message.open {
+    transition: all 0.5s ease-in;
+    transform: scale(1, 1);
+  }
+
+.footer-prefs-div,
+#app-message {
+  max-width: 400px;
+  min-width: 300px;
+}
+  .alarms-panel-left,
+  .alarms-panel-right {
+    display: inline-block;
+    margin: 0;
+    outline: 0px solid green;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    width: 100px;
+  }
+    .alarms-panel-right {
+      margin: 0 5px;
+      outline: 0px solid red;
+      padding: 5px;
+      text-align: left;
+      width: 135px;
+    }
+  .notification-option {
+    display: inline;
+  }
+  .notification-option.closed {
+    display: none;
+  }
+.div50 {
+    display: inline-block;
+    width: 50%;
+  }
+  .nowrap {
+    white-space: nowrap;
+  }
+
+/* Alarms */
+
+.table-responsive table {
+  margin: 0 auto;
+  width: 300px;
+}
+
+.cellCol1 small {
+  color: gray;
+}
+
+#notify-error {
+  color: #cc0000;
+  white-space: normal;
+}
+
+/*!
+ * Extracted 'modal' sections from Done (for now) minified Bootstrap CSS file.
+ * Bootstrap v3.3.6 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%
+}
+
+.glyphicon-modal-window:before {
+  content: "\e237"
+}
+
+.modal-open {
+  overflow: hidden
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  display: none;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  outline: 0
+}
+
+.modal.fade .modal-dialog {
+  -webkit-transition: -webkit-transform .3s ease-out;
+  -o-transition: -o-transform .3s ease-out;
+  transition: transform .3s ease-out;
+  -webkit-transform: translate(0,-25%);
+  -ms-transform: translate(0,-25%);
+  -o-transform: translate(0,-25%);
+  transform: translate(0,-25%)
+}
+
+.modal.in .modal-dialog {
+  -webkit-transform: translate(0,0);
+  -ms-transform: translate(0,0);
+  -o-transform: translate(0,0);
+  transform: translate(0,0)
+}
+
+.modal-open .modal {
+  overflow-x: hidden;
+  overflow-y: auto
+}
+
+.modal-dialog {
+  position: relative;
+  width: auto;
+  margin: 10px
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid #999;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 16px;
+  outline: 0;
+  -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+  box-shadow: 0 3px 9px rgba(0,0,0,.5)
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000
+}
+
+.modal-backdrop.fade {
+  filter: alpha(opacity=0);
+  opacity: 0
+}
+
+.modal-backdrop.in {
+  filter: alpha(opacity=50);
+  opacity: .5
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5
+}
+
+.modal-header .close {
+  margin-top: -2px
+}
+
+.modal-title {
+  margin: 0;
+  line-height: 1.42857143
+}
+
+.modal-body {
+  position: relative;
+  padding: 15px
+}
+
+.modal-footer {
+  padding: 15px;
+  text-align: right;
+  border-top: 1px solid #e5e5e5
+}
+
+.modal-footer .btn+.btn {
+  margin-bottom: 0;
+  margin-left: 5px
+}
+
+.modal-footer .btn-group .btn+.btn {
+  margin-left: -1px
+}
+
+.modal-footer .btn-block+.btn-block {
+  margin-left: 0
+}
+
+.modal-scrollbar-measure {
+  position: absolute;
+  top: -9999px;
+  width: 50px;
+  height: 50px;
+  overflow: scroll
+}
+
+@media (min-width: 768px) {
+  .modal-dialog {
+      width:600px;
+      margin: 30px auto
+  }
+
+  .modal-content {
+      -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+      box-shadow: 0 5px 15px rgba(0,0,0,.5)
+  }
+
+  .modal-sm {
+      width: 300px
+  }
+}
+
+@media (min-width: 992px) {
+  .modal-lg {
+      width:900px
+  }
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: block;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: normal;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  line-break: auto
+}
+
+.tooltip.in {
+  filter: alpha(opacity=90);
+  opacity: .9
+}
+
+.tooltip.top {
+  padding: 5px 0;
+  margin-top: -3px
+}
+
+.tooltip.right {
+  padding: 0 5px;
+  margin-left: 3px
+}
+
+.tooltip.bottom {
+  padding: 5px 0;
+  margin-top: 3px
+}
+
+.tooltip.left {
+  padding: 0 5px;
+  margin-left: -3px
+}
+
+.tooltip-inner {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #fff;
+  text-align: center;
+  background-color: #000;
+  border-radius: 4px
+}
+
+.tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid
+}
+
+.tooltip.top .tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #000
+}
+
+.tooltip.top-left .tooltip-arrow {
+  right: 5px;
+  bottom: 0;
+  margin-bottom: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #000
+}
+
+.tooltip.top-right .tooltip-arrow {
+  bottom: 0;
+  left: 5px;
+  margin-bottom: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #000
+}
+
+.tooltip.right .tooltip-arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -5px;
+  border-width: 5px 5px 5px 0;
+  border-right-color: #000
+}
+
+.tooltip.left .tooltip-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -5px;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #000
+}
+
+.tooltip.bottom .tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000
+}
+
+.tooltip.bottom-left .tooltip-arrow {
+  top: 0;
+  right: 5px;
+  margin-top: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000
+}
+
+.tooltip.bottom-right .tooltip-arrow {
+  top: 0;
+  left: 5px;
+  margin-top: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000
+}
+
+.center-block {
+  display: block;
+  margin-right: auto;
+  margin-left: auto
+}
+
+.pull-right {
+  float: right!important
+}
+
+.pull-left {
+  float: left!important
+}
+
+.hide {
+  display: none!important
+}
+
+.show {
+  display: block!important
+}
+
+.invisible {
+  visibility: hidden
+}
+
+.text-hide {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0
+}
+
+@-ms-viewport {
+  width: device-width
+}
+
+/* Grabbed from Done (for now) custom styles */
+
+/* MODAL */
+
+.modal-alert {
+  margin: 0 auto;
+  text-align: center;
+}
+  .modal-content {
+    background-color: rgba(0, 150, 255, 0.4); /* rgba(255, 255, 255, 0.7); */
+    border: 5px solid #ffffff;
+    border-radius: 25px;
+  }
+    .modal-title,
+    .modal-subtitle {
+      color: #3377dd; /* Blue */
+      font-size: 26px;
+    }
+      .modal-title {
+        font-size: 30px;
+        font-weight: bold;
+      }
+    .modal-alert button,
+    .modal-alert button.btn{
+      background-color: rgba(255, 165, 0, .75);
+      border-radius: 16px;
+      font-size: 400%;
+      font-weight: bold;
+      height: 9rem;
+      line-height: 1.2;
+      margin: 1.5rem 1rem;
+      text-shadow: 2px 2px 9px red;
+      width: 80%;
+    }
+    .modal-alert button:hover,
+    .modal-alert button.btn:hover,
+    .modal-alert button:focus,
+    .modal-alert button.btn:focus {
+      background-position: center;
+      border: 7px solid darkblue;
+      border-radius: 16px;
+      outline: 0;
+    }

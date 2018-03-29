@@ -1,24 +1,25 @@
 /**
- * Expired To Be
+ * Expired To Be |  https://github.com/KDCinfo/expired-to-be
  *
- * This extension allows you to enter and be reminded of expiration dates.
+ * This app allows you to enter and be reminded of expiration dates.
  * It will provide notification reminders with lead times of your choosing.
  *
- * Developer: Keith D Commiskey (https://kdcinfo.com) 2018-02
+ * Developer: Keith D Commiskey (https://kdcinfo.com)
+ * Initial Development: 2018-02 - 2018-03
  *
- * Chrome Extension Notifications:
- *   - Icon badge text (will clear when expired item is reset)
- *   - Storage listing (expired items will be distinct)
+ * The Expired To Be app can be used in one of two ways:
  *
- * In The Works (X2B 1.5):
- *   - Browser-Level Notifications (in lieu of installing the Chrome extension)
- */
-
-/**
+ * Chrome Extension:
+ *   - Notifications are passive, and will clear when expired items are reset.
+ *
+ * Hosted Web App (SPA):
+ * - The Web App uses the 'Chrome Extension' interface code, so it has all the same interface features as the Chrome
+ *   extension. However, it also uses a custom 'Alarm' system and Web-based Notifications. Having these additional
+ *   features provides the Web App with a few additional options and features that the Chrome extension does not have.
+ *
+ * References to the `window.ourExpirations` factory function should also be provided with 'undefined' alternatives.
+ *
  * At the bottom of this file is a simple representation of the elements and objects used in this extension:
- *
- * Functional Diagram: Storage (sync) with Alarms, and Storage (local) with Notifications
- * https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=expired-to-be.xml#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1mTxbVo9d5hfpxvEPvz_4I65Cb0YU3LUG%26export%3Ddownload
  *
  */
 
@@ -32,6 +33,8 @@ const maxDays = 70,
       TESTING = false, // Currently means you can activate an expired item, for testing 'expired notifications'.
       ourKeys = new Set(['title', 'date', 'leadTime', 'leadTimeVal']), // No: 'id', 'active'
       sampleJSON = '[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
+
+const isExtension = !document.getElementById('web-root'); // Only run with either the extension, or the React-based web app.
 
 function displayIt() { // [window|document].onload = function() {}
 
@@ -50,7 +53,11 @@ function displayIt() { // [window|document].onload = function() {}
     // if (e.defaultPrevented) return;
 
     if (!e.target.closest('.footer-menu-toggle-button') &&
-        !e.target.closest('.footer-menu-div')) {
+        !e.target.closest('.footer-menu-div') &&
+        !e.target.closest('.footer-prefs-toggle-button') &&
+        !e.target.closest('.footer-prefs-div') &&
+        !e.target.closest('#button-toggle-webapp-help') &&
+        !e.target.closest('#app-message')) {
       toggleMenu('close');
     }
     // return; // No returns; let it pass through.
@@ -123,47 +130,46 @@ function displayIt() { // [window|document].onload = function() {}
     }
   });
 
-  addStorageListener();
-
   storeStateLocal(showList); // Store Chrome Storage locally, then display the list (if any).
 }
 
 /**
  * Let the FUN Begin!!
  */
-document.addEventListener('DOMContentLoaded', displayIt, false);
 
-/**
- * Listen on Storage Changes
- *
- * https://developer.chrome.com/extensions/storage
- */
+if (isExtension) {
 
-function addStorageListener() {
-  if (isGood('chrome') && isGood('chrome.storage')) {
-    // [storage]: onChange
+  document.addEventListener('DOMContentLoaded', displayIt, false);
+  // window.onload = function() {
+  // displayIt();
 
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
-      /*
-        // Per: https://developer.chrome.com/extensions/storage
-        for (key in changes) {
-          var storageChange = changes[key];
-          console.log('Storage key "%s" in namespace "%s" changed. Old value was "%s", new value is "%s".',
-                      key, namespace, storageChange.oldValue, storageChange.newValue);
-        }
-      */
-      // console.log('Storage Updated !!! Do we need to repaint the list with showList() ???');
-      // showList(); // Refresh the expiration display list after any state updates.
-    });
-  }
-  // Local Storage Listener? Unsure if even the above is necessary... and if so,
-  // how to apply to localStorage. I commented out early in development of X2B 1.4.
-  // Will remove in future releasee.
+} else {
+  let checkIt = () => {
+    let testObj = document.querySelector('.input-date');
+
+    if (typeof(testObj) === 'undefined') {
+      // Let's give it a 10th of a second (or more) in case there's a holdup.
+      // This will also push our call to the end of the call stack (sort of).
+      setTimeout( () => {
+        checkIt();
+      }, 100);
+    } else {
+      // We need to push the `displayIt` fn call to the event queue;
+      // and let the call stack finish doing its thing.
+      setTimeout( () => { displayIt(); }, 1000);
+
+      // I really, really hate putting this ^^^ 1-second timeout here,
+      // but when it was 0, the 'Applying Prefs' wouldn't run until after
+      // the `runPassiveNotification()`, which throws off timer creations.
+      // I tried moving this `displayIt()` over to `index.tsx`, but fn() not found.
+    }
+  };
+  checkIt();
 }
 
 const x2bStorage = (function() {
   return {
-    get: async function() { // x2bStorage.get
+    get: async function(whichStore) { // x2bStorage.get
 
       if (isGood('chrome') && isGood('chrome.storage') && isGood('chrome.storage.sync')) {
 
@@ -176,29 +182,42 @@ const x2bStorage = (function() {
       } else if (isGood('window.localStorage')) {
 
         return new Promise( (resolve, reject) => {
-          const storedTimerList = getStorageItem(localStorage, 'expiresList'); // Returned item is: `JSON.parse()`'d
+          const storedTimerList = getStorageItem(localStorage, whichStore); // Returned item is: `JSON.parse()`'d
           resolve(storedTimerList);
         });
 
       } else {
-        if (hasSeen > 0) {
+        return new Promise( (resolve, reject) => {
           alert('Your browsing device has no local storage (i.e., no data persistence.) ' +
                 'You can still run the app, but nothing will be saved when you leave.'); // try cookies?
-        }
-        return { 'expiresList': ourState };
+          resolve({whichStore: ourState});
+        });
       }
     },
-    set: function(itemId, lastImport) { // was: function updateStorageWithState(itemId) {
+    set: function(storeObj) {
 
       // [ourState] is updated prior to 'x2bStorage.set' being called.
 
-      let msgDone = '';
+      let msgDone = '',
+          whichList = 'expiresList',
+          whichData, // Can/will either be an array [] or an object {}
+          isPrefs = false;
 
-      if (typeof(lastImport) !== 'undefined') {
+      whichData = ourState;
+
+      if (typeof(storeObj.isLastImport) !== 'undefined') {
         finishImport();
-      } else if (itemId === 0) {
+
+      } else if (typeof(storeObj.prefsObj) !== 'undefined') {
+        msgDone = message('Your preferences have been updated.', true);
+        whichList = 'expiresPrefs';
+        whichData = Object.assign({}, ourExpirations.getPrefs(), storeObj.prefsObj);
+        isPrefs = true;
+        // console.log('Hope this combines and updates ourExpirations.getPrefs() objects.', storeObj.prefsObj, whichData);
+
+      } else if (storeObj.id === 0) {
         msgDone = message('Your expiration item was successfully created.', false);
-      } else if (itemId < 0) {
+      } else if (storeObj.id < 0) {
         msgDone = message('Your expiration item was successfully removed.', false);
       } else {
         msgDone = message('Your expiration item was successfully updated.', false);
@@ -207,21 +226,25 @@ const x2bStorage = (function() {
       if (isGood('chrome') && isGood('chrome.storage') && isGood('chrome.storage.sync')) {
 
         // Save it using the Chrome extension storage API.
-        chrome.storage.sync.set({'expiresList': ourState}, () => {
+        chrome.storage.sync.set({'expiresList': whichData}, () => {
           msgDone;
-          showList();
+          if (!isPrefs) {
+            showList();
+          }
         });
 
       } else if (isGood('window.localStorage')) {
 
-        setStorageItem(localStorage, 'expiresList', JSON.stringify(ourState));
-
+        setStorageItem(localStorage, whichList, JSON.stringify(whichData)); // Local Storage is synchronous.
         msgDone;
-        showList();
+        if (!isPrefs) {
+          showList();
+        }
       }
     },
     clear: function(thisId) { // x2bStorage.clear
       // Use instead: x2bStorage.set(-1);
+      x2bStorage.set({id: -1});
     },
     which: function() {
       return stateLocation; // Possible future use, or termination.
@@ -235,23 +258,28 @@ function importSamples() {
 
 function finishImport() {
   let finalImportMsg = importErrors.join(' ');
-  finalImportMsg += ' [[ Import Complete !!! ]]';
+  finalImportMsg += ' Import Successful !!!';
   message(finalImportMsg, true);
 
   toggleProgressBar('off');
 }
 
 function toggleProgressBar(which = 'off') {
+
   let progressBarElement = document.getElementById('import-progress');
+
   if (which === 'off') {
+
     setTimeout( () => {
       progressBarElement.classList.replace('opacity100', 'opacity0');
       setTimeout( () => {
         progressBarElement.classList.add('hidden');
       }, 500);
     }, 1000);
+
   } else {
     progressBarElement.classList.remove('hidden');
+
     setTimeout( () => {
       progressBarElement.classList.replace('opacity0', 'opacity100');
     }, 1); // Near-after hidden is removed, the element will take up space on screen, then fade in.
@@ -282,11 +310,12 @@ async function getState() {
 
   return new Promise( (resolve, reject) => {
     x2bStorage.get('expiresList').then( itemList => {
+
       let returnIt = [];
 
       if (!isEmpty(itemList.expiresList)) {
         // This only runs on initial page load through 'storeStateLocal'
-           message('Or you can edit your items from below.', false);
+        message('Or you can edit your items from below.', false);
 
         returnIt = returnIt.concat(itemList.expiresList);
       }
@@ -295,22 +324,66 @@ async function getState() {
   });
 }
 
-function updateNotifications(stat = '') {
+function runPassiveNotification(stat = '') {
   if (isGood('chrome') && isGood('chrome.browserAction')) {
+
     chrome.browserAction.setBadgeText({text: stat}); // Updated Via: Alarms (eventPage) and showList()
+
   } else {
     if (stat.length > 0) {
-      message('@TODO: Implement \'notifications\': [' + stat + ']', false);
+
+      let passiveMsg = 'You have ' + stat + ' expired item';
+      if (stat === '1') { // Ternary wouldn't work... :(
+        passiveMsg = passiveMsg + '.';
+      } else {
+        passiveMsg = passiveMsg + 's.';
+      }
+      message(passiveMsg, true);
     }
+    updateFavIcon(stat);
   }
 }
 
-function showList() {
+function updateFavIcon(stat = '') {
+  // This function per and thanks to:
+  // https://stackoverflow.com/questions/260857/changing-website-favicon-dynamically#answer-2995536
 
-  toggleMenu('close');
+  document.head = document.head || document.getElementsByTagName('head')[0];
+
+  var link = document.createElement('link'),
+      oldLink = document.getElementById('dynamic-favicon');
+
+  link.id = 'dynamic-favicon';
+  link.rel = 'shortcut icon';
+
+  if (stat.length > 0) {
+    // link.href = '%PUBLIC_URL%/icon32.png';
+    // link.href = '/icon32.png';
+    link.href = '../../iconx32.png';
+    document.title = '[x] EXPIRED Item Alert !!!';
+  } else {
+    // link.href = '/icon16.png';
+    link.href = '../../icon32.png';
+    document.title = 'Expired To Be: Expiration Reminders'; // From [index.html]
+  }
+
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+
+  document.head.appendChild(link);
+}
+
+function showList(noClose = '') {
+
+  if (noClose.length === 0) {
+    toggleMenu('close');
+  }
+
   clearDOMList();
   badgeTextCount = 0;
-  updateNotifications(); // Clear expired alarm notifications
+
+  runPassiveNotification(); // Clear expired alarm notifications
 
   if (ourState.length > 0) {
 
@@ -325,33 +398,9 @@ function showList() {
     printListHead();
 
     ourState.forEach( item => {
-      let configObj = {},
-          getBetweenObj = {}; // {delay, between}
-
-      configObj.dateValueArr = item.date.split('-');
-      configObj.delay = getDelay(item.leadTime, item.leadTimeVal);
-
-      // Need the top two values first in order to get both the 'newThen' and 'between'.
-      getBetweenObj = getBetween(configObj.dateValueArr, configObj.delay);
-
-      // Now that we've got that object, we can assign them respectively.
-      configObj.newThen = getBetweenObj.newThen;
-      configObj.between = getBetweenObj.between;
-
-      // Alarm should not be set (i.e., undefined): Is `between`, and an `alarm` being set, synonymous?
-      if (configObj.between <= 0 && item.active === true) {
-        // Expired; but still active.
-        badgeTextCount++;
-      }
-
       alarmList.push( requestAlarm(item.id) ); // chrome.alarms.get('x2b-' + itemId, callback) );
-
-      printList(item, configObj);
+      printList(item);
     });
-
-    // This action is also used in [eventPage.js]
-    badgeTextCount = (badgeTextCount === 0) ? '' : badgeTextCount.toString();
-    updateNotifications(badgeTextCount); // chrome.browserAction.setBadgeText({text: badgeTextCount });
 
     setItemEdit();
 
@@ -366,93 +415,118 @@ function showList() {
     Promise.all(alarmList).then((results) => {
       // do something on fulfilled
 
-      let expiresTable = document.getElementById('expires-table');
+      let countOrphans = 0,
+          countExpired = 0;
 
       results.forEach( alarm => {
 
+        let tmpObj = ourState.find(elem => elem.id === alarm.id),
+            isGoodAlarm = isGood(alarm.alarmObj);
+
         // alarm: undefined | {id, active, ...}
 
-        if (isGood(alarm)) {
-          let itemId = parseInt(alarm.name.substr(4), 10), // x2b-1
-              // <tr class="x2b-listitem-1">
-              //   <td><input type="checkbox" class="toggle-active active-is-true item-1">
-              alarmNodeParent = expiresTable
-                .querySelector('tr.x2b-listitem-' + itemId)
-                .querySelector('.toggle-active')
-                .parentNode,
-              alarmNode = document.createElement('span');
+        // @TODONE: Adjusted all logic below and added dynamic DOM element updates based on alarms.
 
-          alarmNode.classList.add('alarm-stat', 'has-alarm');
-          alarmNodeParent.appendChild(alarmNode);
+        let delay = getDelay(tmpObj.leadTime, tmpObj.leadTimeVal),
+            dateValueArr = tmpObj.date.split('-'),
+            newTime = {},
+            between = -1,
+            newThen = -1;
 
+        if (isGoodAlarm) {
+          newTime = getBetween(dateValueArr, delay, alarm.alarmObj.presetTargetTime);
         } else {
+          newTime = getBetween(dateValueArr, delay);
+        }
+        between = newTime.between;
+        newThen = newTime.newThen;
 
-          // Active but no alarm.
+        // delay    | dateValueArr         | newTime
+        // 86400000 | ["2018", "03", "27"] | {newThen: 1522048440000, between: 0}
 
-          // You cannot turn off an alarm without deactivating it.
-          // You can save it in an expired state, but that'll trigger the expiration flags
-            // Those 2 flags are;
-            // 1) Icon badge text, and
-            // 2) light-red row highlighting with a semi-translucent ["Expired"] stamp on it.
+        let canBeActive = (
+              between > 0 &&
+              newThen - Date.now() > 0 &&
+              tmpObj.active === true
+            ) ? true : false;
+
+        // Passive notifications should only increase if alarm is invalid, and item is active.
+
+        // CanBeActive && Has alarm - printAlarm()
+        // CanBeActive && No alarm - Create alarm
+
+        // !CanBeActive &&
+          // active && has alarm - Remove alarm (expired - should've triggered notification)
+          // !active && has alarm - Remove alarm (orphan)
+          // active && no alarm - Do nothing (expired)
+          // !active && no alarm - Do nothing
+
+        let trClassListItem = document.querySelector('.x2b-listitem-' + alarm.id),
+            tdClassListItem = trClassListItem.querySelector('td'), // Grabs the first <td>
+            spanClassListItem = tdClassListItem.querySelector('span'),
+            tdBetweenItem = trClassListItem.querySelector('td.between');
+
+        tdBetweenItem.innerText = between;
+
+        if (canBeActive && isGoodAlarm) {
+          trClassListItem.classList.remove('expired');
+          spanClassListItem.classList.add('hidden');
+          printAlarm(alarm.id);
+
+        } else if (canBeActive && !isGoodAlarm) {
+          trClassListItem.classList.remove('expired');
+          spanClassListItem.classList.add('hidden');
+
+          // @TODONE: This only caused a problem when the `alert()` was
+          // triggered immediately due to 32-bit setTimeout() limitation.
+          createTimer(alarm.id, newThen, between).then( (newAlarm) => {
+            printAlarm(alarm.id);
+          });
+
+        } else { // if (!canBeActive) {
+          if (tmpObj.active === true && !isGoodAlarm) {
+            badgeTextCount++;
+            trClassListItem.classList.add('expired');
+            spanClassListItem.classList.remove('hidden');
+
+          } else if (tmpObj.active === true && isGoodAlarm) {
+            // Active with Alarm; but expired...?
+            badgeTextCount++;
+            trClassListItem.classList.add('expired');
+            spanClassListItem.classList.remove('hidden');
+            deleteTimer(alarm.id).then( (wasCleared) => {
+              if (typeof(wasCleared) !== 'undefined') {
+                if (countExpired === 0) {
+                  message('An alarm was expired and has been removed.', false);
+                }
+                countExpired++;
+              }
+            });
+
+          } else if (tmpObj.active !== true && isGoodAlarm) {
+            trClassListItem.classList.remove('expired');
+            spanClassListItem.classList.add('hidden');
+            deleteTimer(alarm.id).then( (wasCleared) => {
+              if (typeof(wasCleared) !== 'undefined') {
+                if (countOrphans === 0) {
+                  message('An alarm was orphaned, and has been removed.', false);
+                }
+                countOrphans++;
+              }
+            });
+
+          } else if (tmpObj.active !== true && !isGoodAlarm) {
+            // Might be able to be active (but isn't); or maybe it can't be.
+            trClassListItem.classList.remove('expired');
+            spanClassListItem.classList.add('hidden');
+          }
         }
       });
+
+      badgeTextCount = (badgeTextCount === 0) ? '' : badgeTextCount.toString(); // Also used in [eventPage.js]
+      runPassiveNotification(badgeTextCount); // chrome.browserAction.setBadgeText({text: badgeTextCount });
     });
 
-  /* Below is another way of doing the same thing as above:
-
-    // I actually did it this way first, before learning about Promise.all().
-
-    //
-    // Now that the table is written to the DOM,
-    // we can run the `getAll()` async call to update the table with any 'expired' items.
-    //
-    let expiresTable = document.getElementById('expires-table');
-    chrome.alarms.getAll( alarms => {
-      // { name: 'x2b-' + item.id }
-
-      alarms.forEach( alarm => {
-        let itemId = parseInt(alarm.name.substr(4), 10), // x2b-1
-            // <tr class="x2b-listitem-1">
-            //   <td><input type="checkbox" class="toggle-active active-is-true item-1">
-            alarmNodeParent = expiresTable
-              .querySelector('tr.x2b-listitem-' + itemId)
-              .querySelector('.toggle-active.item-' + itemId)
-              .parentNode;
-        alarmNode = document.createElement('span'),
-        alarmNode.classList.add('alarm-stat', 'has-alarm');
-        alarmNodeParent.appendChild(alarmNode);
-      });
-    });
-
-    // [2018-02] Although I was able to write my own async/await and
-       // my first Promise [popup.js (async function getState())], I got
-       // help with understanding the Promise.all() (above) from two sources:
-
-       // Thanks to: FED Slacker [Darko Efremov (darko)] [2018-02-15 at 2:02 AM] in #javascript
-       // https://frontenddevelopers.slack.com/archives/C03B41BH2/p1518688964000167
-
-       // Also Thanks to this SO Answer: https://stackoverflow.com/a/32828546/638153
-
-    // FED Slack: During the peak of an architectural crisis with how to approach
-    // adding the "Alarm is Set" notification (which resulted with the blue sun,)
-    // I posted the following in FED Slack: #JavaScript --> Vanilla JS Question:
-
-      // I'm creating and writing out a table of data to the DOM (`TR`s and `TD`s),
-      // and one of the fields (for each item) requires an async API call,
-      // the result of which will go into a newly created `span` on the pertinent field's element.
-
-      // Should I wait until the entire table is written to the DOM,
-      // and then run the async call on all the newly created DOM elements to update the pertinent fields?
-
-      // Or is there a way I can run a promise during the creation of each DOM element?
-      // (Or would that not be a good thing to do on each item?)
-
-      // Or should I instead store that dynamic API call on page load (for all the items),
-      // and use the values then stored locally (but having to update those values whenever they change elsewhere)?
-
-      // I was trying the 2nd option but got stuck.
-      // Gonna run with the first option for now (as I know it's something I can do).
-  */
   } else {
     // No expirations saved in storage.
 
@@ -466,23 +540,49 @@ function showList() {
   }
 }
 
+function printAlarm(itemId) {
+  let expiresTable = document.getElementById('expires-table'),
+      // itemId = parseInt(alarm.name.substr(4), 10), // x2b-1
+      // <tr class="x2b-listitem-1">
+      //   <td><input type="checkbox" class="toggle-active active-is-true item-1">
+      alarmNodeParent = expiresTable
+        .querySelector('tr.x2b-listitem-' + itemId)
+        .querySelector('.toggle-active')
+        .parentNode,
+      alarmNode = document.createElement('span');
+  alarmNode.classList.add('alarm-stat', 'has-alarm');
+  alarmNodeParent.appendChild(alarmNode);
+}
+
 function requestAlarm(itemId) {
+
   if (isGood('chrome') && isGood('chrome.alarms')) {
     return new Promise((resolve, reject) => {
       chrome.alarms.get(
         'x2b-' + itemId,
         (alarmitem) => {
-          resolve(alarmitem);
+          resolve({id: itemId, alarmObj: alarmitem});
         }
       );
     });
   } else {
 
+    return new Promise((resolve, reject) => {
 
-    // @TODO: Implement local alarms interface for array of setTimeout's to be saved in localStorage.
+      const getItems = {
+        id: itemId,
+        whichEvent: 'setAlarms'
+      };
 
+      let checkCurrentItem = window.ourExpirations.getAlarm(itemId); // getStorage where are the alarms set?,
 
-    return undefined; // This is what I've seen `alarms.get` return when empty.
+      if (isGood(checkCurrentItem)) {
+        resolve({id: itemId, alarmObj: checkCurrentItem});
+      } else {
+        resolve({id: itemId, alarmObj: undefined});
+      }
+    });
+    // return undefined; // This is what I've seen `alarms.get` return when empty.
     // chrome.alarms.get('abcd1234', alarm => console.log(alarm)) // undefined undefined
   }
 }
@@ -506,13 +606,13 @@ function printListHead() {
       itemTCH2.innerText = 'Date';
         itemTCH2.classList.add('text-left');
         itemTCR.appendChild(itemTCH2);
-      itemTCH3.innerText = 'Lead Time';
+      itemTCH3.innerHTML = 'Lead<br/>Time';
         itemTCR.appendChild(itemTCH3);
-      itemTCH4.innerText = 'Days/ Weeks';
+      itemTCH4.innerHTML = 'Days/<br/>Weeks';
         itemTCR.appendChild(itemTCH4);
-      itemTCH5.innerText = 'Days Left';
+      itemTCH5.innerHTML = 'Days<br/>Left';
         itemTCR.appendChild(itemTCH5);
-      itemTCH6.innerHTML = '<span>Alarm/</span> Active';
+      itemTCH6.innerHTML = '<span>Alarm/</span><br/>Active';
         itemTCR.appendChild(itemTCH6);
       itemTCH7.innerText = '';
         itemTCR.appendChild(itemTCH7);
@@ -527,7 +627,7 @@ function printListHead() {
   parentTable.appendChild(itemTB);
 }
 
-function printList(item, configObj) {
+function printList(item) {
   let itemTR = document.createElement('tr'),
       itemSpan1 = document.createElement('td'), // 1 :title
       itemSpan1Overlay = document.createElement('span'), // Expiration notification over title
@@ -540,26 +640,34 @@ function printList(item, configObj) {
       itemSpan7 = document.createElement('td'), // 7 <Edit>
       itemSpan8 = document.createElement('td'); // 8 <Delete>
 
-  const itemBetween = configObj.between;
-
   let trClassList = ['x2b-listitem-' + item.id];
-  if (item.active === true && itemBetween <= 0) {
-    trClassList.push('expired');
-  } else {
-    itemSpan1Overlay.classList.add('hidden'); // Not expired; don't show notification.
-  }
 
   itemTR.classList.add(...trClassList);
     itemSpan1Overlay.innerText = 'Expired!';
     itemSpan1.innerText = htmlUnescape(item.title);
       itemSpan1.classList.add('cellCol1');
       itemSpan1.appendChild(itemSpan1Overlay);
+
+      if (!isExtension) {
+        let itemSpan1ID = document.createElement('small');
+        itemSpan1ID.innerText = '[' + item.id + '] ';
+        if (window.ourExpirations.getPrefs().showPanel) {
+          itemSpan1.title = 'Item ID: [x2b-' + item.id + ']';
+          itemSpan1ID.classList.remove('hidden');
+        } else {
+          itemSpan1.title = 'ID: ' + item.id;
+          itemSpan1ID.classList.add('hidden');
+        }
+        itemSpan1.insertBefore(itemSpan1ID, itemSpan1.firstChild);
+      }
+
     itemSpan2.innerText = item.date;
       itemSpan2.classList.add('cellCol2');
     itemSpan3.innerText = item.leadTimeVal;
     itemSpan4.innerText = item.leadTime;
 
-    itemSpan5.innerText = itemBetween; // Should be a whole number: calc is done in getBetween()
+    itemSpan5.classList.add('between');
+    // itemSpan5.innerText = itemBetween; // Should be a whole number: calc is done in getBetween()
 
   itemTR.appendChild(itemSpan1);
   itemTR.appendChild(itemSpan2);
@@ -625,13 +733,9 @@ function toggleActive(e) {
                               // console.log('itemCurState: [', thisClass, '] [', thisClass.substr(0,10), ']');
                               // itemCurState: [ toggle-active ] [ toggle-act ]
                               // itemCurState: [ active-is-true ] [ active-is- ]
-
                               return thisClass.substr(0, 10) === 'active-is-';
                             })
                           .substr(10); // 'true'|'false'
-
-  // console.log('Active 1: [', thisId, '] [', itemCurState, '] [', typeof(eChecked), '] [', typeof(itemCurState), ']');
-  // Active 1: [ 1 ] [ true ] [ string ] [ string ]
 
   // If `active` was off, `.checked` will be true.
   if (eChecked !== itemCurState) {
@@ -641,23 +745,15 @@ function toggleActive(e) {
     let stateItem = ourState.find(stateObj => stateObj.id === thisId),
         stateItemIdx = ourState.findIndex(stateObj => stateObj.id === thisId);
 
-    // console.log('toggleActive 2: ', stateItem, stateItemIdx, newState);
-    // toggleActive 2: {active: true, date: "2018-03-14", id: 1, leadTime: "weeks", leadTimeVal: "2", …}
-                // [ 0 ]
-                // (2) [{…}, {…}]
+        // [stateItem] = {active: true, date: "2018-03-14", id: 1, leadTime: "weeks", leadTimeVal: "2", …}
+        // [stateItemIdx] = [ 0 ]
 
     if (stateItem.active === true) {
 
       deleteTimer(thisId).then( (wasCleared) => {
-
         passthruUpdateStorage(stateItem, stateItemIdx, eTargetChecked, false); // false = not creating a timer
-
         if (typeof(wasCleared) !== 'undefined') {
-          message('Your alarm has been removed.', false); // , thisId
-        } else {
-
-          message('@TODO: Implement local alarms interface: Remove.', false);
-
+          message('Your alarm has been removed.', false);
         }
       });
 
@@ -673,16 +769,12 @@ function toggleActive(e) {
 
       if (canBeActive) {
         // This is an asycnronous call and is completely independent of the `state` and `storage` updates below.
-        createTimer(thisId, newThen).then( (newAlarm) => {
+        createTimer(thisId, newThen, between).then( (newAlarm) => {
 
           passthruUpdateStorage(stateItem, stateItemIdx, eTargetChecked, true); // true = creating a timer
 
           if (typeof(newAlarm) !== 'undefined') {
             message('An alarm was created for your item.', false); // , newAlarm.alarmId
-          } else {
-
-            message('@TODO: Implement local alarms interface: Create.', false);
-
           }
         });
       } else {
@@ -707,8 +799,8 @@ function passthruUpdateStorage(stateItem, stateItemIdx, itemActive, withTimer) {
   newState.splice(stateItemIdx, 1, localStateItem); // Overwrite it in the newState.
   ourState = newState;                              // Update global ourState.
 
-  // updateStorageWithState(localStateItem.id);        // Update '.sync' storage.
-  x2bStorage.set(localStateItem.id);
+  // updateStorageWithState(localStateItem.id);     // Update '.sync' storage.
+  x2bStorage.set({id: localStateItem.id});
 }
 
 function itemUpdate(e) {
@@ -800,10 +892,10 @@ function saveChanges(itemToSave = {}, lastImport) {
   if (!isImport) {
     // Get a value saved in a form.
     itemId = document.querySelector('.input-id').value;
-    textTitle = document.querySelector('.input-title').value; // input-title
-    dateValue = document.querySelector('.input-date').value; // input-date
+    textTitle = document.querySelector('.input-title').value;        // input-title
+    dateValue = document.querySelector('.input-date').value;         // input-date
     selectName = document.querySelector('.input-select-name').value; // input-select-name
-    selectNum = document.querySelector('.input-select-num').value; // input-select-num
+    selectNum = document.querySelector('.input-select-num').value;   // input-select-num
     itemIdOrig = parseInt(itemId, 10);
 
   } else {
@@ -840,8 +932,9 @@ function saveChanges(itemToSave = {}, lastImport) {
 
   if (!itemId || !dateValue || !textTitle || !selectNum || !selectName) {
     errMsg = 'All fields are required in order to setup a proper expiration item.';
-    // message('All fields are required in order to setup a proper expiration item.', true);
+
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
+
     stopShort = true;
 
   } else if (
@@ -893,9 +986,12 @@ function saveChanges(itemToSave = {}, lastImport) {
 
   if (thisId === 0) {
     thisId = getNewId(); // Gets next biggest ID in `ourState` array of objects.
+  } else {
+    // @TONOT: Get 'active' status for existing item in ourState. (Why?)
   }
 
   delay = getDelay(selectName, selectNum); // Validation was done above; first thing on Save.
+       // getDelay() returns number of days in milliseconds (1 wk === 7 days | * 24 * ...)
 
   newTime = getBetween(dateValueArr, delay);
   between = newTime.between;
@@ -907,28 +1003,22 @@ function saveChanges(itemToSave = {}, lastImport) {
 
   if (isActive) {
     // This is an asycnronous call and is completely independent of the `state` and `storage` updates below.
-    createTimer(thisId, newThen).then( (newAlarm) => {
+
+    // https://developer.chrome.com/extensions/alarms#method-create --> If there is another alarm with
+    // the same name (or no name if none is specified), it will be cancelled and replaced by this alarm.
+    createTimer(thisId, newThen, between).then( (newAlarm) => {
       if (!isImport) {
         if (typeof(newAlarm) !== 'undefined') {
           message(' An alarm was successfully created.', false);
-        } else {
-
-
-          message('@TODO: Implement local alarms interface: Create Timer.', false);
-
         }
       }
     });
   } else {
+
     deleteTimer(thisId).then( (wasCleared) => {
       if (!isImport) {
         if (typeof(wasCleared) !== 'undefined') {
           message('Previous alarm has been removed.', false); // , thisId
-        } else {
-
-
-          message('@TODO: Implement local alarms interface: Delete Timer.', false);
-
         }
       }
     });
@@ -953,40 +1043,53 @@ function saveChanges(itemToSave = {}, lastImport) {
         stateItemIdx = newState.findIndex(stateObj => stateObj.id === thisId);
 
     newState.splice(stateItemIdx, 1, ourItem); // Overwrite it in the newState.
-    ourState = newState;                         // Update global ourState.
+    ourState = newState;                       // Update global ourState.
   }
 
   // Clear the form (they can now edit individual items from the list below the form).
   updateForm();
 
   //
-  // Save item using the Chrome extension storage API.
-  // updateStorageWithState(itemIdOrig); // Update '.sync' storage.
+  // Save item using storage APIs.
+
   if (lastImport) {
-    x2bStorage.set(itemIdOrig, 'last');
+    x2bStorage.set({id: itemIdOrig, isLastImport: true});
   } else {
-    x2bStorage.set(itemIdOrig);
+    x2bStorage.set({id: itemIdOrig});
   }
 }
 
-function getBetween(dateValueArr, delay) {
+function getBetween(dateValueArr, delay, presetTargetTime) {
+  // showList()
+  //   if (isGood(alarm.alarmObj)) {
+  //     newTime = getBetween(dateValueArr, delay, alarm.alarmObj.presetTargetTime);
+
+  // delay = getDelay() === [>= 1 day in milliseconds] (1 wk === 7 days | * 24 * ...)
 
   // Get current day's midnight (which is behind the current time, except at midnight).
   // Get expiration day's midnight (today would be same as above, but derived from form).
   // Get time between current day and expiration minus 'warn time' (deactive if negative).
   // How to create a custom date with zeroed-out time without creating a current date first?
 
-  let rightNow = new Date(),              // Sun Feb 11 2018 21:35:47 GMT-0800 (Pacific Standard Time)
-      preNow = new Date(rightNow.getFullYear(), rightNow.getMonth(), rightNow.getDate(), 0, 0, 0),
-                                          // Sun Feb 11 2018 00:00:00 GMT-0800 (Pacific Standard Time)
+  // Exception: `rHours` and `rMins` mingle Extension and Web App code; Extracting most Web App code to [x2b-prefs].
+  let rHours = isExtension ? 0 : window.ourExpirations.getPrefs().prefHours,
+      rMins = isExtension ? 0 : window.ourExpirations.getPrefs().prefMins,
+      rightNow = new Date(),              // Sun Feb 11 2018 21:35:47 GMT-0800 (Pacific Standard Time)
+      preNow = isExtension ?
+                new Date(rightNow.getFullYear(), rightNow.getMonth(), rightNow.getDate(), 0, 0, 0) :
+                rightNow,
       now = Date.parse(preNow),           // 1518336000000
-      preThen = new Date(dateValueArr[0], dateValueArr[1] - 1, dateValueArr[2], 0, 0, 0), //
+      preThen = new Date(dateValueArr[0], dateValueArr[1] - 1, dateValueArr[2], rHours, rMins, 0),
                                           // Sun Feb 11 2018 00:00:00 GMT-0800 (Pacific Standard Time)
       then = Date.parse(preThen),         // 1518336000000
-      newThen = then - delay,             // 1518249600000
+      newThen = (typeof(presetTargetTime) === 'undefined') ? then - delay : presetTargetTime, // 1518249600000
       between = newThen - now;            // -86400000
 
-  between = (between / 1000 / 60 / 60 / 24).toFixed(0); // 1
+  if (isExtension) {
+    between = (between / 1000 / 60 / 60 / 24).toFixed(0); // 1
+  } else {
+    between = Math.ceil(between / 1000 / 60 / 60 / 24) + 0; // 1
+  }
 
   return {newThen, between};
 }
@@ -1063,18 +1166,16 @@ function importTimersRun() {
 
     // Run each newObjs through saveChanges()
     for (let ii = 0; ii < importList.length; ii++) {
+
       if (ii + 1 === importList.length) { // Last item in list
         window.setTimeout( () => {
           saveChanges(importList[(ii)], 'last');
-
-          // console.log('count last: ', ii, fraction * (ii + 1) + '%', newFraction);
           progressBarElement.style.width = fraction * (ii + 1) + '%';
         }, 1500 * ii);
+
       } else {
         window.setTimeout( () => {
           saveChanges(importList[(ii)]);
-
-          // console.log('count not last: ', ii, fraction * (ii + 1) + '%', newFraction);
           progressBarElement.style.width = fraction * (ii + 1) + '%';
         }, 1500 * ii);
       }
@@ -1228,12 +1329,16 @@ function exportTimers() {
 }
 
 function clearItem(itemId) { // deleteAlarm
-  // alarm: alarmId = "x2b-" + itemId;
-  // storage: 'expiresList': [ourState] -> [{ id, title }]
-  // ourState: [{ id, title }]
-  // DOM List: (just redraw the list: showList() -> it will clear it first)
-  let storeId = "x2b-" + itemId,
+  // alarm:     alarmId = "x2b-" + itemId;
+  // storage:   'expiresList': [ourState] -> [{ id, title }]
+  // ourState:  [{ id, title }]
+  // DOM List:  Just redraw the list: showList() -> it will clear it first
+
+  let storeId = 'x2b-' + itemId,
       newState = ourState.filter( item => item.id !== itemId);
+
+  // @TODO: Should not reference 'x2b-' anywhere, or even its length (via index).
+     // Set one global name at top and use its name and length.
 
   // When deleting, if current item ID is in Edit Form, zero it out (ID's should not be used again).
   let currentEditId = document.querySelector('.input-id').value;
@@ -1241,39 +1346,20 @@ function clearItem(itemId) { // deleteAlarm
     document.querySelector('.input-id').value = 0;
   }
 
-  message('Clearing...', true);
+  message('', true);
 
   ourState = newState;
 
-  if (isGood('chrome') && isGood('chrome.alarms') && isGood('chrome.storage')) {
-    chrome.alarms.clear(storeId, (wasCleared) => {
-      chrome.storage.sync.set({'expiresList': newState}, () => {
+  // An async call to remove timers via an alarms API
 
-        showList();
-
-        if (wasCleared) {
-          message('Your expiration item and alarm were both successfully removed.', true);
-        } else {
-          message('Your expiration item was successfully removed.', true);
-        }
-        if (newState.length === 0) {
-          message('You currently have no expirations.', false);
-        }
-      });
-    });
-
-  } else {
-
-    if (isGood('window.localStorage')) {
-      // -1 informs `.set` an item has been removed.
-      // Could do a 2nd param, but will refactor if needed. `.set` is only used in a few places.
-      x2bStorage.set(-1);
+  deleteTimer(itemId).then( (wasCleared) => {
+    if (typeof(wasCleared) !== 'undefined') {
+      message('Alarm has been removed.', false); // , itemId
     }
+  });
 
-    // @TODO: Implement local alarms interface. (v1.5)
-
-    showList();
-  }
+  // Running `x2bStorage.set(-1);` after setting ourState will update storage with state, then run showList()
+  x2bStorage.set({id: -1});
 }
 
 function clearDOMList() {
@@ -1295,6 +1381,29 @@ function toggleMenu(which = 'toggle') {
     // Close .show-import-elements
     document.querySelector('.footer-menu-div').classList.toggle('open');
   }
+
+  if (!isExtension) {
+    let tryTry = 0,
+        doTry = () => window.setTimeout( () => {
+          let checkIt = document.querySelector('.footer-prefs-div');
+
+          if (tryTry >= 20) {
+            // console.log('Not found; Exit loop.'); // Gonna toggle it anyways...
+            document.querySelector('.footer-prefs-div').classList.toggle('open', false); // Close App Prefs (if open)
+            document.getElementById('app-message').classList.toggle('open', false); // Close About App (if open)
+
+          } else if (typeof(checkIt) !== 'undefined' && checkIt !== null) {
+            document.querySelector('.footer-prefs-div').classList.toggle('open', false); // Close App Prefs (if open)
+            document.getElementById('app-message').classList.toggle('open', false); // Close About App (if open)
+
+          } else {
+            // console.log('Trying again... ', tryTry);
+            tryTry++;
+            doTry();
+          }
+        }, 100); // Allow it some time for the DOM element to arrive.
+    doTry();
+  }
 }
 
 /**
@@ -1302,21 +1411,43 @@ function toggleMenu(which = 'toggle') {
  *
  */
 
-function createTimer(timeId, delay) { // async / returns a Promise
+function createTimer(timeId, targetDateZeroHour, daysBetween) { // async / returns a Promise
+
+  // `daysBetween` was going to be used, and although not now, still a good param to have passed.
   let alarmId = "x2b-" + timeId;
 
-  // window.onerror
+  // Per below, this `runReRender` function is NOT run in the Chrome extension.
+  // It is only run when `chrome.runtime` and `sendMessage` API are both available.
+  // Tried putting it in logic, but it says it can't be found (even putting vars above).
+  let runReRender = () => {
+
+    const newItem = {
+            whichEvent: 'add',
+            expiredId: timeId,
+            entryTitle: alarmId,
+            entryPresetTargetTime: targetDateZeroHour,
+            entryHours: window.ourExpirations.getPrefs().prefHours,
+            entryMinutes: window.ourExpirations.getPrefs().prefMins,
+            entryCycle: window.ourExpirations.getPrefs().prefCycle, // 0 = daily
+          };
+
+    ourExpirations.processItem(newItem);
+    window.reRender();
+    ourExpirations.removeItem(newItem.expiredId);
+    window.reRender();
+    return true;
+  };
 
   // window.onerror = (e) => console.error('[onerror] doesn\'t seem to work: ', e);
   return new Promise((resolve, reject) => {
 
-    if (isGood('chrome') && isGood('chrome.runtime')) {
+    if (isGood('chrome') && isGood('chrome.runtime') && isGood('chrome.alarms')) {
 
       try {
         chrome.runtime.sendMessage({
           alarmId,
-          delay
-        }, (response, ) => {
+          delay: targetDateZeroHour
+        }, (response) => {
           resolve(response);
         });
       } catch(e) {
@@ -1327,21 +1458,19 @@ function createTimer(timeId, delay) { // async / returns a Promise
         // We're actually in Chrome, but we're not running the Chrome Extension.
         // So we should follow the approach for: localStorage and Notifications.
 
-        // @TODO: Implement local alarms interface. (v1.5)
-
-        // Until then...
-        resolve(undefined);
+        let runGood = runReRender();
+        resolve(runGood);
       }
     } else {
 
-      // @TODO: Implement local alarms interface. (v1.5)
-
-      resolve(undefined);
+      let runGood = runReRender();
+      resolve(runGood);
     }
   });
 }
 
 function deleteTimer(timeId) {
+
   return new Promise((resolve, reject) => {
     if (isGood('chrome') && isGood('chrome.alarms')) {
       chrome.alarms.clear("x2b-" + timeId, (wasCleared) => {
@@ -1352,9 +1481,18 @@ function deleteTimer(timeId) {
       });
     } else {
 
-      // @TODO: Implement local alarms interface. (v1.5)
+      const removeItem = {
+              whichEvent: 'remove',
+              expiredId: timeId
+            };
 
-      resolve(undefined);
+      // So far as I know this should all be synchronous.
+      ourExpirations.processItem(removeItem);
+      window.reRender();
+      ourExpirations.removeItem(timeId);
+      window.reRender();
+
+      resolve(true);
     }
   });
 }
@@ -1370,7 +1508,7 @@ function clearTimersAndStorage() {
     if (window.confirm('Click OK if you are certain you\'d like to remove all of your expiration items and alarms.')) {
       chrome.alarms.clearAll( () => {
         chrome.storage.sync.clear( () => {
-          ourState = [];
+          ourState.length = 0;
           showList();
           updateForm();
         });
@@ -1378,19 +1516,26 @@ function clearTimersAndStorage() {
     }
   } else {
 
-
     if (isGood('window.localStorage')) {
       if (window.confirm('Click OK if you are certain you\'d like to remove all of your expiration items from local storage.')) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Storage/clear
         localStorage.removeItem('expiresList'); // Synchronous call to clear local storage.
-        ourState = [];
+        ourState.length = 0;
+
+        const removeItem = {
+          whichEvent: 'clearall',
+          expiredId: -1 // Required field
+        };
+
+        ourExpirations.processItem(removeItem);
+        window.reRender();
+        ourExpirations.removeItem(-1);
+        window.reRender();
+
         showList();
         updateForm();
       }
     }
-
-    // @TODO: Implement local alarms interface. (v1.5)
-
   }
 }
 
@@ -1398,11 +1543,6 @@ function clearTimersAndStorage() {
  *   SYSTEM MESSAGING FUNCTIONS
  *
  */
-
-
-    // @TODO: Should only check notification permissions once on page load.
-    // From there out, just go with whatever internal setting is set.
-
 
 function message(msg, clearMsg, data) {
 
@@ -1520,28 +1660,40 @@ function setDate() {
      // What's the difference? The spec doesn't escape the forward slash (recommended by OWASP).
      // https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet#RULE_.231_-_HTML_Escape_Before_Inserting_Untrusted_Data_into_HTML_Element_Content
 
+     // https://stackoverflow.com/questions/8839112/if-function-does-not-exist-write-function-javascript#answer-8839136
+
+  // Other Refs:
+    //  https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API
+    //  https://stackoverflow.com/questions/46561795/notification-requestpermission-then-always-return-promise-object-instead-of
+    //  https://bugs.chromium.org/p/chromium/issues/detail?id=704771
+    //  https://developer.mozilla.org/en-US/docs/Web/API/Notification/permission
+    //  https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari#answer-39282539
+
   // Test strings: (25 chars.)
   // <script>alert(1)</script>
   // <_>-\/!@#$%^&*();'?+"[`~]
 
-function htmlEscape(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\//g, '&#x2F;'); // forward slash is included as it helps end an HTML entity
+if (typeof(htmlEscape) !== 'function') {
+  window.htmlEscape = function(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\//g, '&#x2F;'); // forward slash is included as it helps end an HTML entity
+  };
 }
-
-function htmlUnescape(str){
-  return str
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&#x2F;/g, '/');
+if (typeof(htmlUnescape) !== 'function') {
+  window.htmlUnescape = function(str) {
+    return str
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&#x2F;/g, '/');
+  };
 }
 
 /*  STORAGE FUNCTIONS  */
@@ -1596,14 +1748,27 @@ const getStorageItem = (storage, key) => {
         active: 1                     // Can be 0 or 1 (initially based on date calcs)
       },
       keyItem = storage.getItem(key),
-      testObj0 = { 'expiresList': ourState },
-      testObj1 = { 'expiresList': [ newItem ] },
-      testObj2 = (keyItem) ? { 'expiresList': JSON.parse(keyItem) } : testObj0;
+      testObj = {};
+
+  if (key === 'expiresPrefs') { // expiresPrefs
+    testObj = (keyItem) ? JSON.parse(keyItem) : {};
+  } else { // expiresList
+    testObj = (keyItem) ? { 'expiresList': JSON.parse(keyItem) } : { 'expiresList': ourState };
+    // testObj = (keyItem) ? JSON.parse(keyItem) : ourState;
+  }
+
+  /**
+   *  testObj0 = { 'expiresList': ourState },
+   *  testObj1 = { 'expiresList': [ newItem ] },
+   *  testObj2 = (keyItem) ? { 'expiresList': JSON.parse(keyItem) } : testObj0;
+   */
+  // console.log('getStorageItem: ', keyItem, testObj);
+
   try {
-    return testObj2; // Swap between 'testObj1' and 'testObj2'.
+    return testObj;
   } catch (e) {
     message('Error: ' + e, false);
-    return { expiresList: [] };
+    return { [key]: [] };
   }
 };
 
