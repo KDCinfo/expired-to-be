@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Row, Col } from 'react-bootstrap';
 
-import { getStorageItem, setStorageItem, clearStorageItem } from '../utilities/alarm-functions';
+import { getStorageItem, setStorageItem } from '../utilities/alarm-functions';
 
 import SettingsForm from './SettingsForm';
 import SnoozeForm from './SnoozeForm';
@@ -204,7 +204,7 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
                     break;
 
                 case 'clearall':
-                    this.deleteAllTimeouts(); // true = clearAll (99 is irrelevant; required).
+                    this.removeAllTimers();
                     break;
 
                 default:
@@ -265,6 +265,24 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
             setStorageItem(localStorage, 'timerList', JSON.stringify(timerList));
             this.setTimerCallback();
             this.props.setAlarms(this.state.timerList);
+        });
+    }
+    removeAllTimers() {
+
+        let newTimerList = this.state.timerList.slice();
+
+        newTimerList = newTimerList.filter( timerItem => {
+            this.toggleTimeout(timerItem.id, 'off');
+            return timerItem.title.substr(0, 4) !== 'x2b-';
+        });
+        console.log('removeAllTimers: ', newTimerList);
+
+        this.setState({ timerList: newTimerList }, () => {
+
+            setStorageItem(localStorage, 'timerList', JSON.stringify(newTimerList));
+
+            this.props.setAlarms(this.state.timerList);
+            this.props.refreshAlarms();
         });
     }
     removeTimer(timerId: number, refreshList?: boolean) {
@@ -349,30 +367,6 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
             }
         });
         this.setState({ timerDisplayList: newTimerDisplayList });
-    }
-    deleteAllTimeouts() {
-        // This method has 1 entry point:
-            // handleUpdate()
-
-        // timeoutList[] will have 2 entries for each timeout
-            // [
-            //     {id: 0, timer: 15}, <-- Modal-prompt setTimeout ('pop-up alerts')
-            //     {id: 0, timer: 24}, <-- Every-second setTimeout ('visual counter')
-            // ]
-
-        this.state.timeoutList.forEach( (elem: {id: number, timer: number}, idx: number) => {
-            window.clearTimeout(elem.timer);
-        });
-
-        this.setState(
-            {
-                timerList: [],
-                timeoutList: [],
-                timerDisplayList: []
-            },
-            () => {
-                clearStorageItem(localStorage, 'timerList');
-            });
     }
     createTimeout(entryId: number) {
         // This method has 2 entry points:
@@ -968,7 +962,8 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
                                 smOffset={0}
                                 sm={7}
                                 md={7}
-                                className={`field-col timer-list ${this.state.timerList.length === 0 && 'hidden'}`}
+                                className={`field-col timer-list`}
+                                // className={`field-col timer-list ${this.state.timerList.length === 0 && 'hidden'}`}
                             >
                                 <Timers
                                     removeTimer={this.removeTimer}
