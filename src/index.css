@@ -95,6 +95,10 @@ h1 {
     white-space: nowrap;
   }
 
+#button-toggle-alarms-panel {
+  min-width: 34px;
+}
+
 /* Alarms */
 
 .table-responsive table {
@@ -109,6 +113,13 @@ h1 {
 #notify-error {
   color: #cc0000;
   white-space: normal;
+}
+
+.timer-list div.timer-list-no-alarms {
+  border: 1px solid rgba(40, 150, 255, .35);
+    border-radius: 6px;
+  margin: 1em 1.5em 1.5em;
+  padding: 1.0em;
 }
 
 .timers-div th {

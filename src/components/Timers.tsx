@@ -49,55 +49,62 @@ class Timers extends React.Component<TimersProps, TimersState> {
         this.setState({ showAppLinks: newShowStat });
     }
     render() {
-        return (
-            <div className="timers-div">
-                <Table responsive={true}>
-                    <thead>
-                        <tr>
-                            <th>Internal Alarm ID <sup className="ourAppsTrigger" onClick={this.toggleOurApps}>?</sup>
-                                <div className={'ourAppsDisplay' + this.state.showAppLinks}>
-                                    <div>
-                                        <span>
-                                            <a
-                                                href="https://KDCinfo.github.io/expired-to-be/"
-                                                onClick={(e) => { e.preventDefault(); return false; }}
-                                            >Expired To Be
-                                            </a> (Alarms)
-                                        </span><br/>
-                                        <span>
-                                            <a
-                                                href="https://kdcinfo.github.io/done-for-now/"
-                                                target="kdcNewWindow"
-                                            >Done (for now)
-                                            </a> (Timers)
-                                        </span>
+        if (this.props.timerList.length > 0) {
+            return (
+                <div className="timers-div">
+                    <Table responsive={true}>
+                        <thead>
+                            <tr>
+                                <th><span>Internal Alarm ID </span>
+                                    <sup className="ourAppsTrigger" onClick={this.toggleOurApps}>?</sup>
+                                    <div className={'ourAppsDisplay' + this.state.showAppLinks}>
+                                        <div>
+                                            <span>
+                                                <a
+                                                    href="https://KDCinfo.github.io/expired-to-be/"
+                                                    onClick={(e) => { e.preventDefault(); return false; }}
+                                                >Expired To Be
+                                                </a> (Alarms)
+                                            </span><br/>
+                                            <span>
+                                                <a
+                                                    href="https://kdcinfo.github.io/done-for-now/"
+                                                    target="kdcNewWindow"
+                                                >Done (for now)
+                                                </a> (Timers)
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th>Notify Time</th>
-                            <th className="hidden">Cycle</th>
-                            <th className="hidden">On/Off</th>
-                            <th className="text-center">Hrs:Mins Left</th>
-                            <th className="hidden">Del</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { this.props.timerList.map( (entry, idx: number) =>
-                            <Timer
-                                key={idx}
-                                entry={entry}
-                                timeoutList={this.props.timeoutList}
-                                timerDisplayList={this.props.timerDisplayList}
-                                entryCycleList={this.props.entryCycleList}
-                                toggleTimeout={this.props.toggleTimeout}
-                                removeTimer={this.props.removeTimer}
-                                showSeconds={this.props.showSeconds}
-                            />
-                        )}
-                    </tbody>
-                </Table>
-            </div>
-        );
+                                </th>
+                                <th>Notify Time</th>
+                                <th className="hidden">Cycle</th>
+                                <th className="hidden">On/Off</th>
+                                <th className="text-center">Hrs:Mins Left</th>
+                                <th className="hidden">Del</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { this.props.timerList.map( (entry, idx: number) =>
+                                <Timer
+                                    key={idx}
+                                    entry={entry}
+                                    timeoutList={this.props.timeoutList}
+                                    timerDisplayList={this.props.timerDisplayList}
+                                    entryCycleList={this.props.entryCycleList}
+                                    toggleTimeout={this.props.toggleTimeout}
+                                    removeTimer={this.props.removeTimer}
+                                    showSeconds={this.props.showSeconds}
+                                />
+                            )}
+                        </tbody>
+                    </Table>
+                </div>
+            );
+        } else {
+            return (
+                <div className="timer-list-no-alarms">You have no active alarms...</div>
+            );
+        }
     }
 }
 
