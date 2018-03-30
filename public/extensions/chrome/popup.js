@@ -600,7 +600,11 @@ function printListHead() {
       itemTCH8 = document.createElement('th'),
       itemTB = document.createElement('tbody');
 
-      itemTCH1.innerText = 'Title';
+      if (!isExtension && window.ourExpirations.getPrefs().showPanel) {
+        itemTCH1.innerHTML = '<small>[ID]</small> Title';
+      } else {
+        itemTCH1.innerText = 'Title';
+      }
         itemTCH1.classList.add('text-left');
         itemTCR.appendChild(itemTCH1);
       itemTCH2.innerText = 'Date';

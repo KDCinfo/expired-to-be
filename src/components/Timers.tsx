@@ -23,8 +23,8 @@ interface TimerDisplayListState {
 }
 
 interface TimersProps {
-    removeTimer: (timerId: number) => void;                     // removeTimer(timerId: number) {
-    toggleTimeout: (timerId: number, onOff: string) => void;    // toggleTimeout(timerId: number, onOff: string) {
+    removeTimer: (timerId: number) => void;                  // removeTimer(timerId: number) {
+    toggleTimeout: (timerId: number, onOff: string) => void; // toggleTimeout(timerId: number, onOff: string) {
     timerList: TimerListState[];
     timeoutList: TimeoutListState[];
     timerDisplayList: TimerDisplayListState[];
@@ -32,9 +32,21 @@ interface TimersProps {
     showSeconds: boolean;
 }
 
-class Timers extends React.Component<TimersProps, {}> {
+interface TimersState {
+    showAppLinks: string;
+}
+
+class Timers extends React.Component<TimersProps, TimersState> {
     constructor(props: TimersProps) {
         super(props);
+        this.state = {
+            showAppLinks: ''
+        };
+        this.toggleOurApps = this.toggleOurApps.bind(this);
+    }
+    toggleOurApps() {
+        let newShowStat = (this.state.showAppLinks.length === 0) ? ' showdown' : '';
+        this.setState({ showAppLinks: newShowStat });
     }
     render() {
         return (
@@ -42,7 +54,26 @@ class Timers extends React.Component<TimersProps, {}> {
                 <Table responsive={true}>
                     <thead>
                         <tr>
-                            <th>Internal Alarm ID</th>
+                            <th>Internal Alarm ID <sup className="ourAppsTrigger" onClick={this.toggleOurApps}>?</sup>
+                                <div className={'ourAppsDisplay' + this.state.showAppLinks}>
+                                    <div>
+                                        <span>
+                                            <a
+                                                href="https://KDCinfo.github.io/expired-to-be/"
+                                                onClick={(e) => { e.preventDefault(); return false; }}
+                                            >Expired To Be
+                                            </a> (Alarms)
+                                        </span><br/>
+                                        <span>
+                                            <a
+                                                href="https://kdcinfo.github.io/done-for-now/"
+                                                target="kdcNewWindow"
+                                            >Done (for now)
+                                            </a> (Timers)
+                                        </span>
+                                    </div>
+                                </div>
+                            </th>
                             <th>Notify Time</th>
                             <th className="hidden">Cycle</th>
                             <th className="hidden">On/Off</th>

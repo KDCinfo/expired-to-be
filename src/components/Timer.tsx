@@ -52,13 +52,43 @@ class Timer extends React.Component<TimerProps, {}> {
         const timeoutEntry = this.props.timeoutList.find( (elem) => elem.id === this.props.entry.id),
               timerDisplayEntry = (timeoutEntry) ? this.props.timerDisplayList.find(
                   (elem: {id: number}) => elem.id === timeoutEntry.timer) : null,
-              timeDisplay = (timerDisplayEntry) ? timerDisplayEntry.destination : 0;
+              timeDisplay = (timerDisplayEntry) ? timerDisplayEntry.destination : 0,
+              timerIsX2b = this.props.entry.title.substr(0, 4) === 'x2b-',
+              timerTitleDone = (
+                    <small style={{ opacity: 0.5 }}>This is a&nbsp;
+                        <a
+                            href="https://kdcinfo.github.io/done-for-now/"
+                            target="kdcNewWindow"
+                            // style={{ opacity: 0.5 }}
+                        >Done (for now)
+                        </a> timer
+                    </small>
+                );
+        let timerTDs;
+
+        if (timerIsX2b) {
+            timerTDs = (
+                <React.Fragment>
+                    <td>{this.props.entry.title}</td>
+                    <td>{this.props.entry.timeOfDay}</td>
+                    <td className="hidden">{this.props.entryCycleList[this.props.entry.cycle]}</td>
+                </React.Fragment>
+            );
+        } else {
+            timerTDs = (
+                <React.Fragment>
+                    <td>{this.props.entry.title}</td>
+                    <td colSpan={2}>{timerTitleDone}</td>
+                </React.Fragment>
+            );
+        }
+
+// const { username, url } = this.propos.gist,
+//       userurl = (url === noGistMsg) ? noGistMsg : <a href={}>{}</a>;
 
         return (
             <tr>
-                <td>{this.props.entry.title}</td>
-                <td>{this.props.entry.timeOfDay}</td>
-                <td className="hidden">{this.props.entryCycleList[this.props.entry.cycle]}</td>
+                {timerTDs}
                 <td className="hidden text-center">
                     <input
                         onChange={this.toggleTimeout}
