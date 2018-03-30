@@ -17,7 +17,7 @@ Expired To Be provides notification reminders for your expiring items at a time 
 
   - Display listing of all expiration items:
   	+ Expired items will be distinct, as will any item you are currently 'editing'.
-  	+ Items that have alarms set will show a 'blue sun' near its 'active' status.
+  	+ Items that have alarms set will show an 'orange or blue sun' near its 'active' status.
   	+ You can edit, delete, and de/activate items individually.
   - Expiration items are stored in the browser's own storage. There are no connections to any 3rd party services.
   - You can export all of your existing expiration items.

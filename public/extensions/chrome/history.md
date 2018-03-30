@@ -1822,28 +1822,17 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   - Committed to GitHub for Travis build and more testing.
 
+@2:00 AM
 
-## Helpful Sites
+  - Fixed conflict with Done (for now) storage.
 
-- [](https://github.com/creationix/nvm/blob/master/README.md#installation)
+  - Fixed 'deleteAllTimeouts()' by creating a 'removeAllTimers()' which does not remove 'Done (for now)' timers.
 
-- [](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Event_handlers)
-
-- [](https://askubuntu.com/questions/786015/)how-to-remove-nodejs-from-ubuntu-16-04
-
-- [](https://askubuntu.com/a/786019)
-
-## @TODO:
-
-[OTHER]
-
-  - Testing iPad, Ubuntu, and Pixel and Nexus.
-
-  - @TEST: Clearing of all alarms
+  - Removed defunct 'deleteAllTimeouts()'.
 
 ## Notes
 
-During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the alarms. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).
+During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the Alarms API. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).
 
 [TimerAlertPrompt.tsx]
 
