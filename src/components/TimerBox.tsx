@@ -240,6 +240,7 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
         this.setState({ timerList: newTimerList }, () => {
             setStorageItem(localStorage, 'timerList', JSON.stringify(newTimerList));
             this.updateTimerCallback(entryId);
+            this.props.setAlarms(this.state.timerList);
         });
     }
     setTimer(entryTitle: string,
