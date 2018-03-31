@@ -1642,15 +1642,18 @@ function isGood(objStr) {
 }
 
 function setDate() {
-  const today = new Date(), // Tested: new Date(2018, 11, 31); showed as [Jan 31, 2019]
-        thisMonth = today.getMonth() + 1,
-        nextMonth = (thisMonth === 12) ? 1 : thisMonth + 1,
-        padMonth = ((nextMonth < 10) ? '0' : '') + nextMonth,
-        thisDay = today.getDate(),
-        padDay = ((thisDay < 10) ? '0' : '') + thisDay,
-        thisYear = (thisMonth === 12) ? today.getFullYear() + 1 : today.getFullYear();
+  let today = new Date(); // Tested: new Date(2018, 11, 4); showed as [Jan 01, 2019]
 
-  return thisYear + '-' + padMonth + '-' + padDay;
+  today.setDate(today.getDate() + 28);  // Add 4 weeks
+
+  const newDay = today.getDate(),        // 1-31
+        newMonth = today.getMonth() + 1, // 0-11
+        newYear = today.getFullYear();   // 2018
+
+  const newFullDay = newYear + '-' +
+                     (newMonth < 10 ? '0' + newMonth : newMonth) + '-' +
+                     (newDay < 10 ? '0' + newDay : newDay) ;
+  return newFullDay;
 }
 
 /**
