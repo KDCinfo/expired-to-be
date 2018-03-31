@@ -96,7 +96,7 @@ h1 {
   }
 
 #button-toggle-alarms-panel {
-  min-width: 34px;
+  min-height: 34px;
   text-align: center;
 }
 
