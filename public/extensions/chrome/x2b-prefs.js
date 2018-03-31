@@ -104,7 +104,7 @@ function togglePrefs(which = 'toggle') {
 
 function updatePrefs(prefObj) {
   window.ourExpirations.setPref(prefObj);
-  x2bStorage.set({prefsObj: prefObj});
+  x2bStorage.set({prefsObj: prefObj, isNew: false});
   showPrefNotifyOptions();
   window.reRender();
   showList('noClose'); // Tell showList() not to close the menu.
@@ -179,7 +179,7 @@ const storedExpiredPrefs = getStorageItem(localStorage, 'expiresPrefs');
 if (!isEmpty(storedExpiredPrefs)) {
   window.ourExpirations.setPref(storedExpiredPrefs);
 } else {
-  x2bStorage.set({prefsObj: window.ourExpirations.getPrefs()});
+  x2bStorage.set({prefsObj: window.ourExpirations.getPrefs(), isNew: true});
 }
 
 setTimeout( () => { // 1000

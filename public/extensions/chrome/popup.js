@@ -209,7 +209,9 @@ const x2bStorage = (function() {
         finishImport();
 
       } else if (typeof(storeObj.prefsObj) !== 'undefined') {
-        msgDone = message('Your preferences have been updated.', true);
+        if (storeObj.isNew !== true) {
+          msgDone = message('Your preferences have been updated.', true);
+        }
         whichList = 'expiresPrefs';
         whichData = Object.assign({}, ourExpirations.getPrefs(), storeObj.prefsObj);
         isPrefs = true;
