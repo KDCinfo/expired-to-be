@@ -75,9 +75,9 @@ At the core of the [Expired To Be Web App](https://github.com/KDCinfo/expired-to
 
 All diagrams were created with [Draw.io](https://www.draw.io/).
 
-  > [Page Load - Architecture and Integration Overview](https://kdcinfo.com/app/expired-to-be/public/x2b/expired-to-be_page-load_07.svg)
+  > [Page Load - Architecture and Integration Overview](/public/x2b/expired-to-be_page-load_07.svg)
 
-  > [Alarms and Notifications](https://kdcinfo.com/app/expired-to-be/public/x2b/x2b-with-alarms.svg)
+  > [Alarms and Notifications](/public/x2b/x2b-with-alarms.svg)
 
   > [Storage (sync) with Alarms, and Storage (local) with Notifications](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=expired-to-be.xml#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1mTxbVo9d5hfpxvEPvz_4I65Cb0YU3LUG%26export%3Ddownload)
 
