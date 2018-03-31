@@ -273,7 +273,8 @@ function toggleProgressBar(which = 'off') {
   if (which === 'off') {
 
     setTimeout( () => {
-      progressBarElement.classList.replace('opacity100', 'opacity0');
+      progressBarElement.classList.remove('opacity100');
+      progressBarElement.classList.add('opacity0');
       setTimeout( () => {
         progressBarElement.classList.add('hidden');
       }, 500);
@@ -283,7 +284,8 @@ function toggleProgressBar(which = 'off') {
     progressBarElement.classList.remove('hidden');
 
     setTimeout( () => {
-      progressBarElement.classList.replace('opacity0', 'opacity100');
+      progressBarElement.classList.remove('opacity0');
+      progressBarElement.classList.add('opacity100');
     }, 1); // Near-after hidden is removed, the element will take up space on screen, then fade in.
   }
 }

@@ -1830,6 +1830,38 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   - Removed defunct 'deleteAllTimeouts()'.
 
+@2:45 AM
+
+  - Testing: Opera works good.
+
+	- Fixed: Item update not refreshing "days left".
+
+@3:10 AM
+		Chrome mobile not sending notifications...
+
+	- 1 SO says Chrome / Android = No Notifications, but it's oooold.
+		https://stackoverflow.com/questions/21361968/notification-api-in-android-chrome-browser
+
+	- Other results all included using `serviceWorkers`.
+
+> 2018-03-30 - Friday
+
+@6:40 PM
+
+  - Fixed MS Edge issue showing 'prefs updated' on first page load.
+
+  - Removed deprecated MS CSS style.
+
+@9:55 PM
+
+  - Fixed FireFox (Win10) layout issue: Right side of form was a bit off the page.
+
+  - Fixed FireFox (Ubuntu) layout issue: Right side of form was worse.
+
+  - Trying a fix for the 'toggle alarms panel' button height issue on iPad.
+
+  - Fixed MS Edge not showing import progress bar: Doesn't support `classList.replace()`
+
 ## Notes
 
 During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the Alarms API. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).
