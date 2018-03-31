@@ -1,7 +1,7 @@
 body {
   font-family: sans-serif;
   margin: 0 auto;
-  max-width: 600px;
+  max-width: 700px;
   padding: 0;
 }
 .app {
@@ -97,6 +97,7 @@ h1 {
 
 #button-toggle-alarms-panel {
   min-width: 34px;
+  text-align: center;
 }
 
 /* Alarms */
