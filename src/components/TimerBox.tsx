@@ -95,7 +95,7 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
             this.props.setAlarms(stateTimerList);
 
             stateTimerList.forEach( (elem: {id: number, active: boolean, timeOfDay?: string}) => {
-                if (elem.active === true && elem.timeOfDay) {
+                if (elem.active === true && (typeof(elem.timeOfDay) !== 'undefined')) {
                     window.setTimeout(                              // Was using `global.setTimeout` (for TS).
                         () => {                                     // Switched to `window.` for consistency.
                             this.addRemoveTimeout(elem.id, 'init'); // When these are not staggered, only one
