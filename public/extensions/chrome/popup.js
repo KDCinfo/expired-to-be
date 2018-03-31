@@ -362,12 +362,10 @@ function updateFavIcon(stat = '') {
 
   if (stat.length > 0) {
     // link.href = '%PUBLIC_URL%/icon32.png';
-    // link.href = '/icon32.png';
-    link.href = '../../iconx32.png';
+    link.href = 'iconx32.png';
     document.title = '[x] EXPIRED Item Alert !!!';
   } else {
-    // link.href = '/icon16.png';
-    link.href = '../../icon32.png';
+    link.href = 'icon32.png';
     document.title = 'Expired To Be: Expiration Reminders'; // From [index.html]
   }
 
