@@ -1862,6 +1862,10 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   - Fixed MS Edge not showing import progress bar: Doesn't support `classList.replace()`
 
+@12:40 AM
+
+  - Final commit covering a range of bugs, tweaks, and slight enhancements.
+
 ## Notes
 
 During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the Alarms API. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).
