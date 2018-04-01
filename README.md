@@ -5,22 +5,29 @@
 Expired To Be provides notification reminders for your expiring items at a time of your choosing. It is available as:
 
   - A Chrome browser extension (available for free from the [Chrome Web Store](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan))
+
   - A standalone web app (available via a [(GitHub-hosted) web page](https://KDCinfo.github.io/expired-to-be/))
 
 ## Overview
 
   - Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink. Maybe your pet's next vet visit.
+
   - Notifications are set to an expiration date that you provide, minus your chosen 'lead time'.
+
   - Expired To Be is [open source](https://github.com/KDCinfo/expired-to-be), so feel free to fork it, or, PR's are welcome as well.
 
 **Primary features:**
 
   - Display listing of all expiration items:
+
   	+ Expired items will be distinct, as will any item you are currently 'editing'.
   	+ Items that have alarms set will show an 'orange or blue sun' near its 'active' status.
   	+ You can edit, delete, and de/activate items individually.
+
   - Expiration items are stored in the browser's own storage. There are no connections to any 3rd party services.
+
   - You can export all of your existing expiration items.
+
   - You can import over 500 items (the app will walk through saving each item from the list you provide).
 
 ## X2B [A Chrome Extension]
@@ -29,6 +36,8 @@ The primary notification for when an item expires is an orange number count that
 
   - As a developer, I spend most of my life in Chrome, which is why I decided to create this as a browser extension.
 
+  - This was my 2nd Chrome Extension. Although I built this extension primarily for personal use, I am completely open to feedback as well as PRs, and I'm especially open to looking into any bugs.
+
   - Creating a FireFox extension would make for a good fork and school project for someone.
 
   - Uses: Chrome Extension API (icon badge text)
@@ -36,7 +45,7 @@ The primary notification for when an item expires is an orange number count that
 
 ## X2B [A Web App]
 
-The [web version of the app](https://KDCinfo.github.io/expired-to-be/) can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
+The [web version of the app](https://KDCinfo.github.io/expired-to-be/) (SPA) can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
 
 **Important Note**: Unlike the Chrome Extension, which is always running so long as your browser is running, the web-based version of the app (its browser tab) must remain open for the timers (alarms) to continue to run. You can absolutely continue your browsing activities in other tabs and other windows, but the X2B page will need to stay open in the background. If you close the browser tab that Expired To Be is open in, you are effectively closing the Expired To Be web app, and the timers won't be able to run. However, in the case you do close the tab, all is not lost... each time you visit the page, all active timers are restored, and any active expired items will trigger.
 
@@ -67,6 +76,7 @@ At the core of the [Expired To Be Web App](https://github.com/KDCinfo/expired-to
     - popup.js (the brains)
 
 ## Data Storage
+
   > Chrome Extension uses: Chrome -> Storage -> Sync
 
   > Hosted Web App uses: Each browser's own `LocalStorage`
@@ -133,13 +143,21 @@ See [History file](history.md)
 ### 1.4
 
   - Will begin patch-level updates when applicable from here on out (although this particular version does warrant a minor version increment).
+
   - Changed font. (Discovered iPad (iOS?) fell back to a near illegible cursive font.)
+
   - Implemented 'Export' feature. Will save as a JSON file or open in a new tab (depending on your system).
+
   - Implemented 'Import' feature (includes a progress bar, error handling, and sample JSON data).
+
   - Added both those features with the 'Clear All' and implemented a `List Options` pop-up menu in the footer.
+
   - Major code refactor with storage (created `x2bStorage`) and alarms: Prepped for integration of Notifications and a custom `alarms` interface.
+
   - Created Functional Diagram for visual representation of storage and alarms (notifications).
+
   - Finished [Happy Paths file](assets/x2b-happy-paths.md).
+
   - Got entire app to work standalone, on any browser -- There just aren't any alarms or notifications to let you know when an item's expiration lead time has matured. And, it's not hosted anywhere... yet (will be going through GitHub pages and Travis CLI with ver 1.5).
 
 ### 1.4.1
