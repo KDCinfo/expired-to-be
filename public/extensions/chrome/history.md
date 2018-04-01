@@ -1870,13 +1870,23 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
 @7:00 PM
 
-  - Fixed issue with 'delete' on Chrome extension.
+  - Fixed issue with Chrome extension `badgeIconText` miscount when deleting alarms.
 
     * Moved `badgeTextCount` initialization into `Promise.all()` block.
 
     * Removed call to `showList()` from within the `deleteTimer` function.
 
       Just like the `createTimer` function (right above it), `deleteTimer` should not run `showList()` because they both can be called numerous times from within `showList()` itself.
+
+@2:50 AM
+
+  - Updated Chrome web store with `.zip` of X2B 2.0 files.
+
+  - Integrated X2B SPA `alarms` with Done (for now) SPA `timers`.
+
+  - Got Done (for now) upgraded to React 16.2. Got tests working again. Got Travis CI build working.
+
+  Although references to Done (for now) updates belong in the Done (for now) Readme, it became an extension of this project as well.
 
 ## Notes
 

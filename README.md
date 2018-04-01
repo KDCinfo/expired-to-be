@@ -47,6 +47,8 @@ The primary notification for when an item expires is an orange number count that
 
 The [web version of the app](https://KDCinfo.github.io/expired-to-be/) (SPA) can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
 
+[SPA Integration Diagram](/public/x2b/expired-to-be_page-load_07.svg): Integration between the **React Alarms API** and the **Chrome Extension core files**.
+
 **Important Note**: Unlike the Chrome Extension, which is always running so long as your browser is running, the web-based version of the app (its browser tab) must remain open for the timers (alarms) to continue to run. You can absolutely continue your browsing activities in other tabs and other windows, but the X2B page will need to stay open in the background. If you close the browser tab that Expired To Be is open in, you are effectively closing the Expired To Be web app, and the timers won't be able to run. However, in the case you do close the tab, all is not lost... each time you visit the page, all active timers are restored, and any active expired items will trigger.
 
 You can select one of 4 optional notification delivery methods for when expiring items are triggered. There is also a custom built-in notification method that will update the browser tab's icon and text. The optional notification methods are Alerts (default), Web-based Notifications, Modals, and 'None'.
@@ -85,7 +87,7 @@ At the core of the [Expired To Be Web App](https://github.com/KDCinfo/expired-to
 
 All diagrams were created with [Draw.io](https://www.draw.io/).
 
-  > [Page Load - Architecture and Integration Overview](/public/x2b/expired-to-be_page-load_07.svg)
+  > [Chrome Extension Integration with React Alarms API](/public/x2b/expired-to-be_page-load_07.svg)
 
   > [Alarms and Notifications](/public/x2b/x2b-with-alarms.svg)
 
