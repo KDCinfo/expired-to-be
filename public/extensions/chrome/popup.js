@@ -24,8 +24,7 @@
  */
 
 let ourState = [],
-    importErrors = [],
-    badgeTextCount = 0;
+    importErrors = [];
 
 const maxDays = 70,
       maxWeeks = 10,
@@ -383,7 +382,6 @@ function showList(noClose = '') {
   }
 
   clearDOMList();
-  badgeTextCount = 0;
 
   runPassiveNotification(); // Clear expired alarm notifications
 
@@ -418,7 +416,8 @@ function showList(noClose = '') {
       // do something on fulfilled
 
       let countOrphans = 0,
-          countExpired = 0;
+          countExpired = 0,
+          badgeTextCount = 0;
 
       results.forEach( alarm => {
 
@@ -1361,11 +1360,11 @@ function clearItem(itemId) { // deleteAlarm
   deleteTimer(itemId).then( (wasCleared) => {
     if (typeof(wasCleared) !== 'undefined') {
       message('Alarm has been removed.', false); // , itemId
+
+      // Running `x2bStorage.set(-1);` after setting ourState will update storage with state, then run showList()
+      x2bStorage.set({id: -1});
     }
   });
-
-  // Running `x2bStorage.set(-1);` after setting ourState will update storage with state, then run showList()
-  x2bStorage.set({id: -1});
 }
 
 function clearDOMList() {
@@ -1480,9 +1479,11 @@ function deleteTimer(timeId) {
   return new Promise((resolve, reject) => {
     if (isGood('chrome') && isGood('chrome.alarms')) {
       chrome.alarms.clear("x2b-" + timeId, (wasCleared) => {
-        if (wasCleared) {
-          showList();
-        }
+        // Just like `createTimer` above, this should not run showList()
+        // `deleteTimer` can be called numerous times from within showList.
+        // if (wasCleared) {
+        //   showList();
+        // }
         resolve(wasCleared);
       });
     } else {

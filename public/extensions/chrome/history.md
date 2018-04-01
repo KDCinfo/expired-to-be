@@ -1866,6 +1866,18 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   - Final commit covering a range of bugs, tweaks, and slight enhancements.
 
+> 2018-04-31 - Saturday
+
+@7:00 PM
+
+  - Fixed issue with 'delete' on Chrome extension.
+
+    * Moved `badgeTextCount` initialization into `Promise.all()` block.
+
+    * Removed call to `showList()` from within the `deleteTimer` function.
+
+      Just like the `createTimer` function (right above it), `deleteTimer` should not run `showList()` because they both can be called numerous times from within `showList()` itself.
+
 ## Notes
 
 During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the Alarms API. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).

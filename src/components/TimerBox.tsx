@@ -276,7 +276,6 @@ class TimerBox extends React.Component<TimerBoxProps, TimerBoxState> {
             this.toggleTimeout(timerItem.id, 'off');
             return timerItem.title.substr(0, 4) !== 'x2b-';
         });
-        console.log('removeAllTimers: ', newTimerList);
 
         this.setState({ timerList: newTimerList }, () => {
 
