@@ -171,3 +171,12 @@ See [History file](history.md)
   - Run Expired To Be in any browser as a Web App (in lieu of installing the Chrome extension).
 
 The Web App version of X2B provides for opt-in browser-level Notifications, or just visit the web app page regularly to check on your expirations. It also includes a custom Alarms interface. The code that runs the Chrome Extension is injected directly into the Web App and is the underlying face and brains of the Web App (2 apps; 1 source code).
+
+### 2.0.1
+
+  - Fixed error on initial page load with an active expired item.
+
+### 2.0.2
+
+  - Fixed issue with 'reset' button allowing for more than 10 weeks.
+  - Added GA tag.

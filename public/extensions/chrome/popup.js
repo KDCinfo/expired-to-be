@@ -33,7 +33,10 @@ const maxDays = 70,
       ourKeys = new Set(['title', 'date', 'leadTime', 'leadTimeVal']), // No: 'id', 'active'
       sampleJSON = '[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
 
-const isExtension = !document.getElementById('web-root'); // Only run with either the extension, or the React-based web app.
+const isExtension = !document.getElementById('web-root'), // Only run with either the extension, or the React-based web app.
+      changeEvent = new Event('change'),
+      inputSelectName = document.querySelector('.input-select-name'), // selName
+      inputSelectNum = document.querySelector('.input-select-num');   // selNum
 
 function displayIt() { // [window|document].onload = function() {}
 
@@ -115,16 +118,13 @@ function displayIt() { // [window|document].onload = function() {}
   });
 
   // <select class="input-select-name" required>
-  const selName = document.querySelector('.input-select-name'),
-        selNum = document.querySelector('.input-select-num');
-
-  selName.addEventListener('change', (e) => {
+  inputSelectName.addEventListener('change', (e) => {
     if (e.target.value === 'days') {
-      selNum.setAttribute('max', maxDays);
+      inputSelectNum.setAttribute('max', maxDays);
     } else {
-      selNum.setAttribute('max', maxWeeks);
-      if (selNum.value > maxWeeks) {
-        selNum.value = maxWeeks;
+      inputSelectNum.setAttribute('max', maxWeeks);
+      if (inputSelectNum.value > maxWeeks) {
+        inputSelectNum.value = maxWeeks;
       }
     }
   });
@@ -829,11 +829,14 @@ function updateForm(itemId) {
   if (itemId) {
     let ourObj = ourState.find(item => item.id === itemId);
 
+    // max
+
     document.querySelector('.input-id').value = itemId;
     document.querySelector('.input-date').value = ourObj.date; // input-date
     document.querySelector('.input-title').value = htmlUnescape(ourObj.title); // input-title
-    document.querySelector('.input-select-num').value = ourObj.leadTimeVal; // input-select-num
-    document.querySelector('.input-select-name').value = ourObj.leadTime; // input-select-name
+    inputSelectNum.value = ourObj.leadTimeVal; // input-select-num
+    inputSelectName.value = ourObj.leadTime; // input-select-name
+    inputSelectName.dispatchEvent(changeEvent);
     // document.querySelector('.input-select-name').checked = ourObj.active; // The logic for this is done on save.
 
     setItemEdit(itemId);
@@ -841,8 +844,9 @@ function updateForm(itemId) {
     document.querySelector('.input-id').value = 0;
     document.querySelector('.input-date').value = setDate(); // input-date
     document.querySelector('.input-title').value = ''; // input-title
-    document.querySelector('.input-select-num').value = 1; // input-select-num
-    document.querySelector('.input-select-name').value = 'weeks'; // input-select-name
+    inputSelectNum.value = 1; // input-select-num
+    inputSelectName.value = 'weeks'; // input-select-name
+    inputSelectName.dispatchEvent(changeEvent);
     document.querySelector('.input-title').focus();
 
     setItemEdit();
@@ -897,10 +901,10 @@ function saveChanges(itemToSave = {}, lastImport) {
   if (!isImport) {
     // Get a value saved in a form.
     itemId = document.querySelector('.input-id').value;
-    textTitle = document.querySelector('.input-title').value;        // input-title
-    dateValue = document.querySelector('.input-date').value;         // input-date
-    selectName = document.querySelector('.input-select-name').value; // input-select-name
-    selectNum = document.querySelector('.input-select-num').value;   // input-select-num
+    textTitle = document.querySelector('.input-title').value; // input-title
+    dateValue = document.querySelector('.input-date').value;  // input-date
+    selectName = inputSelectName.value;                       // input-select-name
+    selectNum = inputSelectNum.value;                         // input-select-num
     itemIdOrig = parseInt(itemId, 10);
 
   } else {
