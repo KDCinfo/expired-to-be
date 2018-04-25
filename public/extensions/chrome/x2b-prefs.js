@@ -177,9 +177,10 @@ setSelectOptionsMinutes.forEach( min => prefMinElem.appendChild(min));
 const storedExpiredPrefs = getStorageItem(localStorage, 'expiresPrefs');
 
 if (!isEmpty(storedExpiredPrefs)) {
-  window.ourExpirations.setPref(storedExpiredPrefs);
+  window.ourExpirations.setPref(storedExpiredPrefs); // Will execute `reRender()`
 } else {
   x2bStorage.set({prefsObj: window.ourExpirations.getPrefs(), isNew: true});
+  window.reRender(); // Establish preferences (fixed error: fresh page load + active expired item)
 }
 
 setTimeout( () => { // 1000
@@ -225,6 +226,7 @@ setTimeout( () => { // 1000
     });
   }
 
-  window.reRender();
+  // A `reRender` has already been run above when setting prefs.
+  // window.reRender();
 
 }, 10); // Giving the DOM operations a tick (or 10) to establish themselves.

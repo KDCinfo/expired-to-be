@@ -112,9 +112,15 @@ const getPopup = () => {
             x2bApplyTo.appendChild(div1);
             x2bApplyTo.appendChild(div2);
 
+            // These 2 function calls are both synchronous.
             nowGetPrefsScript();
             nowGetAboutMenu();
-            (window as any).reRender(); // Update the Timer App to reflect any new Timers.
+
+            // console.log('The End. Now for...');
+            // (window as any).reRender(); // Update the Timer App to reflect any new Timers.
+            // ^ This was moved to [x2b-prefs.js] `if (!isEmpty(storedExpiredPrefs)) else...`
+            // A `reRender` cannot happen until [x2b-prefs.js] is loaded; when prefs are set.
+            // Otherwise, alarms will trigger prior to notification preferences being loaded.
 
           }).catch( e => {
             console.log('And the --X2B-- catch(e) error is:');
@@ -142,7 +148,7 @@ const getPopup = () => {
 };
 
 // Initial painting of TimerBox App.
-(window as any).reRender();
+// (window as any).reRender(); // Moved to [x2b-prefs.js] `if (!isEmpty(storedExpiredPrefs)) else ...`
 
 // TimerBox is our (non-Chrome extension) 'Alarms API': We need to let the `reRender` of the TimerBox
 // DOM painting clear the call stack before launching our 'Expired To Be' HTML and its related script.
