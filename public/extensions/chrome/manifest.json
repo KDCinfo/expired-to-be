@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Expired To Be",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "icons": { "16": "icon16.png",
              "32": "icon32.png",
              "48": "icon48.png",
@@ -21,6 +21,6 @@
   ],
   "author": "Keith D Commiskey (https://kdcinfo.com)",
   "homepage_url": "https://github.com/KDCinfo/expired-to-be",
-  "short_name": "Set and be reminded of expiration dates.",
-  "description": "Get notified of expired items for things you don't think about too often; like butter, medicine, or the supplies under your sink."
+  "short_name": "ExpiredToBe",
+  "description": "A quick and convenient way to set and be reminded of expiration dates."
 }
