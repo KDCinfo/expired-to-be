@@ -99,11 +99,11 @@ See ['X2B Version History' at bottom of page](#x2b-version-history)
 
 ## Happy Paths
 
-See [Happy Paths file](assets/x2b-happy-paths.md)
+See [Happy Paths file](/public/x2b/x2b-happy-paths.md)
 
 ## Detailed Development History
 
-See [History file](history.md)
+See [History file](/public/extensions/chrome/history.md)
 
 ## Helpful Sites and Pages
 
@@ -158,7 +158,7 @@ See [History file](history.md)
 
   - Created Functional Diagram for visual representation of storage and alarms (notifications).
 
-  - Finished [Happy Paths file](assets/x2b-happy-paths.md).
+  - Finished [Happy Paths file](/public/x2b/x2b-happy-paths.md).
 
   - Got entire app to work standalone, on any browser -- There just aren't any alarms or notifications to let you know when an item's expiration lead time has matured. And, it's not hosted anywhere... yet (will be going through GitHub pages and Travis CLI with ver 1.5).
 
@@ -180,3 +180,8 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
   - Fixed issue with 'reset' button allowing for more than 10 weeks.
   - Added GA tag.
+
+### 2.0.3
+
+  - Fixed issue with messages (e.g., preference update messages) being overwritten by expired items message.
+  - Made a few relative path adjustments in [README.md](README.md).

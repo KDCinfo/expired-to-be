@@ -341,7 +341,7 @@ function runPassiveNotification(stat = '') {
       } else {
         passiveMsg = passiveMsg + 's.';
       }
-      message(passiveMsg, true);
+      message(passiveMsg, false);
     }
     updateFavIcon(stat);
   }
