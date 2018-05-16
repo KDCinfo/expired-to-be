@@ -1945,6 +1945,45 @@ https://stackoverflow.com/questions/50053991/github-potential-security-vulnerabi
 
   - Fixed messaging not reflecting expired items in Chrome extension.
 
+> 2018-05-10 - Thursday
+
+Began watching videos for better Jest testing.
+
+  - `npm i --save-dev enzyme enzyme-adapter-react-16`
+
+@10:40 PM
+
+  - New issue... `npm` says there are 80 vulnerabilities (low level).
+
+  * Something to do with...
+
+```
+    Removing:   "hoek": "^5.0.3",
+    Added and removed:  "deep-extend": "^0.5.1",
+```
+
+Upgraded React TypeScript to 3.0.0 -- `react-scripts-ts@3.0.0`
+
+  - Resolved all of the `randomatic` errors.
+  - Cut `deep-extend` from 11 to 9 errors.
+
+  - Opened a GitHub issue with `create-react-app-typescript` regarding the remaining 9 vulnerabilities: [npm audit security report - package: deep-extend](https://github.com/wmonk/create-react-app-typescript/issues/319)
+
+@2:15 AM
+
+  - Began getting back into Jest testing.
+
+  * Reinstalled `enzyme`.
+
+  - Realized the React testing would only test the <TimerBox />. (D'oh!) It will NOT be testing the user interface, which is a JavaScript application.
+  - Looking up: testing javascript applications
+
+@3:45 AM
+
+Downgraded back to React `2.15.1` and TypeScript `2.8.3`. `3.0.0` was a blocker.
+
+  - Opened another GitHub issue: [Error: Cannot find module 'react-dev-utils/workspaceUtils'](https://github.com/wmonk/create-react-app-typescript/issues/320)
+
 ## Code Notes: `Timer`
 
 [TimerAlertPrompt.tsx]

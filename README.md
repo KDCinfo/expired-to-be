@@ -191,3 +191,7 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 - Added sorting (6 in all).
   - 3 sortable columns (title; date; days remaining).
   - Ascending and Descending; each sortable column.
+
+### 2.1.1
+
+- Fixed low-level vulnerabilities.
