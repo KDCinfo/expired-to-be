@@ -1984,6 +1984,157 @@ Downgraded back to React `2.15.1` and TypeScript `2.8.3`. `3.0.0` was a blocker.
 
   - Opened another GitHub issue: [Error: Cannot find module 'react-dev-utils/workspaceUtils'](https://github.com/wmonk/create-react-app-typescript/issues/320)
 
+> 2018-05-11 - Friday
+
+@11:00 AM
+  - Got project back on track.
+
+```
+  Installed new CRA w/ TS (typescript/test1).
+        Showed 9 vulnerabilities.
+        Created repo; committed; no security alert message.
+      Updated both GitHub issues.
+      Downgraded chrome/extensions/x2b
+```
+
+  - Began learning TestCafe.
+
+@3:05 AM
+
+  - Got TestCafe up and running.
+
+  > Got my first 3 tests put together;
+  > Lead Time inputs
+
+> 2018-05-12 - Saturday
+
+@Evening
+
+  Trying to finish with testing
+
+  - Got it to wait for progress bar
+  - Currently on sorting... got it checking that 'active' state is applied.
+    Goal: Test each column sort in both directions.
+
+@11:15 PM
+
+  - Hit an all-right breaking point (back into sorting).
+
+> 2018-05-14 - Monday
+
+@1:00 AM
+  TestCafe -- All... Freaking... Day.
+    FRUSTRATING !!!
+
+  (well, apparently from 5:00 PM;
+    which would be 8 hours, which is, then, a Full... Freaking... Day.)
+  - Subtracting the near 14 hours logged by RT 
+    from when I shut down at 7:00 AM puts me starting at 5:00 PM.
+
+  Got first issue / error figured out
+    I was coding for lines 1 and 4, 
+    but was only running 1 import (2 each).
+  Then the "Options" popup wouldn't pop up.
+    Never did figure out why...
+    backtracked some code, but it was all benign.
+  Then the Import Options wouldn't work at all.
+    Finally got custom textarea pasting.
+  Then found out progress bar isn't working...
+    Ended up putting a 5-second timeout
+    prior to `endProgressBarWatcher` Promise resolve
+    ^ Sucks... (2 sec failed; then tried 5; then moved on)
+  Think I was making progress, then... internet went out (see below)
+  @1:40 AM
+    Just got back into code... I now remember the next wall I hit.
+    Last issue was that:
+      const item1text = item1.nth(1).textContent
+        ...wasn't working. The fix was:
+      const item1text = await item1.nth(1).textContent
+
+  Discovered a debugging process I can use to see Selectors and such.
+
+  Somewhere as a troubleshooting approach
+    I installed testcafe into the project (0.19.2)
+    I later uninstalled it when I found I needed the `await`.
+    Thanks to:
+  https://testcafe-discuss.devexpress.com/t/functional-style-selectors-and-insight-in-selector-results/216/9
+
+  Began looking at sorting. Dates appear backwards <= ← → >
+    Need to look at localStorage; there is none.
+    I can see my data; and how I'm feeding it.
+  Then...
+
+  Internet went out.
+
+  * Reset modem and both routers; Disconnected from wireless.
+
+@1:45 AM
+
+  Back to X2b sorting.
+  Wouldn't appear sorting is working... what is nth(1)? 
+
+@2:20 AM
+
+  - That was indeed the issue!!!
+    I was thinking I was triggering the `date` column sort but the default is on the `title` column with wasn't the correct `nth(0)` index (`date` column is `nth(1)`).
+  - Running tests in: Chromium 66.0.3359 / Ubuntu 0.0.0
+  - Getting Started: Sorting
+  - 1 passed (26s)
+
+@5:05 AM
+
+  - Success!
+  - Got both ASC and DESC working with title column.
+
+@7:00 AM
+
+  - Got all 3 columns working.
+  - Finalized documenting testing procedures.
+  - Outlined current 4 version releases in readme.md.
+  - Heading to bed.
+
+#### Follow-up notes
+
+```
+  Running tests in:
+   - Firefox 60.0.0 / Ubuntu 0.0.0
+   - Chromium 66.0.3359 / Ubuntu 0.0.0
+
+   Running Tests on: Expired To Be
+   ✓ Sorting; 3 columns; ASC and DESC
+
+   **1 passed (54s)**
+```
+
+**Tests considered but not added**
+
+__(my initial objective was to test the sorting that I'd just completed.)__
+
+  Platforms: SPA (-only: not testing: Chrome extension (it's the guts of the SPA in any case))
+
+    (each test should be run on each browser: `testcafe all`)
+
+    - Toggle | Edit | Delete
+    - Keyboard navigation
+    - Test quick timeout for expiration
+      Set testing to wait for 5 minutes (or whatever).
+      - Notifications
+      - With / without preferences
+      - With / without expiration items
+    - Try to set an invalid alarm
+      Expect message to contain...
+
+> 2018-05-15 - Tuesday
+
+@8:20 PM
+
+  - Finished updating documentation (readme and history).
+  - Committed `all the things`.
+
+  * `clear && testcafe 'chromium' x2b-test.js --inspect-brk`
+
+  * `clear && testcafe 'chromium' x2b-test.js -r json:testCafe-report.json`
+
 ## Code Notes: `Timer`
 
 [TimerAlertPrompt.tsx]
