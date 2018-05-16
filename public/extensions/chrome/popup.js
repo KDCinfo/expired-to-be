@@ -173,7 +173,7 @@ const x2bStorage = (function() {
       if (isGood('chrome') && isGood('chrome.storage') && isGood('chrome.storage.sync')) {
 
         return new Promise( (resolve, reject) => {
-          chrome.storage.sync.get('expiresList', itemList => {
+          chrome.storage.sync.get(whichStore, itemList => {
             resolve(itemList);
           });
         });
@@ -189,7 +189,7 @@ const x2bStorage = (function() {
         return new Promise( (resolve, reject) => {
           alert('Your browsing device has no local storage (i.e., no data persistence.) ' +
                 'You can still run the app, but nothing will be saved when you leave.'); // try cookies?
-          resolve({whichStore: ourState});
+          resolve({[whichStore]: ourState});
         });
       }
     },
@@ -200,7 +200,8 @@ const x2bStorage = (function() {
       let msgDone = '',
           whichList = 'expiresList',
           whichData, // Can/will either be an array [] or an object {}
-          isPrefs = false;
+          isPrefs = false,
+          isSortUpdate = false;
 
       whichData = ourState;
 
@@ -208,13 +209,33 @@ const x2bStorage = (function() {
         finishImport();
 
       } else if (typeof(storeObj.prefsObj) !== 'undefined') {
+
+        // Currently, this should ONLY be used by the SPA.
+
         if (storeObj.isNew !== true) {
           msgDone = message('Your preferences have been updated.', true);
         }
+        isPrefs = true;
         whichList = 'expiresPrefs';
         whichData = Object.assign({}, ourExpirations.getPrefs(), storeObj.prefsObj);
-        isPrefs = true;
         // console.log('Hope this combines and updates ourExpirations.getPrefs() objects.', storeObj.prefsObj, whichData);
+
+      } else if (typeof(storeObj.newPrefObj) !== 'undefined') { // x2bStorage.set()
+
+        // Currently, this is only used to update the sorting preference (once a sort is clicked).
+
+        // msgDone = message('Your preferences have been updated.', true); // No message; let it sort and record it.
+        isPrefs = true;             // We're just sorting -- it's already looping through the showList()
+        isSortUpdate = true;
+        whichList = 'expiresPrefs'; // chrome.storage.sync.remove('expiresPrefs')
+
+        if (typeof ourExpirations !== 'undefined') {
+          whichData = Object.assign({}, ourExpirations.getPrefs(), storeObj.newPrefObj);
+                                     // ourExpirations.getPrefs() --> is synchronous
+                                     // typeof ourExpirations === isGood('chrome.storage.sync')
+        } else {
+          whichData = Object.assign({}, storeObj.newPrefObj);
+        }
 
       } else if (storeObj.id === 0) {
         msgDone = message('Your expiration item was successfully created.', false);
@@ -227,10 +248,12 @@ const x2bStorage = (function() {
       if (isGood('chrome') && isGood('chrome.storage') && isGood('chrome.storage.sync')) {
 
         // Save it using the Chrome extension storage API.
-        chrome.storage.sync.set({'expiresList': whichData}, () => {
+        chrome.storage.sync.set({[whichList]: whichData}, () => {
           msgDone;
           if (!isPrefs) {
             showList();
+          } else if (isSortUpdate) {
+            showList('', true); // '' = close any open menus; true = don't update alarms
           }
         });
 
@@ -240,6 +263,8 @@ const x2bStorage = (function() {
         msgDone;
         if (!isPrefs) {
           showList();
+        } else if (isSortUpdate) {
+          showList('', true); // '' = close any open menus; true = don't update alarms
         }
       }
     },
@@ -327,22 +352,25 @@ async function getState() {
   });
 }
 
-function runPassiveNotification(stat = '') {
-  if (isGood('chrome') && isGood('chrome.browserAction')) {
+function runPassiveNotification(stat = '', noMsg = '') {
+  // console.log('runPassiveNotification: ', stat, noMsg, noMsg.length);
 
-    chrome.browserAction.setBadgeText({text: stat}); // Updated Via: Alarms (eventPage) and showList()
+  if (stat.length > 0) {
 
-  } else {
-    if (stat.length > 0) {
-
-      let passiveMsg = 'You have ' + stat + ' expired item';
-      if (stat === '1') { // Ternary wouldn't work... :(
-        passiveMsg = passiveMsg + '.';
-      } else {
-        passiveMsg = passiveMsg + 's.';
-      }
+    let passiveMsg = 'You have ' + stat + ' expired item';
+    if (stat === '1') { // Ternary wouldn't work... :(
+      passiveMsg = passiveMsg + '.';
+    } else {
+      passiveMsg = passiveMsg + 's.';
+    }
+    if (noMsg.length === 0) {
       message(passiveMsg, false);
     }
+  }
+
+  if (isGood('chrome') && isGood('chrome.browserAction')) {
+    chrome.browserAction.setBadgeText({text: stat}); // Updated Via: Alarms (eventPage) and showList()
+  } else {
     updateFavIcon(stat);
   }
 }
@@ -375,7 +403,7 @@ function updateFavIcon(stat = '') {
   document.head.appendChild(link);
 }
 
-function showList(noClose = '') {
+function showList(noClose = '', prefUpdate = false) { // showList('', true) // Sorting
 
   if (noClose.length === 0) {
     toggleMenu('close');
@@ -387,146 +415,225 @@ function showList(noClose = '') {
 
   if (ourState.length > 0) {
 
-    // Turn on the 'Clear All' and 'Export All' buttons.
-    let inputOptions = document.querySelectorAll('.input-options-with-items');
-    for (let i = 0; i < inputOptions.length; i++) {
-      inputOptions[i].style.display = 'inline-block';
+    if (!prefUpdate) {
+      // Turn on the 'Clear All' and 'Export All' buttons.
+      let inputOptions = document.querySelectorAll('.input-options-with-items');
+      for (let i = 0; i < inputOptions.length; i++) {
+        inputOptions[i].style.display = 'inline-block';
+      }
     }
 
-    let alarmList = [];
+    let sortState = ourState.slice(),
+        alarmList = [];
 
-    printListHead();
+    x2bStorage.get('expiresPrefs').then( prefsList => {
 
-    ourState.forEach( item => {
-      alarmList.push( requestAlarm(item.id) ); // chrome.alarms.get('x2b-' + itemId, callback) );
-      printList(item);
-    });
+      const sortColumns = ['title', 'date', 'between'];
 
-    setItemEdit();
+      let prefsListSort = prefsList,
+          hasSort = false,
+          sortColKey = '1u';  // If left at this default, this will get flipped to '1u'
+                              // [column | direction] --> [1u] [1d] [2a] [2d] [3a] [3d]
+                              // Column 1 = Title; 2 = Date; 3 = 'between' (calculation)
 
-    /**
-     * ALARMS - ADD BLUE-SUN ICON to ACTIVE CHECKBOXES for ALL ITEMS WITH ALARMS
-     *
-     * Cycle through all the `chrome.alarms.get()` call Promise resolutions.
-     * IF an alarm exists, it'll be in the Promises `alarmList` array.
-     * Outer shell of this Promise.all() is also used in eventPage.js.
-     *
-     */
-    Promise.all(alarmList).then((results) => {
-      // do something on fulfilled
+      if (typeof prefsList.expiresPrefs !== 'undefined') {
+        prefsListSort = prefsList.expiresPrefs;
+      }
 
-      let countOrphans = 0,
-          countExpired = 0,
-          badgeTextCount = 0;
+      if (typeof prefsListSort.sortPref !== 'undefined') {
+        hasSort = true;
+        sortColKey = prefsListSort.sortPref;
+        // console.log('prefsListSort.sortPref is set: ', prefsListSort.sortPref);
+      }
 
-      results.forEach( alarm => {
+      if (hasSort) {
+        printListHead(prefsListSort);
+      } else {
+        printListHead();
+      }
 
-        let tmpObj = ourState.find(elem => elem.id === alarm.id),
-            isGoodAlarm = isGood(alarm.alarmObj);
+      let sortColNum = parseInt(sortColKey.substr(0, 1), 10),
+          sortColName = sortColumns[sortColNum - 1],
+          newSortDir = sortColKey.substr(1, 1); // === 'u' ? 'd' : 'u';
 
-        // alarm: undefined | {id, active, ...}
+      // console.log('sortState: ', sortColNum, newSortDir, sortColName);
 
-        // @TODONE: Adjusted all logic below and added dynamic DOM element updates based on alarms.
+      sortState = sortState.sort( (a, b) => {
+        // 0 : {id: 1, title: "My first reminder.", date: "2018-04-03", leadTime: "days", leadTimeVal: "1", ...}
 
-        let delay = getDelay(tmpObj.leadTime, tmpObj.leadTimeVal),
-            dateValueArr = tmpObj.date.split('-'),
-            newTime = {},
-            between = -1,
-            newThen = -1;
+        if (sortColNum === 3) {       // 'Days Left' sort based on calculations.
 
-        if (isGoodAlarm) {
-          newTime = getBetween(dateValueArr, delay, alarm.alarmObj.presetTargetTime);
-        } else {
-          newTime = getBetween(dateValueArr, delay);
-        }
-        between = newTime.between;
-        newThen = newTime.newThen;
+          const delayA = getDelay(a.leadTime, a.leadTimeVal),
+                dateValueArrA = a.date.split('-'),
+                newTimeA = getBetween(dateValueArrA, delayA),
+                betweenA = newTimeA.between;
 
-        // delay    | dateValueArr         | newTime
-        // 86400000 | ["2018", "03", "27"] | {newThen: 1522048440000, between: 0}
+          const delayB = getDelay(b.leadTime, b.leadTimeVal),
+                dateValueArrB = b.date.split('-'),
+                newTimeB = getBetween(dateValueArrB, delayB),
+                betweenB = newTimeB.between;
 
-        let canBeActive = (
-              between > 0 &&
-              newThen - Date.now() > 0 &&
-              tmpObj.active === true
-            ) ? true : false;
+          if (newSortDir === 'u') {
+            return parseInt(betweenA, 10) > parseInt(betweenB, 10) ? 1 : -1;
+          } else {
+            return parseInt(betweenA, 10) < parseInt(betweenB, 10) ? 1 : -1;
+          }
 
-        // Passive notifications should only increase if alarm is invalid, and item is active.
-
-        // CanBeActive && Has alarm - printAlarm()
-        // CanBeActive && No alarm - Create alarm
-
-        // !CanBeActive &&
-          // active && has alarm - Remove alarm (expired - should've triggered notification)
-          // !active && has alarm - Remove alarm (orphan)
-          // active && no alarm - Do nothing (expired)
-          // !active && no alarm - Do nothing
-
-        let trClassListItem = document.querySelector('.x2b-listitem-' + alarm.id),
-            tdClassListItem = trClassListItem.querySelector('td'), // Grabs the first <td>
-            spanClassListItem = tdClassListItem.querySelector('span'),
-            tdBetweenItem = trClassListItem.querySelector('td.between');
-
-        tdBetweenItem.innerText = between;
-
-        if (canBeActive && isGoodAlarm) {
-          trClassListItem.classList.remove('expired');
-          spanClassListItem.classList.add('hidden');
-          printAlarm(alarm.id);
-
-        } else if (canBeActive && !isGoodAlarm) {
-          trClassListItem.classList.remove('expired');
-          spanClassListItem.classList.add('hidden');
-
-          // @TODONE: This only caused a problem when the `alert()` was
-          // triggered immediately due to 32-bit setTimeout() limitation.
-          createTimer(alarm.id, newThen, between).then( (newAlarm) => {
-            printAlarm(alarm.id);
-          });
-
-        } else { // if (!canBeActive) {
-          if (tmpObj.active === true && !isGoodAlarm) {
-            badgeTextCount++;
-            trClassListItem.classList.add('expired');
-            spanClassListItem.classList.remove('hidden');
-
-          } else if (tmpObj.active === true && isGoodAlarm) {
-            // Active with Alarm; but expired...?
-            badgeTextCount++;
-            trClassListItem.classList.add('expired');
-            spanClassListItem.classList.remove('hidden');
-            deleteTimer(alarm.id).then( (wasCleared) => {
-              if (typeof(wasCleared) !== 'undefined') {
-                if (countExpired === 0) {
-                  message('An alarm was expired and has been removed.', false);
-                }
-                countExpired++;
-              }
-            });
-
-          } else if (tmpObj.active !== true && isGoodAlarm) {
-            trClassListItem.classList.remove('expired');
-            spanClassListItem.classList.add('hidden');
-            deleteTimer(alarm.id).then( (wasCleared) => {
-              if (typeof(wasCleared) !== 'undefined') {
-                if (countOrphans === 0) {
-                  message('An alarm was orphaned, and has been removed.', false);
-                }
-                countOrphans++;
-              }
-            });
-
-          } else if (tmpObj.active !== true && !isGoodAlarm) {
-            // Might be able to be active (but isn't); or maybe it can't be.
-            trClassListItem.classList.remove('expired');
-            spanClassListItem.classList.add('hidden');
+        } else {                      // 'title' and 'date' sorted normally
+          if (newSortDir === 'u') {
+            return a[sortColName] > b[sortColName] ? 1 : -1;
+          } else {
+            return a[sortColName] < b[sortColName] ? 1 : -1;
           }
         }
       });
 
-      badgeTextCount = (badgeTextCount === 0) ? '' : badgeTextCount.toString(); // Also used in [eventPage.js]
-      runPassiveNotification(badgeTextCount); // chrome.browserAction.setBadgeText({text: badgeTextCount });
-    });
+      sortState.forEach( item => {
+        alarmList.push( requestAlarm(item.id) ); // chrome.alarms.get('x2b-' + itemId, callback) );
+        printList(item);
+      });
+
+      // @TODO: arrow focus losing element bc elmts r being redrawn
+      setItemEdit();
+
+      /**
+       * ALARMS - ADD BLUE-SUN ICON to ACTIVE CHECKBOXES for ALL ITEMS WITH ALARMS
+       *
+       * Cycle through all the `chrome.alarms.get()` call Promise resolutions.
+       * IF an alarm exists, it'll be in the Promises `alarmList` array.
+       * Outer shell of this Promise.all() is also used in eventPage.js.
+       *
+       */
+      Promise.all(alarmList).then((results) => {
+        // do something on fulfilled
+
+        let countOrphans = 0,
+            countExpired = 0,
+            badgeTextCount = 0;
+
+        results.forEach( alarm => {
+
+          let tmpObj = sortState.find(elem => elem.id === alarm.id),
+              isGoodAlarm = isGood(alarm.alarmObj);
+
+          // alarm: undefined | {id, active, ...}
+
+          // @TODONE: Adjusted all logic below and added dynamic DOM element updates based on alarms.
+
+          let delay = getDelay(tmpObj.leadTime, tmpObj.leadTimeVal),
+              dateValueArr = tmpObj.date.split('-'),
+              newTime = {},
+              between = -1,
+              newThen = -1;
+
+          if (isGoodAlarm) {
+            newTime = getBetween(dateValueArr, delay, alarm.alarmObj.presetTargetTime);
+          } else {
+            newTime = getBetween(dateValueArr, delay);
+          }
+          between = newTime.between;
+          newThen = newTime.newThen;
+
+          // delay    | dateValueArr         | newTime
+          // 86400000 | ["2018", "03", "27"] | {newThen: 1522048440000, between: 0}
+
+          let canBeActive = (
+                between > 0 &&
+                newThen - Date.now() > 0 &&
+                tmpObj.active === true
+              ) ? true : false;
+
+          // Passive notifications should only increase if alarm is invalid, and item is active.
+
+          // CanBeActive && Has alarm - printAlarm()
+          // CanBeActive && No alarm - Create alarm
+
+          // !CanBeActive &&
+            // active && has alarm - Remove alarm (expired - should've triggered notification)
+            // !active && has alarm - Remove alarm (orphan)
+            // active && no alarm - Do nothing (expired)
+            // !active && no alarm - Do nothing
+
+          let trClassListItem = document.querySelector('.x2b-listitem-' + alarm.id),
+              tdClassListItem = trClassListItem.querySelector('td'), // Grabs the first <td>
+              spanClassListItem = tdClassListItem.querySelector('span'),
+              tdBetweenItem = trClassListItem.querySelector('td.between');
+
+          tdBetweenItem.innerText = between;
+
+          if (canBeActive && isGoodAlarm) {
+            trClassListItem.classList.remove('expired');
+            spanClassListItem.classList.add('hidden');
+            printAlarm(alarm.id);
+
+          } else if (canBeActive && !isGoodAlarm) {
+            trClassListItem.classList.remove('expired');
+            spanClassListItem.classList.add('hidden');
+
+            // @TODONE: This only caused a problem when the `alert()` was
+            // triggered immediately due to 32-bit setTimeout() limitation.
+            if (!prefUpdate) {
+              createTimer(alarm.id, newThen, between).then( (newAlarm) => {
+                printAlarm(alarm.id);
+              });
+            } else {
+              // When sorting, no need to create new timers.
+              printAlarm(alarm.id);
+            }
+
+          } else { // if (!canBeActive) {
+            if (tmpObj.active === true && !isGoodAlarm) {
+              badgeTextCount++;
+              trClassListItem.classList.add('expired');
+              spanClassListItem.classList.remove('hidden');
+
+            } else if (tmpObj.active === true && isGoodAlarm) {
+              // Active with Alarm; but expired...?
+              badgeTextCount++;
+              trClassListItem.classList.add('expired');
+              spanClassListItem.classList.remove('hidden');
+              deleteTimer(alarm.id).then( (wasCleared) => {
+                if (typeof(wasCleared) !== 'undefined') {
+                  if (countExpired === 0) {
+                    message('An alarm was expired and has been removed.', false);
+                  }
+                  countExpired++;
+                }
+              });
+
+            } else if (tmpObj.active !== true && isGoodAlarm) {
+              trClassListItem.classList.remove('expired');
+              spanClassListItem.classList.add('hidden');
+              deleteTimer(alarm.id).then( (wasCleared) => {
+                if (typeof(wasCleared) !== 'undefined') {
+                  if (countOrphans === 0) {
+                    message('An alarm was orphaned, and has been removed.', false);
+                  }
+                  countOrphans++;
+                }
+              });
+
+            } else if (tmpObj.active !== true && !isGoodAlarm) {
+              // Might be able to be active (but isn't); or maybe it can't be.
+              trClassListItem.classList.remove('expired');
+              spanClassListItem.classList.add('hidden');
+            }
+          }
+        });
+
+        badgeTextCount = (badgeTextCount === 0) ? '' : badgeTextCount.toString(); // Also used in [eventPage.js]
+
+        // console.log('Promise.all: ', prefUpdate, badgeTextCount);
+
+        if (!prefUpdate) {
+          runPassiveNotification(badgeTextCount); // chrome.browserAction.setBadgeText({text: badgeTextCount });
+        } else {
+          runPassiveNotification(badgeTextCount, 'noMsg');
+        }
+      });
+
+    }); // End of: x2bStorage.get('expiresPrefs') Promise
+        // (and the enclosed printList() && Promise.all(alarmList))
 
   } else {
     // No expirations saved in storage.
@@ -588,37 +695,201 @@ function requestAlarm(itemId) {
   }
 }
 
-function printListHead() {
+function printListHead(prefsList) {
   let itemTCH = document.createElement('thead'),
       itemTCR = document.createElement('tr'),
       itemTCH1 = document.createElement('th'),
+      itemTCH1D = document.createElement('div');
+      itemTCH1L = document.createElement('span'),
+      itemTCH1R = document.createElement('span'),
+      itemTCH1Ru = document.createElement('a'),
+      itemTCH1Rd = document.createElement('a'),
       itemTCH2 = document.createElement('th'),
+      itemTCH2D = document.createElement('div');
+      itemTCH2L = document.createElement('span'),
+      itemTCH2R = document.createElement('span'),
+      itemTCH2Ru = document.createElement('a'),
+      itemTCH2Rd = document.createElement('a'),
       itemTCH3 = document.createElement('th'),
       itemTCH4 = document.createElement('th'),
       itemTCH5 = document.createElement('th'),
+      itemTCH5D = document.createElement('div');
+      itemTCH5L = document.createElement('span'),
+      itemTCH5R = document.createElement('span'),
+      itemTCH5Ru = document.createElement('a'),
+      itemTCH5Rd = document.createElement('a'),
       itemTCH6 = document.createElement('th'),
+      itemTCH6S = document.createElement('span'),
       itemTCH7 = document.createElement('th'),
       itemTCH8 = document.createElement('th'),
-      itemTB = document.createElement('tbody');
+      itemTB = document.createElement('tbody'),
+      sortArrowActive = '1u';
+
+      if (typeof prefsList !== 'undefined' && typeof prefsList.sortPref !== 'undefined') {
+        if (prefsList.sortPref === '3d') { // 5th column; 3rd sortable column
+          itemTCH5Rd.classList.add('active');
+          sortArrowActive = '3d';
+        } else if (prefsList.sortPref === '3u') {
+          itemTCH5Ru.classList.add('active');
+          sortArrowActive = '3u';
+        } else if (prefsList.sortPref === '2d') {
+          itemTCH2Rd.classList.add('active');
+          sortArrowActive = '2d';
+        } else if (prefsList.sortPref === '2u') {
+          itemTCH2Ru.classList.add('active');
+          sortArrowActive = '2u';
+        } else if (prefsList.sortPref === '1d') {
+          itemTCH1Rd.classList.add('active');
+          sortArrowActive = '1d';
+        } else { // if (prefsList.sortPref === '1u') {
+          itemTCH1Ru.classList.add('active');
+        }
+      } else {
+        itemTCH1Ru.classList.add('active');
+      }
 
       if (!isExtension && window.ourExpirations.getPrefs().showPanel) {
-        itemTCH1.innerHTML = '<small>[ID]</small> Title';
+        itemTCH1L.innerHTML = '<small>[ID]</small> Title';
       } else {
-        itemTCH1.innerText = 'Title';
+        itemTCH1L.innerText = 'Title';
       }
         itemTCH1.classList.add('text-left');
+        itemTCH1L.classList.add('paginate-title');
+        itemTCH1R.classList.add('paginate');
+        itemTCH1Ru.classList.add('arrow-up');
+        itemTCH1Rd.classList.add('arrow-down');
+          itemTCH1Ru.name = '1u';
+          itemTCH1Rd.name = '1d';
+          itemTCH1Ru.innerHTML = '&#x25b2';
+          itemTCH1Rd.innerHTML = '&#x25bc';
+            if (sortArrowActive !== '1u') {
+              itemTCH1Ru.setAttribute('aria-label', 'Sort by: Title - Ascending');
+              itemTCH1Ru.setAttribute("tabindex", "0");
+              itemTCH1Ru.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH1Ru.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+            if (sortArrowActive !== '1d') {
+              itemTCH1Rd.setAttribute('aria-label', 'Sort by: Title - Descending');
+              itemTCH1Rd.setAttribute("tabindex", "0");
+              itemTCH1Rd.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH1Rd.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+          itemTCH1R.appendChild(itemTCH1Ru);
+          itemTCH1R.appendChild(itemTCH1Rd);
+          itemTCH1D.appendChild(itemTCH1R);
+          itemTCH1D.appendChild(itemTCH1L);
+          itemTCH1.appendChild(itemTCH1D);
         itemTCR.appendChild(itemTCH1);
-      itemTCH2.innerText = 'Date';
+
+      itemTCH2L.innerText = 'Date';
         itemTCH2.classList.add('text-left');
+        itemTCH2L.classList.add('paginate-title');
+        itemTCH2R.classList.add('paginate');
+        itemTCH2Ru.classList.add('arrow-up');
+        itemTCH2Rd.classList.add('arrow-down');
+          itemTCH2Ru.innerHTML = '&#x25b2';
+          itemTCH2Rd.innerHTML = '&#x25bc';
+          itemTCH2Ru.name = '2u';
+          itemTCH2Rd.name = '2d';
+            if (sortArrowActive !== '2u') {
+              itemTCH2Ru.setAttribute('aria-label', 'Sort by: Date - Ascending');
+              itemTCH2Ru.setAttribute("tabindex", "0");
+              itemTCH2Ru.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH2Ru.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+            if (sortArrowActive !== '2d') {
+              itemTCH2Rd.setAttribute('aria-label', 'Sort by: Date - Descending');
+              itemTCH2Rd.setAttribute("tabindex", "0");
+              itemTCH2Rd.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH2Rd.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+          itemTCH2R.appendChild(itemTCH2Ru);
+          itemTCH2R.appendChild(itemTCH2Rd);
+          itemTCH2D.appendChild(itemTCH2R);
+          itemTCH2D.appendChild(itemTCH2L);
+          itemTCH2.appendChild(itemTCH2D);
         itemTCR.appendChild(itemTCH2);
+
       itemTCH3.innerHTML = 'Lead<br/>Time';
         itemTCR.appendChild(itemTCH3);
       itemTCH4.innerHTML = 'Days/<br/>Weeks';
         itemTCR.appendChild(itemTCH4);
-      itemTCH5.innerHTML = 'Days<br/>Left';
+
+      itemTCH5L.innerHTML = 'Days<br/>Left';
+        itemTCH5.classList.add('text-left');
+        itemTCH5L.classList.add('paginate-title');
+        itemTCH5R.classList.add('paginate');
+        itemTCH5Ru.classList.add('arrow-up');
+        itemTCH5Rd.classList.add('arrow-down');
+          itemTCH5Ru.innerHTML = '&#x25b2';
+          itemTCH5Rd.innerHTML = '&#x25bc';
+          itemTCH5Ru.name = '3u'; // 5th column; 3rd sortable column
+          itemTCH5Rd.name = '3d';
+            if (sortArrowActive !== '3u') {
+              itemTCH5Ru.setAttribute('aria-label', 'Sort by: Days Left - Ascending');
+              itemTCH5Ru.setAttribute("tabindex", "0");
+              itemTCH5Ru.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH5Ru.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+            if (sortArrowActive !== '3d') {
+              itemTCH5Rd.setAttribute('aria-label', 'Sort by: Days Left - Descending');
+              itemTCH5Rd.setAttribute("tabindex", "0");
+              itemTCH5Rd.addEventListener('click', (e) => {
+                sortRun(e.target.name, true); // true = isClick
+              });
+              itemTCH5Rd.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key.toLowerCase() === 'enter') {
+                  e.preventDefault();
+                  sortRun(e.target.name);
+                }
+              });
+            }
+          itemTCH5R.appendChild(itemTCH5Ru);
+          itemTCH5R.appendChild(itemTCH5Rd);
+          itemTCH5D.appendChild(itemTCH5R);
+          itemTCH5D.appendChild(itemTCH5L);
+          itemTCH5.appendChild(itemTCH5D);
         itemTCR.appendChild(itemTCH5);
-      itemTCH6.innerHTML = '<span>Alarm/</span><br/>Active';
+
+      itemTCH6S.innerText = 'Alarm';
+      itemTCH6.innerHTML = '<span class="alarm">Alarm/</span><br/>Active';
         itemTCR.appendChild(itemTCH6);
+
       itemTCH7.innerText = '';
         itemTCR.appendChild(itemTCH7);
       itemTCH8.innerText = '';
@@ -630,6 +901,13 @@ function printListHead() {
 
   parentTable.appendChild(itemTCH);
   parentTable.appendChild(itemTB);
+}
+
+function sortRun(setObj, isClick = false) { // sortRun(true); // If mouse, remove focus from clicked arrow element.
+  x2bStorage.set({newPrefObj: {sortPref: setObj}});
+  if (isClick) {
+    document.getElementById('entryTitle').focus();
+  }
 }
 
 function printList(item) {

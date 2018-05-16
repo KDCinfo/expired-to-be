@@ -185,3 +185,9 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
   - Fixed issue with messages (e.g., preference update messages) being overwritten by expired items message.
   - Made a few relative path adjustments in [README.md](README.md).
+
+### 2.1.0
+
+- Added sorting (6 in all).
+  - 3 sortable columns (title; date; days remaining).
+  - Ascending and Descending; each sortable column.

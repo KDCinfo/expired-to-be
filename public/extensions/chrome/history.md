@@ -1866,7 +1866,7 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   - Final commit covering a range of bugs, tweaks, and slight enhancements.
 
-> 2018-04-31 - Saturday
+> 2018-03-31 - Saturday
 
 @7:00 PM
 
@@ -1888,9 +1888,64 @@ Uncaught TypeError: Cannot read property 'split' of undefined
 
   Although references to Done (for now) updates belong in the Done (for now) Readme, it became an extension of this project as well.
 
-## Notes
+> 2018-04-24 - Tuesday
 
-During the extraction and while integrating my Done (for now) alarm code, I did not integrate the "Timers" portion of the Alarms API. The code is present and would likely only take 1-2 weeks, but in this particular case necessity dictates innovation (I'd also like to get moving on to learning more in hopes of finding a job this year -- 03-2018).
+  - Been working on fixing X2b; Hitting SPA with an expiration throws errors.
+  `runPassiveNotification` is not defined (initially saw this on my live site (production)).
+
+@4:20 AM
+
+  - Got 3 things fixed; 2 commited (will commit the 3rd tomorrow night).
+
+  1. Put GA tracking on X2b SPA
+  2. Issue with loading page having an active expired item.
+    - Took most of the day to find the root cause.
+    - Issue was when expired item + updating prefs = pref msg overwritten with expired msg
+  3. Fixed reset form issue with allowing >10 weeks.
+
+> 2018-04-25 - Wednesday
+
+Committed changes from yesterday.
+
+  - Also updated Chrome extension.
+
+> 2018-04-26 - Thursday
+
+https://stackoverflow.com/questions/50053991/github-potential-security-vulnerability-error-for-hoek-node-module
+
+@7:45 AM
+
+  - Got X2B and Redux418 both fixed.
+  - kdcinfo/f6 -- Still working on last 3 hoek 2.16.3 versions (node-sass, request, hawk).
+
+> 2018-05-08 - Tuesday
+
+@11:30 PM
+
+  - Tried implementing W3 ARIA Data Grids with Sorting.
+    * Way too much boilerplate!
+
+  - Found X2B data source (`ourState`).
+    * Using that to inject a 'last sorted by' preference.
+    * Default is 1a (Title; Ascending)
+
+@6:05 AM
+
+  - Got sorting working.
+  - Got up/down arrows (for sorting) laid out.
+
+> 2018-05-09 - Wednesday
+
+@6:50 AM
+
+  - Completed X2B sorting.
+  - Got formatting completed (included swapping pagination arrow/title sides).
+
+@7:15 AM
+
+  - Fixed messaging not reflecting expired items in Chrome extension.
+
+## Code Notes: `Timer`
 
 [TimerAlertPrompt.tsx]
 

@@ -12,7 +12,7 @@ body {
     font-family: Helvetica;
   font-size: 12px;
   margin: 0 auto;
-  max-width: 550px;
+  max-width: 650px;
     min-height: 300px;
     min-width: 500px;
   opacity: 1;
@@ -23,7 +23,7 @@ body {
 #container-app {
   display: inline-block;
   margin: 0;
-  outline: 0px solid green;
+  /*outline: 0px solid green;*/
   padding: 0;
   width: 100%;
 }
@@ -44,7 +44,7 @@ body {
   width: 96%;
 }
 h1 {
-  color: rgba(50, 160, 255, 1);
+  color: rgb(50, 160, 255);
   margin: 0 0 0.5em;
   text-shadow: 3px 3px 5px lightgrey;
 }
@@ -84,7 +84,6 @@ a:hover {
 }
 #expires-table thead tr th {
   white-space: normal;
-  vertical-align: bottom;
 }
 #expires-table tr td {
   padding: 0.5em;
@@ -101,11 +100,75 @@ a:hover {
 #expires-table tr.expired {
   background-color: rgba(255, 160, 122, 0.25);
 }
-#expires-table tr th span {
-  color: rgba(50, 160, 255, 1);
+
+/*#expires-table tr th span:nth-child(1) {*/
+#expires-table tr th {
+  margin: 0;
+  padding: 5px 0 2px;
 }
+  #expires-table tr th div {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+  #expires-table tr th span.paginate-title,
+  #expires-table tr th span.paginate {
+    margin: auto 0;
+  }
+#expires-table tr th span.paginate-title {
+  display: inline-block;
+  margin: 0 0 0 5px;
+  min-width: 35px;
+  padding: 0;
+}
+  #expires-table tr th span.paginate {
+    display: inline-block;
+    float: left;
+    height: 28px;
+    margin: 0;
+    padding: 0;
+  }
+    #expires-table tr th span.paginate .arrow-up,
+    #expires-table tr th span.paginate .arrow-down {
+      color: rgb(50, 160, 255);
+      cursor: pointer;
+      display: block;
+      height: 10px;
+      margin: 0;
+      padding: 0;
+    }
+    #expires-table tr th span.paginate .arrow-up:focus,
+    #expires-table tr th span.paginate .arrow-down:focus,
+    #expires-table tr th span.paginate .arrow-up:active,
+    #expires-table tr th span.paginate .arrow-down:active {
+      /*outline: 1px solid blue;*/
+    }
+    #expires-table tr th span.paginate .arrow-up:hover,
+    #expires-table tr th span.paginate .arrow-down:hover,
+    #expires-table tr th span.paginate .arrow-up:focus,
+    #expires-table tr th span.paginate .arrow-down:focus,
+    #expires-table tr th span.paginate .arrow-up:active,
+    #expires-table tr th span.paginate .arrow-down:active {
+      color: red;
+    }
+    #expires-table tr th span.paginate .arrow-up.active,
+    #expires-table tr th span.paginate .arrow-down.active {
+      color: orange;
+      cursor: default;
+    }
+    #expires-table tr th span.paginate .arrow-up {
+      vertical-align: bottom;
+    }
+    #expires-table tr th span.paginate .arrow-down {
+      vertical-align: top;
+    }
+
+#expires-table tr th span.alarm {
+  color: rgb(50, 160, 255);
+}
+
 #expires-table tr > td:first-child {
-  min-width: 100px;
+  min-width: 200px;
 }
 #expires-table tr > td.cellCol1,
 #expires-table tr > td.cellCol2 {
@@ -142,7 +205,7 @@ a:hover {
 }
 #expires-table tr td span.alarm-stat::after {
   background-color: transparent;
-  color: rgba(50, 160, 255, 1);
+  color: rgb(50, 160, 255);
   content: '\2600';
   font-size: 16px;
   line-height: 0.5;
@@ -160,7 +223,7 @@ a:hover {
 }
 #msgs-div {
   border-left: 5px solid rgb(50, 160, 255);
-  color: rgba(40, 150, 255, 1);
+  color: rgb(40, 150, 255);
   display: block;
   font-size: 14px;
   margin: 1em 0 0 1em;
@@ -184,7 +247,7 @@ input.toggle-active {
     z-index: 1;
 }
 input:focus {
-  outline: rgba(50, 160, 255, 1);
+  outline: rgb(50, 160, 255);
 }
 button.input-save {
   background-color: rgba(255, 166, 0, 0.75);
@@ -207,7 +270,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  outline: 1px dotted rgba(50, 160, 255, 1);
+  outline: 1px dotted rgb(50, 160, 255);
 }
 .hidden {
   display: none;
