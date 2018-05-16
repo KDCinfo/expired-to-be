@@ -194,11 +194,11 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
 ### 2.1.1
 
-- Fixed low-level vulnerabilities.
+- Fixed low-level vulnerabilities with open-source dependencies.
 
 ### 2.1.2
 
-- Added auomated UI testing using TestCafe.
+- Added automated UI testing using TestCafe.
   - Lead times.
   - Importing.
   - Clearing all items.
