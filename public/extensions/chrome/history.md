@@ -2173,6 +2173,10 @@ __(my initial objective was to test the sorting that I'd just completed.)__
 
   - Committed to GitHub and updated Chrome web store.
 
+@4:45 AM
+
+  - Changed 'Replacement Date' label to 'Backup Item Date'.
+
 ## Code Notes
 
 [TimerAlertPrompt.tsx] `Timer`
