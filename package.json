@@ -1,6 +1,6 @@
 {
   "name": "expired-to-be",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "An expiration reminder web app.",
   "private": true,
   "dependencies": {

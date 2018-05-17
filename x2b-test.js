@@ -392,9 +392,9 @@ const getActualLocalStorageStage = ClientFunction(() => {
  *
  */
 
-// testLeadTimes();
+testLeadTimes();
 // testImport(); // Redundant to `testClearAll` and `testSort`.
-// testClearAll();
+testClearAll();
 testSort();
 
 /**

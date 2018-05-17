@@ -1,6 +1,6 @@
 # Expired To Be
 
-## A Chrome Extension
+## A Chrome Extension (and a SPA)
 
 ## Detailed Development History
 
@@ -902,7 +902,7 @@ Error: Cannot find module 'inherits'
     [ `nvm install node` ]
     [ `nvm use node` ]
 
-#### Summary of my successfull commands (from above)
+### Summary of my successful commands (from above)
 
   [ `cd ./expired-to-be` ]
   [ `sudo npx create-react-app .` ]
@@ -1379,7 +1379,7 @@ Per [/microsoft-edge/dev-guide/windows-integration/web-notifications-api](https:
 
   - Got the "App Preferences" button placed and clickable.
 
-#### Root cause(s) for 2 days of confusion:
+### Root cause(s) for 2 days of confusion:
 
 I've been manually setting the setTimeout delay value by setting:
 
@@ -2093,7 +2093,7 @@ Downgraded back to React `2.15.1` and TypeScript `2.8.3`. `3.0.0` was a blocker.
   - Outlined current 4 version releases in readme.md.
   - Heading to bed.
 
-#### Follow-up notes
+### Follow-up notes
 
 ```
   Running tests in:
@@ -2135,13 +2135,57 @@ __(my initial objective was to test the sorting that I'd just completed.)__
 
   * `clear && testcafe 'chromium' x2b-test.js -r json:testCafe-report.json`
 
-## Code Notes: `Timer`
+@10:40 PM
 
-[TimerAlertPrompt.tsx]
+  - Decided against 'expiration extender'.
 
+    + Extending out represents 'snoozing', whereas X2B is not an alarm or timer system; it's a countdown system.
+    + Expired items are not necessarily repeating, but replaced. Thought: Add grouping? Or some way to have a 'current' item, alongside its 'replacement'.
+    + Maybe... have a 'Next' date, which takes precedence when the expired item is 'checked off'.
+
+@10:45 PM
+
+### New Feature Thought: Replacement Dates
+
+  1. Add input for a 2nd date: Replacement Date (optional)
+  2. Should always be greater than (current) 'Expiration Date'.
+  3. Expiration table listing:
+    - Expired Items: Date field given a small button that, when clicked, shows an alert message indicating the expired item has been swapped out (past tense; not "I'm gonna..."!)
+    - Click button --> Confirm message prompt.
+    - "I have 'already' discarded the expired item; You may proceed to replace the expired date with my newer replacement date."
+    - Behind the scenes;
+      1. Overwrite current date with replacement date.
+      2. Delete replacement date.
+    - Provide small 'per row' indicator for which rows have a replacement date (perhaps a tiny upper-right corner orange triangular object on the date field. Hover or tap shows replacement date as field's 'title' tag. Field can be edited as item is edited normally).
+
+> 2018-05-16 - Wednesday
+
+@2:30 PM -
+
+@2:45 AM (Thu morning; technically)
+
+  - Completed "Replacement Dates" feature.
+
+    * Tested with all 3 of my TestCafe tests. (4 actually; `import` is a subset of some other tests).
+    * It says it also ran the Jest snapshots tests... Interesting it didn't fail on the screen compares (the new date field was added; along with a few other aesthetic tweaks).
+
+@3:55 AM
+
+  - Committed to GitHub and updated Chrome web store.
+
+## Code Notes
+
+[TimerAlertPrompt.tsx] `Timer`
+
+```
   > {isTimer ? (<ButtonSnooze />) : null}
   > {isTimer ? (<DivTitle />) : null}
   > {isTimer ? (<ButtonDoneForNow />) : null}
   > {isTimer ? null : (<ButtonCloseModal />)}
   > {isTimer ? (<DivSubtitle />) : null}
   > {isTimer ? (<ButtonDisable />) : null}
+```
+
+[Testing: Mock Data]
+
+`[{"id": 1, "title": "My 4th reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"},{"id": 2, "title": "My 3rd reminder.", "date": "2033-03-24", "leadTime": "days", "leadTimeVal": "1"},{"id": 3, "title": "My 2nd reminder.", "date": "2018-05-23", "leadTime": "weeks", "leadTimeVal": "1"},{"id": 4, "title": "My 1st reminder.", "date": "2018-05-22", "leadTime": "days", "leadTimeVal": "1"}]`

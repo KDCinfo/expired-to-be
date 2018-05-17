@@ -40,7 +40,7 @@ const isExtension = !document.getElementById('web-root'), // Only run with eithe
 
 function displayIt() { // [window|document].onload = function() {}
 
-  document.querySelector('.input-date').value = setDate(); // input-date
+  document.querySelector('.input-date-expiry').value = setDate(); // input-date
 
   //
   // Set Listeners
@@ -144,7 +144,7 @@ if (isExtension) {
 
 } else {
   let checkIt = () => {
-    let testObj = document.querySelector('.input-date');
+    let testObj = document.querySelector('.input-date-expiry');
 
     if (typeof(testObj) === 'undefined') {
       // Let's give it a 10th of a second (or more) in case there's a holdup.
@@ -545,10 +545,10 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
 
           // Passive notifications should only increase if alarm is invalid, and item is active.
 
-          // CanBeActive && Has alarm - printAlarm()
-          // CanBeActive && No alarm - Create alarm
+          // canBeActive && Has alarm - printAlarm()
+          // canBeActive && No alarm - Create alarm
 
-          // !CanBeActive &&
+          // !canBeActive &&
             // active && has alarm - Remove alarm (expired - should've triggered notification)
             // !active && has alarm - Remove alarm (orphan)
             // active && no alarm - Do nothing (expired)
@@ -905,7 +905,14 @@ function printListHead(prefsList) {
 
 function sortRun(setObj, isClick = false) { // sortRun(true); // If mouse, remove focus from clicked arrow element.
   x2bStorage.set({newPrefObj: {sortPref: setObj}});
-  if (isClick) {
+
+  let w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  // let h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    // ^^^ https://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript/36132694#36132694
+    // ^^^ Not the most reliable, but should work in normal case scenarios
+    // ... just don't test with Chrome emulator :)
+
+  if (isClick && w > 500) {
     document.getElementById('entryTitle').focus();
   }
 }
@@ -915,6 +922,7 @@ function printList(item) {
       itemSpan1 = document.createElement('td'), // 1 :title
       itemSpan1Overlay = document.createElement('span'), // Expiration notification over title
       itemSpan2 = document.createElement('td'), // 2 :dateValue
+      itemSpan2Overlay = document.createElement('span'), // 'Replacement Date' indicator over Expiry field
       itemSpan3 = document.createElement('td'), // 3 :leadTimeVal
       itemSpan4 = document.createElement('td'), // 4 :leadTime
       itemSpan5 = document.createElement('td'), // 5 :between
@@ -933,7 +941,7 @@ function printList(item) {
 
       if (!isExtension) {
         let itemSpan1ID = document.createElement('small');
-        itemSpan1ID.innerText = '[' + item.id + '] ';
+        itemSpan1ID.innerText = '[' + item.id + '] '; // Do NOT modify this w/o adjusting TestCafe tests.
         if (window.ourExpirations.getPrefs().showPanel) {
           itemSpan1.title = 'Item ID: [x2b-' + item.id + ']';
           itemSpan1ID.classList.remove('hidden');
@@ -946,6 +954,18 @@ function printList(item) {
 
     itemSpan2.innerText = item.date;
       itemSpan2.classList.add('cellCol2');
+      if (typeof item.dateReplacement !== 'undefined' && item.dateReplacement.length > 0) {
+        itemSpan2Overlay.innerText = '\u2713'; // \u0252 \u2713 \u2714
+          itemSpan2Overlay.title = 'Click to apply your backup date.';
+          itemSpan2Overlay.classList.add('date-replace', 'item-' + item.id); // item-1
+          itemSpan2Overlay.setAttribute("tabindex", "0");
+          // <span title="Click to apply your backup date." class="date-replace item-1" tabindex="0">✓</span>
+          itemSpan2Overlay.addEventListener('click', (e) => { // date replace
+            itemUpdate(e);
+          });
+          itemSpan2.appendChild(itemSpan2Overlay);
+      }
+
     itemSpan3.innerText = item.leadTimeVal;
     itemSpan4.innerText = item.leadTime;
 
@@ -1101,6 +1121,13 @@ function itemUpdate(e) {
   if (whichFunc === 'del') {
     clearItem(itemId);
   }
+
+  if (e.target.innerText.length === 1) {
+    // e.target.innerText === '✓'
+    if (window.confirm('Click OK if you are certain you\'d like to replace your expiration date with your replacement date (thus removing your replacement date).')) {
+      patchItem(itemId);
+    }
+  }
 }
 
 function updateForm(itemId) {
@@ -1110,7 +1137,8 @@ function updateForm(itemId) {
     // max
 
     document.querySelector('.input-id').value = itemId;
-    document.querySelector('.input-date').value = ourObj.date; // input-date
+    document.querySelector('.input-date-expiry').value = ourObj.date; // input-date
+    document.querySelector('.input-date-replacement').value = ourObj.dateReplacement; // input-date
     document.querySelector('.input-title').value = htmlUnescape(ourObj.title); // input-title
     inputSelectNum.value = ourObj.leadTimeVal; // input-select-num
     inputSelectName.value = ourObj.leadTime; // input-select-name
@@ -1120,7 +1148,8 @@ function updateForm(itemId) {
     setItemEdit(itemId);
   } else {
     document.querySelector('.input-id').value = 0;
-    document.querySelector('.input-date').value = setDate(); // input-date
+    document.querySelector('.input-date-expiry').value = setDate(); // input-date
+    document.querySelector('.input-date-replacement').value = '';
     document.querySelector('.input-title').value = ''; // input-title
     inputSelectNum.value = 1; // input-select-num
     inputSelectName.value = 'weeks'; // input-select-name
@@ -1171,6 +1200,7 @@ function saveChanges(itemToSave = {}, lastImport) {
 
   let itemId,
       dateValue,
+      dateRepValue,
       textTitle,
       selectNum,
       selectName,
@@ -1180,7 +1210,8 @@ function saveChanges(itemToSave = {}, lastImport) {
     // Get a value saved in a form.
     itemId = document.querySelector('.input-id').value;
     textTitle = document.querySelector('.input-title').value; // input-title
-    dateValue = document.querySelector('.input-date').value;  // input-date
+    dateValue = document.querySelector('.input-date-expiry').value;
+    dateRepValue = document.querySelector('.input-date-replacement').value;
     selectName = inputSelectName.value;                       // input-select-name
     selectNum = inputSelectNum.value;                         // input-select-num
     itemIdOrig = parseInt(itemId, 10);
@@ -1202,6 +1233,7 @@ function saveChanges(itemToSave = {}, lastImport) {
 
     textTitle = itemToSave.title;
     dateValue = itemToSave.date;
+    dateRepValue = itemToSave.dateReplacement;
     selectName = itemToSave.leadTime;
     selectNum = itemToSave.leadTimeVal;
     itemIdOrig = 0;
@@ -1218,7 +1250,7 @@ function saveChanges(itemToSave = {}, lastImport) {
   // Simple Validation --> PR's are welcome.
 
   if (!itemId || !dateValue || !textTitle || !selectNum || !selectName) {
-    errMsg = 'All fields are required in order to setup a proper expiration item.';
+    errMsg = 'All non-optional fields are required in order to setup a proper expiration item.';
 
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
 
@@ -1231,6 +1263,16 @@ function saveChanges(itemToSave = {}, lastImport) {
     !testVal(selectName, 'string', 20))
   {
     errMsg = 'Error: Something appears to be wrong with one of your field entries.';
+    if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
+    stopShort = true;
+
+  } else if (dateRepValue.length > 0 && dateRepValue <= dateValue) {
+    errMsg = 'Error: If optional Replacement Date is provided, it should be greater than the primary expiration date.';
+    if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
+    stopShort = true;
+
+  } else if (dateRepValue.length > 0 && dateRepValue <= setDate(false)) {
+    errMsg = 'Error: If optional Replacement Date is provided, it should be greater than today\'s date.';
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
     stopShort = true;
 
@@ -1305,7 +1347,7 @@ function saveChanges(itemToSave = {}, lastImport) {
     deleteTimer(thisId).then( (wasCleared) => {
       if (!isImport) {
         if (typeof(wasCleared) !== 'undefined') {
-          message('Previous alarm has been removed.', false); // , thisId
+          message('An alarm was removed or skipped.', false); // , thisId
         }
       }
     });
@@ -1315,6 +1357,7 @@ function saveChanges(itemToSave = {}, lastImport) {
         id: thisId,                   // <number> 1, 2, 3, ...
         title: htmlEscape(textTitle), // (25 chars)
         date: dateValue,              // Expiration Date [2018-02-12]
+        dateReplacement: dateRepValue,
         leadTime: selectName,         // days  ; weeks
         leadTimeVal: selectNum,       // [1-maxDays]; [1-maxWeeks]
         active: isActive              // Can be 0 or 1 (initially based on date calcs)
@@ -1495,6 +1538,7 @@ function getJson(item) {
         //       id: thisId,                   // <number> 1, 2, 3, ...
         //       title: htmlEscape(textTitle), // (25 chars)
         //       date: dateValue,              // Expiration Date [2018-02-12]
+        //       dateReplacement: dateRepValue,
         //       leadTime: selectName,         // days  ; weeks
         //       leadTimeVal: selectNum,       // [1-maxDays]; [1-maxWeeks]
         //       active: isActive              // Can be 0 or 1 (initially based on date calcs)
@@ -1571,6 +1615,7 @@ function hasCorrectProps(testObj = {}) {
   // id: thisId,                   // <number> 1, 2, 3, ...
   // title: htmlEscape(textTitle), // (25 chars)
   // date: dateValue,              // Expiration Date [2018-02-12]
+  // dateReplacement: dateRepValue,
   // leadTime: selectName,         // days  ; weeks
   // leadTimeVal: selectNum,       // [1-maxDays]; [1-maxWeeks]
   // active: isActive              // Can be 0 or 1 (initially based on date calcs)
@@ -1613,6 +1658,89 @@ function exportTimers() {
       message('It would seem you have an empty list: there doesn\'t appear to be anything to export.', true);
     }
   });
+}
+
+function patchItem(itemId) {
+
+  let messageMsg = '',
+      storeId = 'x2b-' + itemId,
+      newState = JSON.parse(JSON.stringify(ourState));
+
+  newState = newState.map( item => {
+    if (item.id === itemId) {
+      if (item.dateReplacement.length > 0) {
+        item.date = item.dateReplacement;
+        item.dateReplacement = '';
+        messageMsg = 'Your item\'s date has been renewed with its replacement.';
+      } else {
+        messageMsg = 'The replacement date was empty and could not be used as a replacement date.';
+      }
+    }
+    return item;
+  });
+
+  ourState = newState; // x2bStorage.set
+
+  // When updating, if current item ID is in Edit Form, zero it out.
+  let currentEditId = document.querySelector('.input-id').value;
+  if (parseInt(currentEditId, 10) === itemId) {
+    document.querySelector('.input-id').value = 0;
+  }
+
+  message(messageMsg, true);
+
+  // Extracted / Borrowed from `toggleActive`
+
+  let stateItem = ourState.find(stateObj => stateObj.id === itemId),
+      stateItemIdx = ourState.findIndex(stateObj => stateObj.id === itemId);
+
+      // [stateItem] = {active: true, date: "2018-03-14", id: 1, leadTime: "weeks", leadTimeVal: "2", …}
+      // [stateItemIdx] = [ 0 ]
+
+  let delay = getDelay(stateItem.leadTime, stateItem.leadTimeVal),
+      dateValueArr = stateItem.date.split('-'),
+      newTime = getBetween(dateValueArr, delay),
+      between = newTime.between,
+      newThen = newTime.newThen;
+
+  let canBeActive = (between > 0) ? true : false;
+
+  // if it was active, and now can still be active. delete - create
+  // if it was active, and now cannot be active.    delete -
+  // if it wasn't active, and now can be active.           - create
+  // if it wasn't active, and still can't be.              -
+
+  if (stateItem.active) {
+    deleteTimer(itemId).then( (wasCleared) => {
+      if (typeof(wasCleared) !== 'undefined') {
+        message('Your previous alarm has been removed.', false);
+      }
+      if (canBeActive) {
+        createTimer(itemId, newThen, between).then( (newAlarm) => {
+          if (typeof(newAlarm) !== 'undefined') {
+            message('A new alarm was created for your item.', false);
+          }
+          x2bStorage.set({id: itemId});
+        });
+      } else {
+        message('Cannot create and activate an expired alarm. It would seem your replacement date is also expired.', false);
+        passthruUpdateStorage(stateItem, stateItemIdx, false); // Was on; Turn it off.
+      }
+    });
+  } else {
+    if (canBeActive) {
+      createTimer(itemId, newThen, between).then( (newAlarm) => {
+        passthruUpdateStorage(stateItem, stateItemIdx, true); // Was off; Turn it on.
+        if (typeof(newAlarm) !== 'undefined') {
+          message('An alarm was created for your item.', false);
+        }
+      });
+    } else {
+      message('Cannot create and activate an expired alarm. It would seem your replacement date is also expired.', false);
+      x2bStorage.set({id: itemId});
+    }
+  }
+  // check `toggleActive`
 }
 
 function clearItem(itemId) { // deleteAlarm
@@ -1924,10 +2052,12 @@ function isGood(objStr) {
   }
 }
 
-function setDate() {
+function setDate(add28 = true) {
   let today = new Date(); // Tested: new Date(2018, 11, 4); showed as [Jan 01, 2019]
 
-  today.setDate(today.getDate() + 28);  // Add 4 weeks
+  if (add28) {
+    today.setDate(today.getDate() + 28);  // Add 4 weeks
+  }
 
   const newDay = today.getDate(),        // 1-31
         newMonth = today.getMonth() + 1, // 0-11
@@ -2086,6 +2216,7 @@ const getStorageItem = (storage, key) => {
     id: thisId,             // <number> 1, 2, 3, ...
     title: textTitle,       // (25 chars)
     date: dateValue,        // Expiration Date [2018-02-12]
+    dateReplacement: dateRepValue,
     leadTime: selectName,   // days  ; weeks
     leadTimeVal: selectNum, // [1-maxDays]; [1-maxWeeks]
     active: isActive        // Can be 0 or 1 (initially based on date calcs)

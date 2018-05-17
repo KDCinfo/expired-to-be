@@ -55,18 +55,36 @@ a:visited {
 a:hover {
   color: green;
 }
+
 #container {
   margin: 10px;
   transition: all 1.5s cubic-bezier(0.1, 1, 0.55, 1);
 }
+
 .div-left,
 .div-right {
   display: inline-block;
-  width: 55%;
 }
-.div-right {
-  width: 38%;
-}
+  .div-left {
+    white-space: normal;
+    min-width: 295px;
+  }
+    .div-left label {
+      display: inline-block;
+    }
+    .div-left label {
+      margin-right: 10px;
+    }
+    .div-left label input[type="date"] {
+      width: 130px;
+    }
+    .input-select-name {
+      vertical-align: top;
+    }
+  .div-right {
+    /*width: 38%;*/
+  }
+
 #expires-table {
   border-collapse: collapse;
     border-bottom: 1px solid orange;
@@ -75,31 +93,31 @@ a:hover {
   padding: 1em 0;
   width: 100%;
 }
-#expires-table tr[class^="x2b-listitem"].is-edit {
-  border-left: 5px solid rgb(50, 160, 255);
-  background-color: rgba(50, 160, 255, .2);
-}
-#expires-table tr[class^="x2b-listitem"]:hover {
-  background-color: orange;
-}
-#expires-table thead tr th {
-  white-space: normal;
-}
-#expires-table tr td {
-  padding: 0.5em;
-  position: relative;
-}
-  td {
-    text-align: center;
+  #expires-table tr[class^="x2b-listitem"].is-edit {
+    border-left: 5px solid rgb(50, 160, 255);
+    background-color: rgba(50, 160, 255, .2);
   }
-  td button {
-    font-size: 1em;
-    height: 18px;
-    line-height: 1;
+  #expires-table tr[class^="x2b-listitem"]:hover {
+    background-color: orange;
   }
-#expires-table tr.expired {
-  background-color: rgba(255, 160, 122, 0.25);
-}
+  #expires-table thead tr th {
+    white-space: normal;
+  }
+  #expires-table tr td {
+    padding: 0.5em;
+    position: relative;
+  }
+    td {
+      text-align: center;
+    }
+    td button {
+      font-size: 1em;
+      height: 18px;
+      line-height: 1;
+    }
+  #expires-table tr.expired {
+    background-color: rgba(255, 160, 122, 0.25);
+  }
 
 /*#expires-table tr th span:nth-child(1) {*/
 #expires-table tr th {
@@ -176,7 +194,7 @@ a:hover {
   text-align: left;
 }
   #expires-table tr > td.cellCol1 {
-    padding-left: 5px;/* Overwrite above */
+    padding-left: 5px;
   }
 #expires-table tr.expired > td.cellCol1 span {
   background-color: rgba(255, 80, 50, 0.65);
@@ -185,9 +203,22 @@ a:hover {
   font-weight: bold;
   height: 10px;
   line-height: 0.7;
+  margin-right: 5px;
   padding: 0.5em;
   position: absolute;
     top: 5px;
+    right: 0;
+    z-index: 1;
+}
+#expires-table tr > td.cellCol2 span.date-replace {
+  background-color: rgba(50, 160, 255, 0.5);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 0 0.3em;
+  position: absolute;
+    top: 2px;
     right: 0;
     z-index: 1;
 }

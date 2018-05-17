@@ -203,3 +203,11 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
   - Importing.
   - Clearing all items.
   - Sorting.
+
+### 2.2.0
+
+  * Added **'Replacement Date'** feature (optional).
+
+  This is for when you have a backup on hand (such as an overlapping spare butter; gotta have spare butter).
+
+  - See [History file](/public/extensions/chrome/history.md#new-feature-thought-replacement-dates) for details.
