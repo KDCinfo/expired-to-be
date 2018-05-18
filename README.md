@@ -215,3 +215,7 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 ### 2.2.1
 
 - Aesthetic adjustment.
+
+### 2.2.2
+
+- Fixed import error.

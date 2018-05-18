@@ -31,7 +31,7 @@ const maxDays = 70,
       stateLocation = 'chrome', // chrome|local|session|cookie
       TESTING = false, // Currently means you can activate an expired item, for testing 'expired notifications'.
       ourKeys = new Set(['title', 'date', 'leadTime', 'leadTimeVal']), // No: 'id', 'active'
-      sampleJSON = '[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
+      sampleJSON = '[{"id": 1, "title": "My 1st reminder.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "dateReplacement": "2033-04-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
 
 const isExtension = !document.getElementById('web-root'), // Only run with either the extension, or the React-based web app.
       changeEvent = new Event('change'),
@@ -1266,12 +1266,12 @@ function saveChanges(itemToSave = {}, lastImport) {
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
     stopShort = true;
 
-  } else if (dateRepValue.length > 0 && dateRepValue <= dateValue) {
+  } else if (typeof dateReplacement !== 'undefined' && dateRepValue.length > 0 && dateRepValue <= dateValue) {
     errMsg = 'Error: If optional Replacement Date is provided, it should be greater than the primary expiration date.';
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
     stopShort = true;
 
-  } else if (dateRepValue.length > 0 && dateRepValue <= setDate(false)) {
+  } else if (typeof dateReplacement !== 'undefined' && dateRepValue.length > 0 && dateRepValue <= setDate(false)) {
     errMsg = 'Error: If optional Replacement Date is provided, it should be greater than today\'s date.';
     if (isImport) {  importMsg += ' ' + errMsg; } // message(importMsg, false);
     stopShort = true;

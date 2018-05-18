@@ -2177,6 +2177,14 @@ __(my initial objective was to test the sorting that I'd just completed.)__
 
   - Changed 'Replacement Date' label to 'Backup Item Date'.
 
+> 2018-05-18 - Friday
+
+@5:20 AM
+
+  - Fixed import error.
+    - Sample JSON data didn't include new optional backup date, and 2 form validators didn't account for the missing field.
+    - Also added new field to HTML placeholder text.
+
 ## Code Notes
 
 [TimerAlertPrompt.tsx] `Timer`
