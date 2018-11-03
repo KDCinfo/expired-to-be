@@ -14,7 +14,7 @@
     "@types/react": "^16.4.18",
     "@types/react-bootstrap": "^0.0.52",
     "@types/react-dom": "^16.0.9",
-    "react-scripts-ts": "2.15.1",
+    "react-scripts-ts": "^4.0.8",
     "react-test-renderer": "^16.6.0",
     "typescript": "^2.9.2"
   },
@@ -27,5 +27,11 @@
     "deploy": "gh-pages -d build"
   },
   "homepage": "https://KDCinfo.github.io/expired-to-be/",
-  "author": "Keith D Commiskey <https://kdcinfo.com>"
+  "author": "Keith D Commiskey <https://kdcinfo.com>",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
