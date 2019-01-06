@@ -1,0 +1,47 @@
+<div class="x2b footer-prefs-div">
+  <ul class="footer-menu-ul">
+    <li>
+      <div class="alarms-panel-left">
+        <select id="prefNotifyMethod" name="prefNotify" size="1" aria-label="Notification Method">
+          <option value="alerts" selected>Alerts</option>
+          <option value="modals">Modals</option>
+          <option value="notifications">Notifications</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="alarms-panel-right">
+        Notification Method
+      </div>
+      <div id="notify-error" class="show-notify-elements hiddenx"></div>
+    </li>
+    <li>
+      <div class="alarms-panel-left nowrap">
+        <label class="div50">Hour:<br/>
+          <select id="prefTimeHr" name="prefHours" size="1">
+            <option></option>
+          </select>
+        </label>
+        <label class="div50">Min:<br/>
+          <select id="prefTimeMin" name="prefMinutes" size="1">
+            <option></option>
+          </select>
+        </label>
+      </div>
+      <div class="alarms-panel-right">
+        Time of day to clear alarms <span class="notification-option">&amp; trigger your notifications. </span>
+        (only affects future alarm saves; edit and save to update existing alarms.)
+      </div>
+    </li>
+    <li>
+      <div class="alarms-panel-left">
+        <button id="button-toggle-alarms-panel">Toggle Alarms<br/>Panel</button>
+      </div>
+      <div class="alarms-panel-right">
+        The 'Alarms Panel' displays "<i>internal</i>" active alarms (read-only).
+      </div>
+    </li>
+  </ul>
+</div>
+<div class="x2b footer-prefs-toggle-button">
+  App Preferences
+</div>
