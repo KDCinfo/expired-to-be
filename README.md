@@ -1,12 +1,6 @@
-[![Build Status](https://travis-ci.org/KDCinfo/expired-to-be.svg?branch=master)](https://travis-ci.org/KDCinfo/expired-to-be)
-
 # Expired To Be
 
-Expired To Be provides notification reminders for your expiring items at a time of your choosing. It is available as:
-
-  - A Chrome browser extension (available for free from the [Chrome Web Store](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan))
-
-  - A standalone web app (available via a [(GitHub-hosted) web page](https://KDCinfo.github.io/expired-to-be/))
+Expired To Be provides notification reminders for your expiring items at a time of your choosing. It is available as a free Chrome browser extension on the [Chrome Web Store](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan))
 
 ## Overview
 
@@ -43,55 +37,15 @@ The primary notification for when an item expires is an orange number count that
   - Uses: Chrome Extension API (icon badge text)
     https://developer.chrome.com/extensions/
 
-## X2B [A Web App]
-
-The [web version of the app](https://KDCinfo.github.io/expired-to-be/) (SPA) can be run in any browser, was written with React 16.2 (w/ TypeScript), was built on top of [Create React App](https://github.com/facebookincubator/create-react-app), and is hosted via GitHub Pages bootstrapped with Travis CI.
-
-[SPA Integration Diagram](/public/x2b/expired-to-be_page-load_07.svg): Integration between the **React Alarms API** and the **Chrome Extension core files**.
-
-**Important Note**: Unlike the Chrome Extension, which is always running so long as your browser is running, the web-based version of the app (its browser tab) must remain open for the timers (alarms) to continue to run. You can absolutely continue your browsing activities in other tabs and other windows, but the X2B page will need to stay open in the background. If you close the browser tab that Expired To Be is open in, you are effectively closing the Expired To Be web app, and the timers won't be able to run. However, in the case you do close the tab, all is not lost... each time you visit the page, all active timers are restored, and any active expired items will trigger.
-
-You can select one of 4 optional notification delivery methods for when expiring items are triggered. There is also a custom built-in notification method that will update the browser tab's icon and text. The optional notification methods are Alerts (default), Web-based Notifications, Modals, and 'None'.
-
-  > `Alerts` will trigger a built-in browser dialog box, which will be revealed when the X2B web page is available. In Chrome, if the tab is not active, you may see a little dot in the X2B browser's tab. `Alerts` is the default notification delivery method.
-
-  > Web-based `Notifications`, if `grant`ed, will use the browser's built-in notification system, which will show a notification balloon on your desktop. Most of these desktop notifications will automatically disappear after a certain time (e.g., after 15-30 seconds). If permissions are not granted (either by denying, or by just closing the permission request box, Alerts will be set and used in its stead.
-
-  Side note: If you close the permissions request box 3 times, Chrome will ___automatically___ set Notifications to `Deny`, and ___will not ask again___. To reset after that, you'll need to click the 'Site Info' button at the top of your browser, to the left of the URL (it may say, "Secure"). Clicking that will provide a dropdown panel which will have the `Notifications` option set to `Deny`.
-
-  > `Modals` are quite passive and will only show when the page is available. The modal will continue to show each time the page is loaded until the "Done (for now)" button is clicked. (The Done (for now) reference is an easter egg for the borrowed TimerBox component.)
-
-  > `None` will yield no notifications other than the custom built-in notification method (distinct tab icon and text changes).
-
-  - Uses: Custom Alarms API (extracted from my "Done (for now)" web app)
-    https://github.com/KDCinfo/done-for-now
-
-  - Uses: Web-based Notifications API (optional)
-    https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API
-
-### Technical Note
-
-At the core of the [Expired To Be Web App](https://github.com/KDCinfo/expired-to-be) lies the Expired To Be Chrome extension's 2 primary files, which include:
-
-    > `/public/extensions/chrome/`
-    - popup.html (the user interface)
-    - popup.js (the brains)
-
 ## Data Storage
 
   > Chrome Extension uses: Chrome -> Storage -> Sync
-
-  > Hosted Web App uses: Each browser's own `LocalStorage`
 
 ## Diagrams
 
 All diagrams were created with [Draw.io](https://www.draw.io/).
 
   > [Chrome Extension Integration with React Alarms API](/public/x2b/expired-to-be_page-load_07.svg)
-
-  > [Alarms and Notifications](/public/x2b/x2b-with-alarms.svg)
-
-  > [Storage (sync) with Alarms, and Storage (local) with Notifications](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=expired-to-be.xml#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1mTxbVo9d5hfpxvEPvz_4I65Cb0YU3LUG%26export%3Ddownload)
 
 ## Version History
 
@@ -106,16 +60,6 @@ See [Happy Paths file](/public/x2b/x2b-happy-paths.md)
 See [History file](/public/extensions/chrome/history.md)
 
 ## Helpful Sites and Pages
-
-  * [Travis CI (Prod Build)](https://travis-ci.org/KDCinfo/expired-to-be)
-
-  * [Done (for now) TimerBox (timers) Component](https://github.com/KDCinfo/done-for-now/blob/master/src/components/TimerBox.tsx)
-  The Done (for now) TimerBox component (and all its subcomponents) was forked and updated to accommodate (one-time daily) alarms. The (recurring) `timer` code still exists in Expired To Be, and could be enabled within a week or two (see `TimerAlertPrompt.tsx`).
-
-  * [Done (for now) TimerBox Flow Diagram](https://kdcinfo.com/app/done-for-now/flowchart/done-for-now.svg)
-  This diagram was used as a schematic for integrating the TimerBox component with the Expired To Be architecture.
-
-  * [Done (for now) Web App (the working version)](https://kdcinfo.github.io/done-for-now/)
 
   * [https://developer.chrome.com/extensions/content_scripts](https://developer.chrome.com/extensions/content_scripts)
   * [https://developer.chrome.com/extensions/storage](https://developer.chrome.com/extensions/storage)
@@ -219,3 +163,7 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 ### 2.2.2
 
 - Fixed import error.
+
+### 2.2.3
+
+- Stripped SPA.
