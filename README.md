@@ -4,6 +4,10 @@ Products that you own, such as medicines, pantry and refrigerated items, etc., t
 
 Expired To Be provides notification reminders for your expiring items at a time of your choosing.
 
+Simply add an item (1), expiration date (2), and how much 'lead time' you would like (3).
+
+> Your browser will show a # count for items as they come due for renewal.
+
 ## App Availability
 
   - [Chrome Browser Extension](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan) - Available for free on the Chrome Web Store.
@@ -176,7 +180,7 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
 ### 2.3.0
 
-- Converted expired items listing from an HTML <table> to <div>s.
+- Converted expired items listing from an HTML `<table>` to `<div>`s.
 - Instead of scrolling the entire screen when the list fills up, scrolling is now isolated to just the expired item list (below the sortable list headings).
 - Updated favicons to accommodate the browser's dark themed bar.
 - Added FAQ / Help.
