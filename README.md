@@ -21,22 +21,13 @@ The primary notification for when an item expires is an orange number count that
 **Primary features:**
 
   - Display listing of all expiration items:
-
   	+ Expired items will be distinct, as will any item you are currently 'editing'.
   	+ Items that have alarms set will show an 'orange or blue sun' near its 'active' status.
   	+ You can edit, delete, and de/activate items individually.
-
   - Expiration items are stored in the browser's own storage. There are no connections to any 3rd party services.
-
   - You can export all of your existing expiration items.
-
   - You can import over 500 items (the app will walk through saving each item from the list you provide).
-
-  - Uses: [Icon Badge Text](https://developer.chrome.com/extensions/browserAction#badge)
-
-  - Uses: [Data Storage](https://developer.chrome.com/extensions/storage)
-  
-  - Uses: [Chrome.Storage.Sync](https://developer.chrome.com/extensions/storage#property-sync)
+  - Uses: [Icon Badge Text](https://developer.chrome.com/extensions/browserAction#badge), [Data Storage](https://developer.chrome.com/extensions/storage), and [Chrome.Storage.Sync](https://developer.chrome.com/extensions/storage#property-sync).
 
 ## Happy Paths
 
@@ -66,15 +57,10 @@ If you have a bug or feature request, please feel free to [submit a new issue on
 A list of longer term considerations:
 
 - Add 'last export' date and remind about backing up (you really don't want to lose your list!)
-
-  Store: Date, number of items at that time, number of active items at that time, ...
-
-  Preference Option: Enable Check [yes|no] _ How often: [1-dy|2-dy|3-dy|5-dy|1-wk (default)|2-wk|3-wk|4-wk]
-
-  Preference Option: Can/should show reminder alert on the toolbar icon? Different color background (with a 0 if no expires---just to show for the export reminder (usually it won't show if there are none)).
-
+  	+ Store: Date, number of items at that time, number of active items at that time, ...
+  	+ Preference Option: Enable Check [yes|no] _ How often: [1-dy|2-dy|3-dy|5-dy|1-wk (default)|2-wk|3-wk|4-wk]
+  	+ Preference Option: Can/should show reminder alert on the toolbar icon? Different color background (with a 0 if no expires---just to show for the export reminder (usually it won't show if there are none)).
 - Allow categorizing (or labeling)
-
 - Get code prepped for a mobile version of the app (as part of an even bigger suite).
 
 ## Chrome Store Listing
