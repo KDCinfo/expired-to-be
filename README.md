@@ -16,9 +16,7 @@ Simply add an item (1), expiration date (2), and how much 'lead time' you would 
 
   - Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink.
 
-  - Notifications are set to an expiration date that you provide, minus your chosen 'lead time'.
-
-  - Expired To Be is [open source](https://github.com/KDCinfo/expired-to-be), so feel free to fork it, or, PR's are welcome as well.
+The primary notification for when an item expires is an orange number count that will show in the extension's icon (in the Chrome toolbar). This expiration count will clear when the expired item is either deactivated, or updated with a new valid reminder date.
 
 **Primary features:**
 
@@ -34,21 +32,11 @@ Simply add an item (1), expiration date (2), and how much 'lead time' you would 
 
   - You can import over 500 items (the app will walk through saving each item from the list you provide).
 
-## X2B [A Chrome Extension]
+  - Uses: [Icon Badge Text](https://developer.chrome.com/extensions/browserAction#badge)
 
-The primary notification for when an item expires is an orange number count that will show in the extension's icon (in the Chrome toolbar). This expiration count will clear when the expired item is either deactivated, or updated with a new valid reminder date.
-
-  - As a developer, I spend most of my life in Chrome, which is why I decided to create this as a browser extension.
-
-  - This was my 2nd Chrome Extension. Although I built this extension primarily for personal use, I am completely open to feedback as well as PRs, and I'm especially open to looking into any bugs.
-
-  - Creating a FireFox extension would make for a good fork and school project for someone.
-
-  - Uses: [Chrome Extension API](https://developer.chrome.com/extensions/) - Icon badge text
-
-## Data Storage
-
-  > Chrome Extension uses: Chrome -> Storage -> Sync
+  - Uses: [Data Storage](https://developer.chrome.com/extensions/storage)
+  
+  - Uses: [Chrome.Storage.Sync](https://developer.chrome.com/extensions/storage#property-sync)
 
 ## Happy Paths
 
