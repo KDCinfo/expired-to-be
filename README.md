@@ -29,19 +29,19 @@ The primary notification for when an item expires is an orange number count that
   - You can import over 500 items (the app will walk through saving each item from the list you provide).
   - Uses: [Icon Badge Text](https://developer.chrome.com/extensions/browserAction#badge), [Data Storage](https://developer.chrome.com/extensions/storage), and [Chrome.Storage.Sync](https://developer.chrome.com/extensions/storage#property-sync).
 
-## Happy Paths
-
-See [Happy Paths file](/public/x2b/x2b-happy-paths.md).
-
 ## Helpful Sites and Pages
 
 All of these are available from [the Chrome API Documentation](https://developer.chrome.com/extensions)
 
   * [[content_scripts](https://developer.chrome.com/extensions/content_scripts)], [[storage](https://developer.chrome.com/extensions/storage)], [[event_pages](https://developer.chrome.com/extensions/event_pages)], [[messaging](https://developer.chrome.com/extensions/messaging)], [[alarms](https://developer.chrome.com/extensions/alarms)], [[browserAction](https://developer.chrome.com/extensions/browserAction)]
 
+## Happy Paths
+
+See [Happy Paths file](/public/x2b/x2b-happy-paths.md).
+
 ## App Genesis: Detailed Notes
 
-See ['Detailed Development History'](https://github.com/KDCinfo/expired-to-be/blob/master/public/extensions/chrome/history.md).
+See [Detailed Development History](https://github.com/KDCinfo/expired-to-be/blob/master/public/extensions/chrome/history.md).
 
 ## Release Notes
 
