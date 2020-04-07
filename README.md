@@ -61,10 +61,6 @@ All diagrams were created with [Draw.io](https://www.draw.io/).
 
 See [Happy Paths file](/public/x2b/x2b-happy-paths.md)
 
-## Detailed Development History
-
-See [History file](/public/extensions/chrome/history.md)
-
 ## Helpful Sites and Pages
 
   * [https://developer.chrome.com/extensions/content_scripts](https://developer.chrome.com/extensions/content_scripts)
