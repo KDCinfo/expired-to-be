@@ -14,7 +14,7 @@ Simply add an item (1), expiration date (2), and how much 'lead time' you would 
 
 ## Overview
 
-  - Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink.
+Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink.
 
 The primary notification for when an item expires is an orange number count that will show in the extension's icon (in the Chrome toolbar). This expiration count will clear when the expired item is either deactivated, or updated with a new valid reminder date.
 
@@ -35,12 +35,9 @@ See [Happy Paths file](/public/x2b/x2b-happy-paths.md).
 
 ## Helpful Sites and Pages
 
-  * [https://developer.chrome.com/extensions/content_scripts](https://developer.chrome.com/extensions/content_scripts)
-  * [https://developer.chrome.com/extensions/storage](https://developer.chrome.com/extensions/storage)
-  * [https://developer.chrome.com/extensions/event_pages](https://developer.chrome.com/extensions/event_pages)
-  * [https://developer.chrome.com/extensions/messaging](https://developer.chrome.com/extensions/messaging)
-  * [https://developer.chrome.com/extensions/alarms](https://developer.chrome.com/extensions/alarms)
-  * [https://developer.chrome.com/extensions/browserAction](https://developer.chrome.com/extensions/browserAction)
+All of these are available from [the Chrome API Documentation](https://developer.chrome.com/extensions)
+
+  * [[content_scripts](https://developer.chrome.com/extensions/content_scripts)], [[storage](https://developer.chrome.com/extensions/storage)], [[event_pages](https://developer.chrome.com/extensions/event_pages)], [[messaging](https://developer.chrome.com/extensions/messaging)], [[alarms](https://developer.chrome.com/extensions/alarms)], [[browserAction](https://developer.chrome.com/extensions/browserAction)]
 
 ## App Genesis: Detailed Notes
 
