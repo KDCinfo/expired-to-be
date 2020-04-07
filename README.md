@@ -44,22 +44,15 @@ The primary notification for when an item expires is an orange number count that
 
   - Creating a FireFox extension would make for a good fork and school project for someone.
 
-  - Uses: Chrome Extension API (icon badge text)
-    https://developer.chrome.com/extensions/
+  - Uses: [Chrome Extension API](https://developer.chrome.com/extensions/) - Icon badge text
 
 ## Data Storage
 
   > Chrome Extension uses: Chrome -> Storage -> Sync
 
-## Diagrams
-
-All diagrams were created with [Draw.io](https://www.draw.io/).
-
-  > [Chrome Extension Integration with React Alarms API](/public/x2b/expired-to-be_page-load_07.svg)
-
 ## Happy Paths
 
-See [Happy Paths file](/public/x2b/x2b-happy-paths.md)
+See [Happy Paths file](/public/x2b/x2b-happy-paths.md).
 
 ## Helpful Sites and Pages
 
@@ -72,11 +65,11 @@ See [Happy Paths file](/public/x2b/x2b-happy-paths.md)
 
 ## App Genesis: Detailed Notes
 
-See ['Detailed Development History'](https://github.com/KDCinfo/expired-to-be/blob/master/public/extensions/chrome/history.md)
+See ['Detailed Development History'](https://github.com/KDCinfo/expired-to-be/blob/master/public/extensions/chrome/history.md).
 
 ## Release Notes
 
-See ['Wiki'](https://github.com/KDCinfo/expired-to-be/wiki) for version history and release notes.
+See ['Wiki' for version history and release notes](https://github.com/KDCinfo/expired-to-be/wiki/Expired-To-Be:-Release-Notes-and-Version-History).
 
 ## Bugs and Enhancements
 
