@@ -60,7 +60,7 @@ A list of longer term considerations:
 - Allow categorizing (or labeling)
 - Get code prepped for a mobile version of the app (as part of an even bigger suite).
 
-## Chrome Store Listing
+## [Chrome Store Listing](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan)
 
 ```
 Expiration Reminders for groceries, medicine, warranties, etc.
