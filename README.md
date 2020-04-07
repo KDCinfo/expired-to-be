@@ -14,7 +14,7 @@ Simply add an item (1), expiration date (2), and how much 'lead time' you would 
 
 ## Overview
 
-  - Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink. Maybe your pet's next vet visit.
+  - Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink.
 
   - Notifications are set to an expiration date that you provide, minus your chosen 'lead time'.
 
@@ -176,7 +176,7 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
 ### 2.2.3
 
-- Stripped SPA.
+- Stripped SPA: A React-based wrapper that now [lives in its own repo](https://github.com/KDCinfo/expired-to-be-spa).
 
 ### 2.3.0
 
@@ -189,11 +189,46 @@ The Web App version of X2B provides for opt-in browser-level Notifications, or j
 
 - Aesthetic fix for new FAQ slide-up modal when list is empty.
 
+### 2.3.2
+
+- Placed and prettied fill-in copy for empty list.
+- Adjusted 'Import Items' placeholder copy so it is more informative, and which now also helps to visually see when the 'Click for 2 examples' link is clicked and the textarea entry field is populated with actual samples.
+- Converted all HTML IDs from <code>kebab-case</code> to <code>PascalCase</code> based on research I did for my recent [JavaScript Informational](https://kdcinfo.blogspot.com/2020/01/javascript-informational-best-of-basics.html) article.
+
+```HTML ID attributes should avoid using kebab-case, and instead use either camelCase or PascalCase. After many years of seeing differently, this took some major thought adjustment, but my IDs from here-on-out will be PascalCase (aka, TitleCase).```
+
 ## Bugs and Enhancements
 
-If you have a bug or feature request, please feel free to [submit a new issue on GitHub](https://github.com/KDCinfo/expired-to-be/issues). You are also free to submit Pull Requests for consideration.
+If you have a bug or feature request, please feel free to [submit a new issue on GitHub](https://github.com/KDCinfo/expired-to-be/issues). Feel free to submit [Pull Requests](https://github.com/KDCinfo/expired-to-be/pulls) for consideration as well.
 
-A partial list of things I have in store, of which are in no particular order:
+A list of longer term considerations:
 
-- Add reminders to export your list (you really don't want to lose your list!)
+- Add 'last export' date and remind about backing up (you really don't want to lose your list!)
+
+  Store: Date, number of items at that time, number of active items at that time, ...
+
+  Preference Option: Enable Check [yes|no] _ How often: [1-dy|2-dy|3-dy|5-dy|1-wk (default)|2-wk|3-wk|4-wk]
+
+  Preference Option: Can/should show reminder alert on the toolbar icon? Different color background (with a 0 if no expires---just to show for the export reminder (usually it won't show if there are none)).
+
+- Allow categorizing (or labeling)
+
 - Get code prepped for a mobile version of the app (as part of an even bigger suite).
+
+## Chrome Store Listing
+
+```
+Expiration Reminders for groceries, medicine, warranties, etc.
+A quick and convenient way to set and be reminded of expiring items.
+```
+```
+Because by the time you need something---it's expired!
+
+> Simply add an item (1), expiration date (2), and how much 'lead time' you would like (3).
+
+> Your browser will show a # count for items as they come due for renewal.
+
+Expired To Be is a free browser extension.
+It is also open source on GitHub and is provided with
+detailed notes and release notes: https://github.com/KDCinfo/expired-to-be
+```

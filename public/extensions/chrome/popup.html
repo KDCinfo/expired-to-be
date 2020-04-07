@@ -20,10 +20,10 @@
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
-    <div id="container-app">
-      <div id="topBox">
+    <div id="ContainerApp">
+      <div id="TopBox">
         <h1>Expired To Be</h1>
-        <form id="dates-div">
+        <form id="DatesDiv">
           <div class="div-left">
             <label>Expiration Date:<br/>
               <input
@@ -60,7 +60,7 @@
               <input
                 type="text"
                 class="input-title"
-                id="entryTitle"
+                id="EntryTitle"
                 name="entryTitle"
                 maxLength=25
                 size=25
@@ -78,12 +78,12 @@
         </form>
       </div>
 
-      <div id="container">
-        <div id="msgs-parent"><div id="msgs-div">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
+      <div id="Container">
+        <div id="MsgsParent"><div id="MsgsDiv">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
 
-        <div id="import-progress" class="opacity0 hidden"><div id="import-progress-bar"></div></div>
+        <div id="ImportProgress" class="opacity0 hidden"><div id="ImportProgressBar"></div></div>
 
-        <div><div id="expires-table"></div></div>
+        <div><div id="ExpiresTable"></div></div>
       </div>
 
       <footer>
@@ -91,28 +91,28 @@
           <div class="footer-menu-div">
             <ul class="footer-menu-ul">
               <li class="input-options-with-items">
-                <button id="input-export-all">Export All</button>
-                <a id="input-export-download" style="display:none"></a>
+                <button id="InputExportAll">Export All</button>
+                <a id="InputExportDownload" style="display:none"></a>
               </li>
               <li>
-                <button id="input-import-button">Import Items<span class="show-import-elements hidden"> (close)</span></button>
+                <button id="InputImportButton">Import Items<span class="show-import-elements hidden"> (close)</span></button>
                 <textarea
-                  placeholder='[{"id": 1, "title": "My 1st reminder.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "dateReplacement": "2033-04-16", "leadTime": "weeks", "leadTimeVal": "1"}]'
-                  id="input-import"
+                  placeholder='[{"id": 1, "title": "Reminders have 6 fields.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "Titles: 25 characters.", ...}]'
+                  id="InputImport"
                   rows="4"
                   cols="40"
                   class="closed"
                 ></textarea>
                 <span class="hidden">[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]</span>
-                <div id="import-error" class="show-import-elements hidden"></div>
-                <div id="import-notes" class="show-import-elements hidden">
+                <div id="ImportError" class="show-import-elements hidden"></div>
+                <div id="ImportNotes" class="show-import-elements hidden">
                   <span>Enter a JSON-like string to import. NOTE: Use double quotes for strings. Do NOT include `active` status. You can include `ID`, but it will be reassigned if that ID already exists.</span>
-                  <a id="fillSampleJSON" class="show-import-elements hidden" href="#samples">Click for 2 samples.</a>
-                  <button id="input-import-action" class="show-import-elements hidden">Import JSON</button>
+                  <a id="FillSampleJSON" class="show-import-elements hidden" href="#samples">Click for 2 samples.</a>
+                  <button id="InputImportAction" class="show-import-elements hidden">Import JSON</button>
                 </div>
               </li>
               <li class="input-options-with-items">
-                <button id="input-clear-all">Clear All</button>&nbsp;<small class="erase-all-msg">(this will erase<br/>everything!)</small>
+                <button id="InputClearAll">Clear All</button>&nbsp;<small class="erase-all-msg">(this will erase<br/>everything!)</small>
               </li>
             </ul>
           </div>

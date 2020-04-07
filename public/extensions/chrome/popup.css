@@ -31,7 +31,7 @@ body {
   white-space: nowrap;
   width: 98%;
 }
-#container-app {
+#ContainerApp {
   display: inline-block;
   margin: 0;
   padding: 0;
@@ -50,7 +50,7 @@ body {
   #app-message p {
     margin: 1em;
   }
-#topBox {
+#TopBox {
   background-color: rgba(50, 160, 255, .2);
   border-radius: 10px 10px 0 0;
   height: 135px;
@@ -72,7 +72,7 @@ a:hover {
   color: green;
 }
 
-#container {
+#Container {
   margin: 0 0 0 10px;
   /*max-height: 378px;*/
   /*overflow-x: hidden;*/
@@ -104,7 +104,7 @@ a:hover {
     /*width: 38%;*/
   }
 
-#expires-table {
+#ExpiresTable {
   border-collapse: collapse;
     border-bottom: 1px solid orange;
     border-top: 1px solid orange;
@@ -113,34 +113,34 @@ a:hover {
   padding: 0.2em 0 0;
   width: 100%;
 }
-  /*#expires-table div[class^="x2b-listitem"].is-edit {*/
-  #expires-table div[class*="x2b-listitem"].is-edit {
+  /*#ExpiresTable div[class^="x2b-listitem"].is-edit {*/
+  #ExpiresTable div[class*="x2b-listitem"].is-edit {
     border-left: 5px solid rgb(50, 160, 255);
     background-color: rgba(50, 160, 255, .2);
   }
-  /*#expires-table div[class^="x2b-listitem"]:hover {*/
-  #expires-table div[class*="x2b-listitem"]:hover {
+  /*#ExpiresTable div[class^="x2b-listitem"]:hover {*/
+  #ExpiresTable div[class*="x2b-listitem"]:hover {
     background-color: orange;
   }
-  #expires-table .tbody {
+  #ExpiresTable .tbody {
     /*max-height: 224px;*/
     /*max-height: 252px;*/
     max-height: 258px;
     overflow-x: hidden;
     overflow-y: auto;
   }
-  #expires-table .tr {
+  #ExpiresTable .tr {
     display: flex;
     /*justify-content: space-between;*/
   }
-  #expires-table .thead.show-scroll {
+  #ExpiresTable .thead.show-scroll {
     overflow-y: scroll;
   }
-  #expires-table .thead .tr .th {
+  #ExpiresTable .thead .tr .th {
     white-space: normal;
   }
-  #expires-table .tr .th,
-  #expires-table .tr .td {
+  #ExpiresTable .tr .th,
+  #ExpiresTable .tr .td {
     /*outline: 1px dotted red;*/
     overflow: hidden;
   }
@@ -157,7 +157,7 @@ a:hover {
       width: 185px;
     }
       /* This compensates for the 5px left border on the row for editing. */
-      #expires-table div[class*="x2b-listitem"].is-edit .td:nth-child(1) {
+      #ExpiresTable div[class*="x2b-listitem"].is-edit .td:nth-child(1) {
         width: 180px;
       }
     .tr .th:nth-child(2),
@@ -190,8 +190,8 @@ a:hover {
       width: 45px;
       text-align: center;
     }
-  #expires-table .tr .th,
-  #expires-table .tr .td {
+  #ExpiresTable .tr .th,
+  #ExpiresTable .tr .td {
     padding: 0.5em;
     position: relative;
   }
@@ -203,39 +203,39 @@ a:hover {
       height: 18px;
       line-height: 1;
     }
-  #expires-table .tr.expired {
+  #ExpiresTable .tr.expired {
     background-color: rgba(255, 160, 122, 0.25);
   }
 
-/*#expires-table tr th span:nth-child(1) {*/
-#expires-table .tr .th {
+/*#ExpiresTable tr th span:nth-child(1) {*/
+#ExpiresTable .tr .th {
   margin: 0;
   /*padding: 5px 0 2px;*/
 }
-  #expires-table .tr .th div {
+  #ExpiresTable .tr .th div {
     align-items: center;
     display: flex;
     flex-direction: row;
   }
-  #expires-table .tr .th span.paginate-title,
-  #expires-table .tr .th span.paginate {
+  #ExpiresTable .tr .th span.paginate-title,
+  #ExpiresTable .tr .th span.paginate {
     margin: auto 0;
   }
-#expires-table .tr .th span.paginate-title {
+#ExpiresTable .tr .th span.paginate-title {
   display: inline-block;
   margin: 0 0 0 5px;
   /*min-width: 35px;*/
   padding: 0;
 }
-  #expires-table .tr .th span.paginate {
+  #ExpiresTable .tr .th span.paginate {
     display: inline-block;
     float: left;
     height: 28px;
     margin: 0;
     padding: 0;
   }
-    #expires-table .tr .th span.paginate .arrow-up,
-    #expires-table .tr .th span.paginate .arrow-down {
+    #ExpiresTable .tr .th span.paginate .arrow-up,
+    #ExpiresTable .tr .th span.paginate .arrow-down {
       color: rgb(50, 160, 255);
       cursor: pointer;
       display: block;
@@ -243,49 +243,49 @@ a:hover {
       margin: 0;
       padding: 0;
     }
-    #expires-table .tr .th span.paginate .arrow-up:focus,
-    #expires-table .tr .th span.paginate .arrow-down:focus,
-    #expires-table .tr .th span.paginate .arrow-up:active,
-    #expires-table .tr .th span.paginate .arrow-down:active {
+    #ExpiresTable .tr .th span.paginate .arrow-up:focus,
+    #ExpiresTable .tr .th span.paginate .arrow-down:focus,
+    #ExpiresTable .tr .th span.paginate .arrow-up:active,
+    #ExpiresTable .tr .th span.paginate .arrow-down:active {
       /*outline: 1px solid blue;*/
     }
-    #expires-table .tr .th span.paginate .arrow-up:hover,
-    #expires-table .tr .th span.paginate .arrow-down:hover,
-    #expires-table .tr .th span.paginate .arrow-up:focus,
-    #expires-table .tr .th span.paginate .arrow-down:focus,
-    #expires-table .tr .th span.paginate .arrow-up:active,
-    #expires-table .tr .th span.paginate .arrow-down:active {
+    #ExpiresTable .tr .th span.paginate .arrow-up:hover,
+    #ExpiresTable .tr .th span.paginate .arrow-down:hover,
+    #ExpiresTable .tr .th span.paginate .arrow-up:focus,
+    #ExpiresTable .tr .th span.paginate .arrow-down:focus,
+    #ExpiresTable .tr .th span.paginate .arrow-up:active,
+    #ExpiresTable .tr .th span.paginate .arrow-down:active {
       color: red;
     }
-    #expires-table .tr .th span.paginate .arrow-up.active,
-    #expires-table .tr .th span.paginate .arrow-down.active {
+    #ExpiresTable .tr .th span.paginate .arrow-up.active,
+    #ExpiresTable .tr .th span.paginate .arrow-down.active {
       color: orange;
       cursor: default;
     }
-    #expires-table .tr .th span.paginate .arrow-up {
+    #ExpiresTable .tr .th span.paginate .arrow-up {
       vertical-align: bottom;
     }
-    #expires-table .tr .th span.paginate .arrow-down {
+    #ExpiresTable .tr .th span.paginate .arrow-down {
       vertical-align: top;
     }
 
-#expires-table .tr .th span.alarm {
+#ExpiresTable .tr .th span.alarm {
   color: rgb(50, 160, 255);
 }
 
-#expires-table .tr > .td:first-child {
+#ExpiresTable .tr > .td:first-child {
   /*min-width: 200px;*/
 }
 
-#expires-table .tr > .td.cellCol1,
-#expires-table .tr > .td.cellCol2 {
+#ExpiresTable .tr > .td.cellCol1,
+#ExpiresTable .tr > .td.cellCol2 {
   /*padding-left: 0;*/
   text-align: left;
 }
-  #expires-table .tr > .td.cellCol1 {
+  #ExpiresTable .tr > .td.cellCol1 {
     /*padding-left: 5px;*/
   }
-#expires-table .tr.expired > .td.cellCol1 span {
+#ExpiresTable .tr.expired > .td.cellCol1 span {
   background-color: rgba(255, 80, 50, 0.65);
   color: #ffffff;
   content: 'Expired!';
@@ -299,7 +299,7 @@ a:hover {
     right: 0;
     z-index: 1;
 }
-#expires-table .tr > .td.cellCol2 span.date-replace {
+#ExpiresTable .tr > .td.cellCol2 span.date-replace {
   background-color: rgba(50, 160, 255, 0.5);
   color: #ffffff;
   cursor: pointer;
@@ -311,10 +311,10 @@ a:hover {
     right: 0;
     z-index: 1;
 }
-#expires-table .tr .td span.container-active-alarm {
+#ExpiresTable .tr .td span.container-active-alarm {
   position: relative;
 }
-#expires-table .tr .td span.alarm-stat {
+#ExpiresTable .tr .td span.alarm-stat {
   position: absolute;
     height: 10px;
     width: 10px;
@@ -323,7 +323,7 @@ a:hover {
     z-index: 0;
   text-align: center;
 }
-#expires-table .tr .td span.alarm-stat::after {
+#ExpiresTable .tr .td span.alarm-stat::after {
   background-color: transparent;
   color: rgb(50, 160, 255);
   content: '\2600';
@@ -337,11 +337,31 @@ a:hover {
     left: -5px;
     top: 3px;
 }
-#msgs-parent {
+
+#ExpiresTable .temp-text {
+    color: orange;
+    display: flex;
+      justify-content: center;
+      align-items: center;
+    font-size: 25px;
+    height: 200px;
+    line-height: 1.9;
+    margin: 0 auto;
+    /*outline: 1px solid red;*/
+    padding: 0 1rem;
+    text-align: center;
+    text-shadow: 0px 0px 11px cadetblue;
+    max-width: 290px;
+}
+  #ExpiresTable .temp-text span {
+    white-space: normal;
+  }
+
+#MsgsParent {
   position: relative;
   text-align: center;
 }
-#msgs-div {
+#MsgsDiv {
   border-left: 5px solid rgb(50, 160, 255);
   color: rgb(40, 150, 255);
   display: block;
@@ -448,7 +468,7 @@ footer {
           /*min-height: 30px;*/
           padding: 0;
         }
-          #input-import {
+          #InputImport {
             display: block;
             height: 60px;
             opacity: 1;
@@ -457,40 +477,40 @@ footer {
             transition: all 0.5s ease-in;
             width: 400px;
           }
-          #input-import.closed {
+          #InputImport.closed {
             height: 0;
             opacity: 0;
             transition: all 0.5s ease-out;
             width: 0;
           }
-          #fillSampleJSON,
-          #input-import-action {
+          #FillSampleJSON,
+          #InputImportAction {
             float: right;
           }
           .input-options-with-items {
             display: none;
           }
-          #import-notes {
+          #ImportNotes {
             padding: 0.5em 0 0 0;
             white-space: normal;
             width: 400px;
           }
-            #import-notes span {
+            #ImportNotes span {
               display: inline-block;
               width: 75%;
             }
-          #import-progress {
+          #ImportProgress {
             margin: 0 auto;
             outline: 1px solid rgba(50, 160, 255, 0.5);
             width: 400px;
           }
-            #import-progress-bar {
+            #ImportProgressBar {
               background-color: orange;
               height: 20px;
               transition: all 0.2s ease-in;
               width: 20%;
             }
-          #import-error {
+          #ImportError {
             color: #cc0000;
             white-space: normal;
             width: 400px;

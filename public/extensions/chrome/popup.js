@@ -24,7 +24,7 @@ const
       ourKeys = new Set(['title', 'date', 'leadTime', 'leadTimeVal']), // No: 'id', 'active'
       sampleJSON = '[{"id": 1, "title": "My 1st reminder.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "dateReplacement": "2033-04-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
 
-const isExtension = !document.getElementById('web-root'), // Only run with either the extension, or the React-based web app.
+const isExtension = !document.getElementById('WebRoot'), // Only run with either the extension, or the React-based web app.
       changeEvent = new Event('change'),
       inputSelectName = document.querySelector('.input-select-name'), // selName
       inputSelectNum = document.querySelector('.input-select-num');   // selNum
@@ -102,27 +102,27 @@ function displayIt() { // [window|document].onload = function() {}
   });
 
   // <button>: Clear All
-  document.getElementById('input-clear-all').addEventListener('click', (e) => {
+  document.getElementById('InputClearAll').addEventListener('click', (e) => {
     clearTimersAndStorage();
   });
 
   // <button>: Export All
-  document.getElementById('input-export-all').addEventListener('click', (e) => {
+  document.getElementById('InputExportAll').addEventListener('click', (e) => {
     exportTimers();
   });
 
   // <button>: Import - Toggle Import Options
-  document.getElementById('input-import-button').addEventListener('click', (e) => {
+  document.getElementById('InputImportButton').addEventListener('click', (e) => {
     showImportTextarea();
   });
 
   // <button>: Import - Execute Import
-  document.querySelector('#input-import-action').addEventListener('click', (e) => {
+  document.querySelector('#InputImportAction').addEventListener('click', (e) => {
     importTimersRun();
   });
 
-  // <a>: Import - fillSampleJSON
-  document.getElementById('fillSampleJSON').addEventListener('click', (e) => {
+  // <a>: Import - FillSampleJSON
+  document.getElementById('FillSampleJSON').addEventListener('click', (e) => {
     e.preventDefault();
     importSamples();
   });
@@ -294,7 +294,7 @@ const x2bStorage = (function() {
 })(); // <-- Does not work without IIFE (same with how MDN wrote 'LocalStorageState' interface (far below).)
 
 function importSamples() {
-  document.getElementById('input-import').value = sampleJSON;
+  document.getElementById('InputImport').value = sampleJSON;
 }
 
 function finishImport() {
@@ -307,7 +307,7 @@ function finishImport() {
 
 function toggleProgressBar(which = 'off') {
 
-  let progressBarElement = document.getElementById('import-progress');
+  let progressBarElement = document.getElementById('ImportProgress');
 
   if (which === 'off') {
 
@@ -341,6 +341,8 @@ function storeStateLocal(thenFunc) {
         // I'd never done this before, but I just plugged it in as
         // I imagined it should go and it just worked - like cool!
       }
+    } else {
+      showEmptyList();
     }
   });
 }
@@ -397,9 +399,9 @@ function updateFavIcon(stat = '') {
   document.head = document.head || document.getElementsByTagName('head')[0];
 
   var link = document.createElement('link'),
-      oldLink = document.getElementById('dynamic-favicon');
+      oldLink = document.getElementById('DynamicFavicon');
 
-  link.id = 'dynamic-favicon';
+  link.id = 'DynamicFavicon';
   link.rel = 'shortcut icon';
 
   if (stat.length > 0) {
@@ -419,6 +421,8 @@ function updateFavIcon(stat = '') {
 }
 
 function showList(noClose = '', prefUpdate = false) { // showList('', true) // Sorting
+
+console.log('showList');
 
   if (noClose.length === 0) {
     toggleMenu('close');
@@ -656,6 +660,8 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
   } else {
     // No expirations saved in storage.
 
+    showEmptyList();
+
     // Turn off the 'Clear All' and 'Export All' buttons (nothing to clear or export).
     let inputOptions = document.querySelectorAll('.input-options-with-items');
     for (let i = 0; i < inputOptions.length; i++) {
@@ -666,8 +672,23 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
   }
 }
 
+function showEmptyList() {
+  //
+  // ExpiresTable - Empty
+  //
+  let tempChildD = document.createElement('div');
+  tempChildD.classList.add('temp-text');
+
+  let tempChildS = document.createElement('span');
+  tempChildS.innerText = 'Create expiration items using the form above.';
+
+  let parentTable = document.getElementById('ExpiresTable'); // <table>
+  tempChildD.appendChild(tempChildS);
+  parentTable.appendChild(tempChildD);
+}
+
 function printAlarm(itemId) {
-  let expiresTable = document.getElementById('expires-table'),
+  let expiresTable = document.getElementById('ExpiresTable'),
       // itemId = parseInt(alarm.name.substr(4), 10), // x2b-1
       // <tr class="x2b-listitem-1">
       //   <td><input type="checkbox" class="toggle-active active-is-true item-1">
@@ -930,7 +951,7 @@ function printListHead(prefsList) {
 
   itemTCH.appendChild(itemTCR);
 
-  let parentTable = document.getElementById('expires-table'); // <table>
+  let parentTable = document.getElementById('ExpiresTable'); // <table>
 
   parentTable.appendChild(itemTCH);
   parentTable.appendChild(itemTB);
@@ -946,7 +967,7 @@ function sortRun(setObj, isClick = false) { // sortRun(true); // If mouse, remov
     // ... just don't test with Chrome emulator :)
 
   if (isClick && w > 500) {
-    document.getElementById('entryTitle').focus();
+    document.getElementById('EntryTitle').focus();
   }
 }
 
@@ -1056,7 +1077,7 @@ function printList(item) {
 
   itemTR.appendChild(itemSpan8);
 
-  let parentTable = document.querySelector('#expires-table .tbody'); // <table>
+  let parentTable = document.querySelector('#ExpiresTable .tbody'); // <table>
 
   parentTable.appendChild(itemTR); // Adding the current item from global array of items
 }
@@ -1211,7 +1232,7 @@ function updateForm(itemId) {
 
 function setItemEdit(itemId) {
   // Apply CSS class name to TR of the item that's currently in the form (if >0).
-  let expiresTable = document.getElementById('expires-table'),
+  let expiresTable = document.getElementById('ExpiresTable'),
       ourItemId = 0;
 
   // First; Remove any previous Edits (Recursive CSS Class Removal)
@@ -1492,14 +1513,14 @@ function showImportTextarea(forceOff = '') { // Show the import <textarea> and o
   let forceClose = forceOff.length > 0,
       isOpen = true;
 
-  if (document.getElementById('input-import').classList.contains('closed')) {
+  if (document.getElementById('InputImport').classList.contains('closed')) {
     isOpen = false;
   }
 
   if (isOpen || forceClose) {
-    document.getElementById('input-import').classList.add('closed');
+    document.getElementById('InputImport').classList.add('closed');
   } else {
-    document.getElementById('input-import').classList.toggle('closed');
+    document.getElementById('InputImport').classList.toggle('closed');
   }
 
   setTimeout( () => {
@@ -1518,13 +1539,13 @@ function importTimersRun() {
   setParsingImportError();
   importErrors.length = 0;
 
-  if (document.getElementById('input-import').value.length > 120000) {
+  if (document.getElementById('InputImport').value.length > 120000) {
     // Max Length: 120000 (allows for up to ~999 expirations.)
     setParsingImportError('on', 'Import only supports up to 999 expiration items.');
     return;
   }
 
-  let ourJSON = getJson(document.getElementById('input-import').value);
+  let ourJSON = getJson(document.getElementById('InputImport').value);
 
   if (ourJSON.results === 'success') {
 
@@ -1536,7 +1557,7 @@ function importTimersRun() {
     let percent = 0,
         fraction = 100 / importList.length,
         newFraction = 0,
-        progressBarElement = document.getElementById('import-progress-bar');
+        progressBarElement = document.getElementById('ImportProgressBar');
 
         // 100 / 1    = 100%
         // 100 / 2    = 50%
@@ -1674,11 +1695,11 @@ function hasCorrectProps(testObj = {}) {
 
 function setParsingImportError(onOff = 'off', msg = '') {
   if (onOff === 'on') {
-    document.getElementById('import-error').classList.remove('hidden');
+    document.getElementById('ImportError').classList.remove('hidden');
   } else {
-    document.getElementById('import-error').classList.add('hidden');
+    document.getElementById('ImportError').classList.add('hidden');
   }
-  document.getElementById('import-error').innerText = msg;
+  document.getElementById('ImportError').innerText = msg;
 }
 
 function exportTimers() {
@@ -1686,7 +1707,7 @@ function exportTimers() {
 
   message('Exporting...', true);
 
-  // <a id="input-export-download" style="display:none"></a>
+  // <a id="InputExportDownload" style="display:none"></a>
 
   x2bStorage.get('expiresList').then( itemList => {
     if (!isEmpty(itemList.expiresList)) {
@@ -1698,7 +1719,7 @@ function exportTimers() {
       const storageObj = itemList.expiresList,
             dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storageObj));
 
-      let dlAnchorElem = document.getElementById('input-export-download');
+      let dlAnchorElem = document.getElementById('InputExportDownload');
 
       dlAnchorElem.setAttribute("href", dataStr);
       dlAnchorElem.setAttribute("download", "x2b-expires-list.json");
@@ -1829,7 +1850,7 @@ function clearItem(itemId) { // deleteAlarm
 }
 
 function clearDOMList() {
-  let parentTable = document.getElementById('expires-table');
+  let parentTable = document.getElementById('ExpiresTable');
   // There should really only be 2 elements to remove; <thead> and <tbody>
   while (parentTable.firstChild) {
     parentTable.removeChild(parentTable.firstChild);
@@ -2013,7 +2034,7 @@ function clearTimersAndStorage() {
 
 function message(msg, clearMsg, data) {
 
-  let msgsDiv = document.getElementById('msgs-div'); // The <div> where all the notifications are headed.
+  let msgsDiv = document.getElementById('MsgsDiv'); // The <div> where all the notifications are headed.
 
   msgsDiv.classList.add('msg-transition');
 
@@ -2037,7 +2058,7 @@ function message(msg, clearMsg, data) {
 }
 
 function clearMessage() {
-  document.getElementById('msgs-div').innerText = '';
+  document.getElementById('MsgsDiv').innerText = '';
 }
 
 /**
