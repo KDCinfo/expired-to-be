@@ -12,6 +12,15 @@ Simply add an item (1), expiration date (2), and how much 'lead time' you would 
 
   - [Chrome Browser Extension](https://chrome.google.com/webstore/detail/expired-to-be/kamjiblbgmiobifooelpmlkojmadmcan) - Available for free on the Chrome Web Store.
 
+As of Sep 2021, 'Expired To Be' is also available as a free mobile app titled 'Xpired To Be' in both app stores. 
+
+  > **Note**: The 'Xpired To Be' mobile app is a part of the KD-reCall collection of free 'simple reminder apps'. As a part of that collection, an account is required (also free), and is shared among all the mobile apps in the collection. Due to the Chrome extension operating solely in the browser and not requiring a login, **the mobile app and Chrome extension are not linked, and do not share data**. 
+  
+  > Additionally, due to the "file" structure in mobile devices, there is currently no support for importing or exporting lists. For mobile, your lists are stored on your account, and is available across mobile devices.
+
+  - [Google Play Store](https://play.google.com/store/apps/details?id=com.kdcinfo.kdrecall_x2b) - Available for Android devices.
+  - [Apple App Store](https://apps.apple.com/us/app/kd-recall-xpired-to-be/id1585280787) - Available for iPhones and iPads.
+
 ## Overview
 
 Be reminded of little one-offs you don't think about too often; like butter, medicine, or the cleaning supplies under your sink.
