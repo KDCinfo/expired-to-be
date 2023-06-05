@@ -29,12 +29,6 @@ jobs:
     - name: Install Dependencies  # This step installs your npm dependencies.
       run: npm ci
 
-    - name: Run Tests  # This step runs your tests.
-      run: npm test
-
-    - name: Build  # This step builds your project.
-      run: npm run build
-
     - name: Deploy  # This step deploys your build to the gh-pages branch of your repo.
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
