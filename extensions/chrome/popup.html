@@ -2,26 +2,16 @@
 <html>
 <!--
  /**
- * Expired To Be |  https://github.com/KDCinfo/expired-to-be
+ * Expired To Be | https://github.com/KDCinfo/expired-to-be
  *
  * This app allows you to enter and be reminded of expiration dates.
  * It will provide notification reminders with lead times of your choosing.
  *
  * Developer: Keith D Commiskey (https://kdcinfo.com)
- * Initial Development: 2018-02 - 2018-03
+ * Development: 2018-02 - 2018-03; 2020-04
  *
- * The Expired To Be app can be used in one of two ways:
- *
- * Chrome Extension:
+ * The Expired To Be app is a Chrome Extension:
  *   - Notifications are passive, and will clear when expired items are reset.
- *
- * Hosted Web App (SPA):
- * - The Web App uses the 'Chrome Extension' interface code, so it has all the same interface features as the Chrome
- *   extension. However, it also uses a custom 'Alarm' system and Web-based Notifications. Having these additional
- *   features provides the Web App with a few additional options and features that the Chrome extension does not have.
- *
- * References to the `window.ourExpirations` factory function should also be provided with 'undefined' alternatives.
- *
  */
  -->
   <head>
@@ -29,12 +19,11 @@
     <meta name="description" content="This extension allows the setting and reminders of 'expiring things'.">
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
-  <!-- Do not alter body tag, unless you also modify the Web App's `const dataLeftIdx` in `index.tsx` -->
   <body>
-    <div id="container-app">
-      <div id="topBox">
+    <div id="ContainerApp">
+      <div id="TopBox">
         <h1>Expired To Be</h1>
-        <form id="dates-div">
+        <form id="DatesDiv">
           <div class="div-left">
             <label>Expiration Date:<br/>
               <input
@@ -71,7 +60,7 @@
               <input
                 type="text"
                 class="input-title"
-                id="entryTitle"
+                id="EntryTitle"
                 name="entryTitle"
                 maxLength=25
                 size=25
@@ -89,50 +78,124 @@
         </form>
       </div>
 
-      <div id="container">
-        <div id="msgs-parent"><div id="msgs-div">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
+      <div id="Container">
+        <div id="MsgsParent"><div id="MsgsDiv">Welcome! Enter expiration info in the form above and click 'Save'.</div></div>
 
-        <div id="import-progress" class="opacity0 hidden"><div id="import-progress-bar"></div></div>
+        <div id="ImportProgress" class="opacity0 hidden"><div id="ImportProgressBar"></div></div>
 
-        <div><table id="expires-table"></table></div>
-
-        <footer>
-          <div class="input-options">
-            <div class="footer-menu-div">
-              <ul class="footer-menu-ul">
-                <li class="input-options-with-items">
-                  <button id="input-export-all">Export All</button>
-                  <a id="input-export-download" style="display:none"></a>
-                </li>
-                <li>
-                  <button id="input-import-button">Import Items<span class="show-import-elements hidden"> (close)</span></button>
-                  <textarea
-                    placeholder='[{"id": 1, "title": "My 1st reminder.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "dateReplacement": "2033-04-16", "leadTime": "weeks", "leadTimeVal": "1"}]'
-                    id="input-import"
-                    rows="4"
-                    cols="40"
-                    class="closed"
-                  ></textarea>
-                  <span class="hidden">[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]</span>
-                  <div id="import-error" class="show-import-elements hidden"></div>
-                  <div id="import-notes" class="show-import-elements hidden">
-                    <span>Enter a JSON-like string to import. NOTE: Use double quotes for strings. Do NOT include `active` status. You can include `ID`, but it will be reassigned if that ID already exists.</span>
-                    <a id="fillSampleJSON" class="show-import-elements hidden" href="#samples">Click for 2 samples.</a>
-                    <button id="input-import-action" class="show-import-elements hidden">Import JSON</button>
-                  </div>
-                </li>
-                <li class="input-options-with-items">
-                  <button id="input-clear-all">Clear All</button>&nbsp;<small class="erase-all-msg">(this will erase<br/>everything!)</small>
-                </li>
-              </ul>
-            </div>
-            <div class="footer-menu-toggle-button">
-              List Options
-            </div>
-          </div>
-          <span class="open-source">Expired To Be is <a target="expiredToBe" href="https://github.com/KDCinfo/expired-to-be">Open Source on GitHub</a>.</span>
-        </footer>
+        <div><div id="ExpiresTable"></div></div>
       </div>
+
+      <footer>
+        <div class="input-options">
+          <div class="footer-menu-div">
+            <ul class="footer-menu-ul">
+              <li class="input-options-with-items">
+                <button id="InputExportAll">Export All</button>
+                <a id="InputExportDownload" style="display:none"></a>
+              </li>
+              <li>
+                <button id="InputImportButton">Import Items<span class="show-import-elements hidden"> (close)</span></button>
+                <textarea
+                  placeholder='[{"id": 1, "title": "Reminders have 6 fields.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "Titles: 25 characters.", ...}]'
+                  id="InputImport"
+                  rows="4"
+                  cols="40"
+                  class="closed"
+                ></textarea>
+                <span class="hidden">[{"id": 1, "title": "My first reminder.", "date": "2033-03-10", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "leadTime": "weeks", "leadTimeVal": "1"}]</span>
+                <div id="ImportError" class="show-import-elements hidden"></div>
+                <div id="ImportNotes" class="show-import-elements hidden">
+                  <span>Enter a JSON-like string to import. NOTE: Use double quotes for strings. Do NOT include `active` status. You can include `ID`, but it will be reassigned if that ID already exists.</span>
+                  <a id="FillSampleJSON" class="show-import-elements hidden" href="#samples">Click for 2 samples.</a>
+                  <button id="InputImportAction" class="show-import-elements hidden">Import JSON</button>
+                </div>
+              </li>
+              <li class="input-options-with-items">
+                <button id="InputClearAll">Clear All</button>&nbsp;<small class="erase-all-msg">(this will erase<br/>everything!)</small>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-faq-div">
+            <ul class="footer-faq-ul">
+              <li class="text-center faq-start faq-toc">
+                <span class="text-left">
+                  <h3>Table of Contents</h3>
+                  #1 - Important Storage FAQs<br>
+                  #2 - Important Reminder: Back up your list!!<br>
+                  #3 - Contact / Support<br>
+                </span>
+              </li>
+              <li class="faq-hr">
+                <hr>
+              </li>
+
+              <!--   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   -->
+              <li>
+                <h3>#1 - Important Storage FAQs</h3>
+              </li>
+              <li>
+                The 'storage' that your expired items list is stored on is inside the browser you are currently using, and is not 'in the cloud.'
+                <ul>
+                  <li>
+                    <b>DO NOT save sensitive info in this app!!</b> The provided storage is not encrypted.
+                  </li>
+                  <li>
+                    Your list should be considered as 'vulnerable and <b>susceptible to deletion</b>.' For instance,
+                    <b>if you uninstall your browser, or say your operating system fails, you cannot get your list back.</b> <span class="alert-text">Export your data often!</span>
+                  </li>
+                  <li>
+                    The storage pertains only to the browser you're using (unless your Chrome account is synced).
+                  </li>
+                </ul>
+              </li>
+
+              <!--   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   -->
+              <li>
+                <h3>#2 - Important Reminder</h3>
+                Due to the expired item list being stored inside your browser, it is strongly advised to...
+              </li>
+              <li class="text-center">
+                <b class="alert-text">Export your list!!</b><br>
+                <span class="faq-block">Especially after adding or editing items.</span>
+              </li>
+              <li>
+                <h4>To backup a list (export)</h4>
+                <ul>
+                  <li>Open the List Options menu.</li>
+                  <li>Click the "Export All" button.</li>
+                  <li>The app will either save the file, or prompt you for a location and filename.</li>
+                </ul>
+                <h4>To restore a list</h4>
+                <ul>
+                  <li>Open the file you backed up (exported) in any text editor, such as Notepad.</li>
+                  <li>Select and copy the entire contents of the file to your clipboard (including the <code>[]</code>).</li>
+                  <li>Open the List Options menu.</li>
+                  <li>Click the "Import Items" button.</li>
+                  <li>Paste that into the provided textarea box.</li>
+                  <li>Click the "Import JSON" button.</li>
+                  <li>The app will then import each expired item individually, and will provide an import progress status bar during the import process.</li>
+                </ul>
+              </li>
+
+              <!--   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   FAQ   -->
+              <li>
+                <h3>#3 - Contact / Support</h3>
+                If you have a bug or feature request, please feel free to <a target="kdcNewWinExt" href="https://github.com/KDCinfo/expired-to-be/issues">submit a new issue on GitHub</a>.
+                Feel free to <a target="kdcNewWinExt" href="https://github.com/KDCinfo/expired-to-be/pulls">submit Pull Requests</a> for consideration as well.
+                If you need to contact me directly, you can use <a target="kdcNewWinInt" href="https://kdcinfo.com/?contact">the contact form on my portfolio site</a>.
+              </li>
+            </ul>
+          </div>
+          <div class="footer-menu-toggle-button">
+            List Options
+          </div>
+          <div class="footer-faq-toggle-button">
+            FAQ / Help
+          </div>
+        </div>
+        <span class="open-source">Expired To Be is <a target="kdcNewWinExt" href="https://github.com/KDCinfo/expired-to-be">Open Source on GitHub</a>.</span>
+      </footer>
     </div>
     <script src="popup.js"></script>
   </body>

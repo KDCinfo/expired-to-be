@@ -7,33 +7,24 @@
  * Developer: Keith D Commiskey (https://kdcinfo.com)
  * Initial Development: 2018-02 - 2018-03
  *
- * The Expired To Be app can be used in one of two ways:
- *
- * Chrome Extension:
- *   - Notifications are passive, and will clear when expired items are reset.
- *
- * Hosted Web App (SPA):
- * - The Web App uses the 'Chrome Extension' interface code, so it has all the same interface features as the Chrome
- *   extension. However, it also uses a custom 'Alarm' system and Web-based Notifications. Having these additional
- *   features provides the Web App with a few additional options and features that the Chrome extension does not have.
- *
  * References to the `window.ourExpirations` factory function should also be provided with 'undefined' alternatives.
  *
  * At the bottom of this file is a simple representation of the elements and objects used in this extension:
- *
  */
 
 let ourState = [],
     importErrors = [];
 
-const maxDays = 70,
+const
+      MIN_ITEMS_TO_SHOW_SCROLL = 8,
+      TESTING = false, // Currently means you can activate an expired item, for testing 'expired notifications'.
+      maxDays = 70,
       maxWeeks = 10,
       stateLocation = 'chrome', // chrome|local|session|cookie
-      TESTING = false, // Currently means you can activate an expired item, for testing 'expired notifications'.
       ourKeys = new Set(['title', 'date', 'leadTime', 'leadTimeVal']), // No: 'id', 'active'
       sampleJSON = '[{"id": 1, "title": "My 1st reminder.", "date": "2033-03-10", "dateReplacement": "", "leadTime": "days", "leadTimeVal": "1"}, {"id": 2, "title": "My 2nd reminder.", "date": "2033-03-16", "dateReplacement": "2033-04-16", "leadTime": "weeks", "leadTimeVal": "1"}]';
 
-const isExtension = !document.getElementById('web-root'), // Only run with either the extension, or the React-based web app.
+const isExtension = !document.getElementById('WebRoot'), // Only run with either the extension, or the React-based web app.
       changeEvent = new Event('change'),
       inputSelectName = document.querySelector('.input-select-name'), // selName
       inputSelectNum = document.querySelector('.input-select-num');   // selNum
@@ -56,13 +47,26 @@ function displayIt() { // [window|document].onload = function() {}
 
     if (!e.target.closest('.footer-menu-toggle-button') &&
         !e.target.closest('.footer-menu-div') &&
-        !e.target.closest('.footer-prefs-toggle-button') &&
-        !e.target.closest('.footer-prefs-div') &&
-        !e.target.closest('#button-toggle-webapp-help') &&
-        !e.target.closest('#app-message')) {
+        !e.target.closest('.footer-faq-toggle-button') &&
+        !e.target.closest('.footer-faq-div')) {
       toggleMenu('close');
     }
     // return; // No returns; let it pass through.
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'escape') {
+      let menuElem = document.querySelector('.footer-menu-div').classList;
+      let faqElem = document.querySelector('.footer-faq-div').classList;
+
+      if (menuElem.contains('open')) {
+        menuElem.toggle('open', false);
+        e.preventDefault();
+      } else if (faqElem.contains('open')) {
+        faqElem.toggle('open', false);
+        e.preventDefault();
+      }
+    }
   });
 
   // <button>: Save
@@ -91,28 +95,34 @@ function displayIt() { // [window|document].onload = function() {}
     toggleMenu();
   });
 
+  // document
+  // <div>: List Options
+  document.querySelector('.footer-faq-toggle-button').addEventListener('click', (e) => {
+    toggleFAQ();
+  });
+
   // <button>: Clear All
-  document.getElementById('input-clear-all').addEventListener('click', (e) => {
+  document.getElementById('InputClearAll').addEventListener('click', (e) => {
     clearTimersAndStorage();
   });
 
   // <button>: Export All
-  document.getElementById('input-export-all').addEventListener('click', (e) => {
+  document.getElementById('InputExportAll').addEventListener('click', (e) => {
     exportTimers();
   });
 
   // <button>: Import - Toggle Import Options
-  document.getElementById('input-import-button').addEventListener('click', (e) => {
+  document.getElementById('InputImportButton').addEventListener('click', (e) => {
     showImportTextarea();
   });
 
   // <button>: Import - Execute Import
-  document.querySelector('#input-import-action').addEventListener('click', (e) => {
+  document.querySelector('#InputImportAction').addEventListener('click', (e) => {
     importTimersRun();
   });
 
-  // <a>: Import - fillSampleJSON
-  document.getElementById('fillSampleJSON').addEventListener('click', (e) => {
+  // <a>: Import - FillSampleJSON
+  document.getElementById('FillSampleJSON').addEventListener('click', (e) => {
     e.preventDefault();
     importSamples();
   });
@@ -170,10 +180,15 @@ const x2bStorage = (function() {
   return {
     get: async function(whichStore) { // x2bStorage.get
 
+      // console.log(whichStore); // expiresList, expiresPrefs
+
       if (isGood('chrome') && isGood('chrome.storage') && isGood('chrome.storage.sync')) {
 
         return new Promise( (resolve, reject) => {
           chrome.storage.sync.get(whichStore, itemList => {
+
+            // console.log(itemList); // {expiresList: Array(18)}, {expiresPrefs: {sortPref: "3u"}}
+
             resolve(itemList);
           });
         });
@@ -279,7 +294,7 @@ const x2bStorage = (function() {
 })(); // <-- Does not work without IIFE (same with how MDN wrote 'LocalStorageState' interface (far below).)
 
 function importSamples() {
-  document.getElementById('input-import').value = sampleJSON;
+  document.getElementById('InputImport').value = sampleJSON;
 }
 
 function finishImport() {
@@ -292,7 +307,7 @@ function finishImport() {
 
 function toggleProgressBar(which = 'off') {
 
-  let progressBarElement = document.getElementById('import-progress');
+  let progressBarElement = document.getElementById('ImportProgress');
 
   if (which === 'off') {
 
@@ -326,6 +341,8 @@ function storeStateLocal(thenFunc) {
         // I'd never done this before, but I just plugged it in as
         // I imagined it should go and it just worked - like cool!
       }
+    } else {
+      showEmptyList();
     }
   });
 }
@@ -382,9 +399,9 @@ function updateFavIcon(stat = '') {
   document.head = document.head || document.getElementsByTagName('head')[0];
 
   var link = document.createElement('link'),
-      oldLink = document.getElementById('dynamic-favicon');
+      oldLink = document.getElementById('DynamicFavicon');
 
-  link.id = 'dynamic-favicon';
+  link.id = 'DynamicFavicon';
   link.rel = 'shortcut icon';
 
   if (stat.length > 0) {
@@ -404,6 +421,8 @@ function updateFavIcon(stat = '') {
 }
 
 function showList(noClose = '', prefUpdate = false) { // showList('', true) // Sorting
+
+console.log('showList');
 
   if (noClose.length === 0) {
     toggleMenu('close');
@@ -430,33 +449,36 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
 
       const sortColumns = ['title', 'date', 'between'];
 
-      let prefsListSort = prefsList,
-          hasSort = false,
+      let listOptions = prefsList,
+          // hasSort = false,
           sortColKey = '1u';  // If left at this default, this will get flipped to '1u'
                               // [column | direction] --> [1u] [1d] [2a] [2d] [3a] [3d]
                               // Column 1 = Title; 2 = Date; 3 = 'between' (calculation)
 
       if (typeof prefsList.expiresPrefs !== 'undefined') {
-        prefsListSort = prefsList.expiresPrefs;
+        listOptions = prefsList.expiresPrefs;
       }
 
-      if (typeof prefsListSort.sortPref !== 'undefined') {
-        hasSort = true;
-        sortColKey = prefsListSort.sortPref;
-        // console.log('prefsListSort.sortPref is set: ', prefsListSort.sortPref);
+      if (typeof listOptions.sortPref !== 'undefined') {
+        // hasSort = true;
+        sortColKey = listOptions.sortPref;
+        // console.log('listOptions.sortPref is set: ', listOptions.sortPref);
       }
 
-      if (hasSort) {
-        printListHead(prefsListSort);
-      } else {
-        printListHead();
-      }
+      printListHead(listOptions);
+      // if (hasSort) {
+      //   printListHead(listOptions);
+      // } else {
+      //   printListHead();
+      // }
 
-      let sortColNum = parseInt(sortColKey.substr(0, 1), 10),
+      // let sortColNum = parseInt(sortColKey.substr(0, 1), 10),
+      let sortColNum = parseInt(sortColKey.substring(0, 1), 10),
           sortColName = sortColumns[sortColNum - 1],
-          newSortDir = sortColKey.substr(1, 1); // === 'u' ? 'd' : 'u';
+          newSortDir = sortColKey.substring(1, 2); // === 'u' ? 'd' : 'u';
+          // newSortDir = sortColKey.substr(1, 1); // === 'u' ? 'd' : 'u';
 
-      // console.log('sortState: ', sortColNum, newSortDir, sortColName);
+      // console.log('sortState: ', sortColKey, sortColNum, newSortDir, sortColName); // 3u 3 u between
 
       sortState = sortState.sort( (a, b) => {
         // 0 : {id: 1, title: "My first reminder.", date: "2018-04-03", leadTime: "days", leadTimeVal: "1", ...}
@@ -555,9 +577,9 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
             // !active && no alarm - Do nothing
 
           let trClassListItem = document.querySelector('.x2b-listitem-' + alarm.id),
-              tdClassListItem = trClassListItem.querySelector('td'), // Grabs the first <td>
+              tdClassListItem = trClassListItem.querySelector('.td'), // Grabs the first <td>
               spanClassListItem = tdClassListItem.querySelector('span'),
-              tdBetweenItem = trClassListItem.querySelector('td.between');
+              tdBetweenItem = trClassListItem.querySelector('.td.between');
 
           tdBetweenItem.innerText = between;
 
@@ -638,6 +660,8 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
   } else {
     // No expirations saved in storage.
 
+    showEmptyList();
+
     // Turn off the 'Clear All' and 'Export All' buttons (nothing to clear or export).
     let inputOptions = document.querySelectorAll('.input-options-with-items');
     for (let i = 0; i < inputOptions.length; i++) {
@@ -648,13 +672,28 @@ function showList(noClose = '', prefUpdate = false) { // showList('', true) // S
   }
 }
 
+function showEmptyList() {
+  //
+  // ExpiresTable - Empty
+  //
+  let tempChildD = document.createElement('div');
+  tempChildD.classList.add('temp-text');
+
+  let tempChildS = document.createElement('span');
+  tempChildS.innerText = 'Create expiration items using the form above.';
+
+  let parentTable = document.getElementById('ExpiresTable'); // <table>
+  tempChildD.appendChild(tempChildS);
+  parentTable.appendChild(tempChildD);
+}
+
 function printAlarm(itemId) {
-  let expiresTable = document.getElementById('expires-table'),
+  let expiresTable = document.getElementById('ExpiresTable'),
       // itemId = parseInt(alarm.name.substr(4), 10), // x2b-1
       // <tr class="x2b-listitem-1">
       //   <td><input type="checkbox" class="toggle-active active-is-true item-1">
       alarmNodeParent = expiresTable
-        .querySelector('tr.x2b-listitem-' + itemId)
+        .querySelector('.tr.x2b-listitem-' + itemId)
         .querySelector('.toggle-active')
         .parentNode,
       alarmNode = document.createElement('span');
@@ -696,34 +735,49 @@ function requestAlarm(itemId) {
 }
 
 function printListHead(prefsList) {
-  let itemTCH = document.createElement('thead'),
-      itemTCR = document.createElement('tr'),
-      itemTCH1 = document.createElement('th'),
+  let itemTCH = document.createElement('div'),  // thead
+      itemTCR = document.createElement('div'),  // tr
+      itemTCH1 = document.createElement('div'), // th
       itemTCH1D = document.createElement('div');
       itemTCH1L = document.createElement('span'),
       itemTCH1R = document.createElement('span'),
       itemTCH1Ru = document.createElement('a'),
       itemTCH1Rd = document.createElement('a'),
-      itemTCH2 = document.createElement('th'),
+      itemTCH2 = document.createElement('div'), // th
       itemTCH2D = document.createElement('div');
       itemTCH2L = document.createElement('span'),
       itemTCH2R = document.createElement('span'),
       itemTCH2Ru = document.createElement('a'),
       itemTCH2Rd = document.createElement('a'),
-      itemTCH3 = document.createElement('th'),
-      itemTCH4 = document.createElement('th'),
-      itemTCH5 = document.createElement('th'),
+      itemTCH3 = document.createElement('div'), // th
+      itemTCH4 = document.createElement('div'), // th
+      itemTCH5 = document.createElement('div'), // th
       itemTCH5D = document.createElement('div');
       itemTCH5L = document.createElement('span'),
       itemTCH5R = document.createElement('span'),
       itemTCH5Ru = document.createElement('a'),
       itemTCH5Rd = document.createElement('a'),
-      itemTCH6 = document.createElement('th'),
+      itemTCH6 = document.createElement('div'), // th
       itemTCH6S = document.createElement('span'),
-      itemTCH7 = document.createElement('th'),
-      itemTCH8 = document.createElement('th'),
-      itemTB = document.createElement('tbody'),
+      itemTCH7 = document.createElement('div'), // th
+      itemTCH8 = document.createElement('div'), // th
+      itemTB = document.createElement('div'),   // tbody
       sortArrowActive = '1u';
+
+      itemTCH.classList.add('thead');
+      if (ourState.length > MIN_ITEMS_TO_SHOW_SCROLL) {
+        itemTCH.classList.add('show-scroll');
+      }
+      itemTCR.classList.add('tr');
+      itemTCH1.classList.add('th');
+      itemTCH2.classList.add('th');
+      itemTCH3.classList.add('th');
+      itemTCH4.classList.add('th');
+      itemTCH5.classList.add('th');
+      itemTCH6.classList.add('th');
+      itemTCH7.classList.add('th');
+      itemTCH8.classList.add('th');
+      itemTB.classList.add('tbody');
 
       if (typeof prefsList !== 'undefined' && typeof prefsList.sortPref !== 'undefined') {
         if (prefsList.sortPref === '3d') { // 5th column; 3rd sortable column
@@ -890,14 +944,14 @@ function printListHead(prefsList) {
       itemTCH6.innerHTML = '<span class="alarm">Alarm/</span><br/>Active';
         itemTCR.appendChild(itemTCH6);
 
-      itemTCH7.innerText = '';
+      itemTCH7.innerHTML = '&nbsp;';
         itemTCR.appendChild(itemTCH7);
-      itemTCH8.innerText = '';
+      itemTCH8.innerHTML = '&nbsp;';
         itemTCR.appendChild(itemTCH8);
 
   itemTCH.appendChild(itemTCR);
 
-  let parentTable = document.getElementById('expires-table'); // <table>
+  let parentTable = document.getElementById('ExpiresTable'); // <table>
 
   parentTable.appendChild(itemTCH);
   parentTable.appendChild(itemTB);
@@ -913,23 +967,33 @@ function sortRun(setObj, isClick = false) { // sortRun(true); // If mouse, remov
     // ... just don't test with Chrome emulator :)
 
   if (isClick && w > 500) {
-    document.getElementById('entryTitle').focus();
+    document.getElementById('EntryTitle').focus();
   }
 }
 
 function printList(item) {
-  let itemTR = document.createElement('tr'),
-      itemSpan1 = document.createElement('td'), // 1 :title
+  let itemTR = document.createElement('div'), // tr
+      itemSpan1 = document.createElement('div'), // td // 1 :title
       itemSpan1Overlay = document.createElement('span'), // Expiration notification over title
-      itemSpan2 = document.createElement('td'), // 2 :dateValue
+      itemSpan2 = document.createElement('div'), // td // 2 :dateValue
       itemSpan2Overlay = document.createElement('span'), // 'Replacement Date' indicator over Expiry field
-      itemSpan3 = document.createElement('td'), // 3 :leadTimeVal
-      itemSpan4 = document.createElement('td'), // 4 :leadTime
-      itemSpan5 = document.createElement('td'), // 5 :between
-      itemSpan6 = document.createElement('td'), // 6 <Active>
+      itemSpan3 = document.createElement('div'), // td // 3 :leadTimeVal
+      itemSpan4 = document.createElement('div'), // td // 4 :leadTime
+      itemSpan5 = document.createElement('div'), // td // 5 :between
+      itemSpan6 = document.createElement('div'), // td // 6 <Active>
       itemSpan6Container = document.createElement('span'), // Container for active and blue sun
-      itemSpan7 = document.createElement('td'), // 7 <Edit>
-      itemSpan8 = document.createElement('td'); // 8 <Delete>
+      itemSpan7 = document.createElement('div'), // td // 7 <Edit>
+      itemSpan8 = document.createElement('div'); // td // 8 <Delete>
+
+  itemTR.classList.add('tr');
+  itemSpan1.classList.add('td');
+  itemSpan2.classList.add('td');
+  itemSpan3.classList.add('td');
+  itemSpan4.classList.add('td');
+  itemSpan5.classList.add('td');
+  itemSpan6.classList.add('td');
+  itemSpan7.classList.add('td');
+  itemSpan8.classList.add('td');
 
   let trClassList = ['x2b-listitem-' + item.id];
 
@@ -1013,7 +1077,7 @@ function printList(item) {
 
   itemTR.appendChild(itemSpan8);
 
-  let parentTable = document.querySelector('#expires-table tbody'); // <table>
+  let parentTable = document.querySelector('#ExpiresTable .tbody'); // <table>
 
   parentTable.appendChild(itemTR); // Adding the current item from global array of items
 }
@@ -1027,8 +1091,10 @@ function toggleActive(e) {
       eTargetChecked = e.target.checked,
       thisId = parseInt(
                  Array.from(e.target.classList)
-                      .find(thisClass => thisClass.substr(0, 5) === 'item-')
-                      .substr(5),
+                      // .find(thisClass => thisClass.substr(0, 5) === 'item-')
+                      .find(thisClass => thisClass.substring(0, 5) === 'item-')
+                      // .substr(5),
+                      .substring(5),
                  10);
 
   let itemCurState = Array.from(e.target.classList)
@@ -1036,9 +1102,11 @@ function toggleActive(e) {
                               // console.log('itemCurState: [', thisClass, '] [', thisClass.substr(0,10), ']');
                               // itemCurState: [ toggle-active ] [ toggle-act ]
                               // itemCurState: [ active-is-true ] [ active-is- ]
-                              return thisClass.substr(0, 10) === 'active-is-';
+                              // return thisClass.substr(0, 10) === 'active-is-';
+                              return thisClass.substring(0, 10) === 'active-is-';
                             })
-                          .substr(10); // 'true'|'false'
+                          // .substr(10); // 'true'|'false'
+                          .substring(10); // 'true'|'false'
 
   // If `active` was off, `.checked` will be true.
   if (eChecked !== itemCurState) {
@@ -1111,8 +1179,10 @@ function itemUpdate(e) {
   // itemDelete:  <button class=​"delete item-4">​Del​</button>​
   e.preventDefault();
 
-  let whichFunc = e.target.innerText.substr(0, 3).toLowerCase(), // [edi|del]
-      itemId = parseInt(Array.from(e.target.classList).find(thisClass => thisClass.substr(0, 5) === 'item-').substr(5), 10);
+  // let whichFunc = e.target.innerText.substr(0, 3).toLowerCase(), // [edi|del]
+  //     itemId = parseInt(Array.from(e.target.classList).find(thisClass => thisClass.substr(0, 5) === 'item-').substr(5), 10);
+  let whichFunc = e.target.innerText.substring(0, 3).toLowerCase(), // [edi|del]
+      itemId = parseInt(Array.from(e.target.classList).find(thisClass => thisClass.substring(0, 5) === 'item-').substring(5), 10);
 
   if (whichFunc === 'edi') {
     updateForm(itemId);
@@ -1162,14 +1232,16 @@ function updateForm(itemId) {
 
 function setItemEdit(itemId) {
   // Apply CSS class name to TR of the item that's currently in the form (if >0).
-  let expiresTable = document.getElementById('expires-table'),
+  let expiresTable = document.getElementById('ExpiresTable'),
       ourItemId = 0;
 
   // First; Remove any previous Edits (Recursive CSS Class Removal)
-  let trEdit = expiresTable.querySelector('tr[class^="x2b-listitem"].is-edit');
+  // let trEdit = expiresTable.querySelector('div[class^="x2b-listitem"].is-edit');
+  let trEdit = expiresTable.querySelector('div[class*="x2b-listitem"].is-edit');
   while (trEdit) {
     trEdit.classList.remove('is-edit');
-    trEdit = expiresTable.querySelector('tr[class^="x2b-listitem"].is-edit');
+    // trEdit = expiresTable.querySelector('div[class^="x2b-listitem"].is-edit');
+    trEdit = expiresTable.querySelector('div[class*="x2b-listitem"].is-edit');
   }
 
   // Second; Let's make it editable!
@@ -1187,7 +1259,7 @@ function setItemEdit(itemId) {
 
   if (ourItemId > 0) {
     expiresTable
-      .querySelector('tr.x2b-listitem-' + ourItemId)
+      .querySelector('.tr.x2b-listitem-' + ourItemId)
       .classList
       .add('is-edit');
   }
@@ -1441,14 +1513,14 @@ function showImportTextarea(forceOff = '') { // Show the import <textarea> and o
   let forceClose = forceOff.length > 0,
       isOpen = true;
 
-  if (document.getElementById('input-import').classList.contains('closed')) {
+  if (document.getElementById('InputImport').classList.contains('closed')) {
     isOpen = false;
   }
 
   if (isOpen || forceClose) {
-    document.getElementById('input-import').classList.add('closed');
+    document.getElementById('InputImport').classList.add('closed');
   } else {
-    document.getElementById('input-import').classList.toggle('closed');
+    document.getElementById('InputImport').classList.toggle('closed');
   }
 
   setTimeout( () => {
@@ -1467,13 +1539,13 @@ function importTimersRun() {
   setParsingImportError();
   importErrors.length = 0;
 
-  if (document.getElementById('input-import').value.length > 120000) {
+  if (document.getElementById('InputImport').value.length > 120000) {
     // Max Length: 120000 (allows for up to ~999 expirations.)
     setParsingImportError('on', 'Import only supports up to 999 expiration items.');
     return;
   }
 
-  let ourJSON = getJson(document.getElementById('input-import').value);
+  let ourJSON = getJson(document.getElementById('InputImport').value);
 
   if (ourJSON.results === 'success') {
 
@@ -1485,7 +1557,7 @@ function importTimersRun() {
     let percent = 0,
         fraction = 100 / importList.length,
         newFraction = 0,
-        progressBarElement = document.getElementById('import-progress-bar');
+        progressBarElement = document.getElementById('ImportProgressBar');
 
         // 100 / 1    = 100%
         // 100 / 2    = 50%
@@ -1623,11 +1695,11 @@ function hasCorrectProps(testObj = {}) {
 
 function setParsingImportError(onOff = 'off', msg = '') {
   if (onOff === 'on') {
-    document.getElementById('import-error').classList.remove('hidden');
+    document.getElementById('ImportError').classList.remove('hidden');
   } else {
-    document.getElementById('import-error').classList.add('hidden');
+    document.getElementById('ImportError').classList.add('hidden');
   }
-  document.getElementById('import-error').innerText = msg;
+  document.getElementById('ImportError').innerText = msg;
 }
 
 function exportTimers() {
@@ -1635,7 +1707,7 @@ function exportTimers() {
 
   message('Exporting...', true);
 
-  // <a id="input-export-download" style="display:none"></a>
+  // <a id="InputExportDownload" style="display:none"></a>
 
   x2bStorage.get('expiresList').then( itemList => {
     if (!isEmpty(itemList.expiresList)) {
@@ -1647,7 +1719,7 @@ function exportTimers() {
       const storageObj = itemList.expiresList,
             dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storageObj));
 
-      let dlAnchorElem = document.getElementById('input-export-download');
+      let dlAnchorElem = document.getElementById('InputExportDownload');
 
       dlAnchorElem.setAttribute("href", dataStr);
       dlAnchorElem.setAttribute("download", "x2b-expires-list.json");
@@ -1778,7 +1850,7 @@ function clearItem(itemId) { // deleteAlarm
 }
 
 function clearDOMList() {
-  let parentTable = document.getElementById('expires-table');
+  let parentTable = document.getElementById('ExpiresTable');
   // There should really only be 2 elements to remove; <thead> and <tbody>
   while (parentTable.firstChild) {
     parentTable.removeChild(parentTable.firstChild);
@@ -1786,38 +1858,37 @@ function clearDOMList() {
 }
 
 function toggleMenu(which = 'toggle') {
-  if (document.querySelector('.footer-menu-div').classList.contains('open')) {
+  let menuElem = document.querySelector('.footer-menu-div').classList;
+  let faqElem = document.querySelector('.footer-faq-div').classList;
+
+  if (faqElem.contains('open')) {
+    faqElem.toggle('open', false); // Remove 'open' class.
+  }
+
+  if (menuElem.contains('open')) {
     showImportTextarea('close');
   }
 
   if (which === 'close') { // Force close
-    document.querySelector('.footer-menu-div').classList.toggle('open', false); // Remove 'open' class.
+    menuElem.toggle('open', false); // Remove 'open' class.
   } else {
-    // Close .show-import-elements
-    document.querySelector('.footer-menu-div').classList.toggle('open');
+    menuElem.toggle('open');
+  }
+}
+
+function toggleFAQ(which = 'toggle') {
+  let menuElem = document.querySelector('.footer-menu-div').classList;
+  let faqElem = document.querySelector('.footer-faq-div').classList;
+
+  if (menuElem.contains('open')) {
+    showImportTextarea('close');
+    menuElem.toggle('open', false); // Remove 'open' class.
   }
 
-  if (!isExtension) {
-    let tryTry = 0,
-        doTry = () => window.setTimeout( () => {
-          let checkIt = document.querySelector('.footer-prefs-div');
-
-          if (tryTry >= 20) {
-            // console.log('Not found; Exit loop.'); // Gonna toggle it anyways...
-            document.querySelector('.footer-prefs-div').classList.toggle('open', false); // Close App Prefs (if open)
-            document.getElementById('app-message').classList.toggle('open', false); // Close About App (if open)
-
-          } else if (typeof(checkIt) !== 'undefined' && checkIt !== null) {
-            document.querySelector('.footer-prefs-div').classList.toggle('open', false); // Close App Prefs (if open)
-            document.getElementById('app-message').classList.toggle('open', false); // Close About App (if open)
-
-          } else {
-            // console.log('Trying again... ', tryTry);
-            tryTry++;
-            doTry();
-          }
-        }, 100); // Allow it some time for the DOM element to arrive.
-    doTry();
+  if (which === 'close') { // Force close
+    faqElem.toggle('open', false); // Remove 'open' class.
+  } else {
+    faqElem.toggle('open');
   }
 }
 
@@ -1963,7 +2034,7 @@ function clearTimersAndStorage() {
 
 function message(msg, clearMsg, data) {
 
-  let msgsDiv = document.getElementById('msgs-div'); // The <div> where all the notifications are headed.
+  let msgsDiv = document.getElementById('MsgsDiv'); // The <div> where all the notifications are headed.
 
   msgsDiv.classList.add('msg-transition');
 
@@ -1987,7 +2058,7 @@ function message(msg, clearMsg, data) {
 }
 
 function clearMessage() {
-  document.getElementById('msgs-div').innerText = '';
+  document.getElementById('MsgsDiv').innerText = '';
 }
 
 /**
@@ -2209,7 +2280,6 @@ const getStorageItem = (storage, key) => {
   </tr>
 
   document.querySelector('.x2b-listitem-{id} .toggle-active').addEventListener('click', (e) => editItem);
-  document.querySelector('.x2b-listitem-{id} button.edit').addEventListener('click', (e) => editItem);
   document.querySelector('.x2b-listitem-{id} button.edit').addEventListener('click', (e) => editItem);
 
   {

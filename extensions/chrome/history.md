@@ -1,6 +1,12 @@
 # Expired To Be
 
-## A Chrome Extension (and a SPA)
+## A Chrome Extension ... and its SPA
+
+The information below was made during the initial development of Expired To Be.
+
+It ranges from birth to maturity for the Chrome extension version, and it's subsequent marriage to a custom React interface, providing a SPA version of the browser extension.
+
+This page is a representation of the project's genesis.
 
 ## Detailed Development History
 
@@ -2028,11 +2034,11 @@ Downgraded back to React `2.15.1` and TypeScript `2.8.3`. `3.0.0` was a blocker.
 
   (well, apparently from 5:00 PM;
     which would be 8 hours, which is, then, a Full... Freaking... Day.)
-  - Subtracting the near 14 hours logged by RT 
+  - Subtracting the near 14 hours logged by RT
     from when I shut down at 7:00 AM puts me starting at 5:00 PM.
 
   Got first issue / error figured out
-    I was coding for lines 1 and 4, 
+    I was coding for lines 1 and 4,
     but was only running 1 import (2 each).
   Then the "Options" popup wouldn't pop up.
     Never did figure out why...
@@ -2071,7 +2077,7 @@ Downgraded back to React `2.15.1` and TypeScript `2.8.3`. `3.0.0` was a blocker.
 @1:45 AM
 
   Back to X2b sorting.
-  Wouldn't appear sorting is working... what is nth(1)? 
+  Wouldn't appear sorting is working... what is nth(1)?
 
 @2:20 AM
 
@@ -2186,17 +2192,6 @@ __(my initial objective was to test the sorting that I'd just completed.)__
     - Also added new field to HTML placeholder text.
 
 ## Code Notes
-
-[TimerAlertPrompt.tsx] `Timer`
-
-```
-  > {isTimer ? (<ButtonSnooze />) : null}
-  > {isTimer ? (<DivTitle />) : null}
-  > {isTimer ? (<ButtonDoneForNow />) : null}
-  > {isTimer ? null : (<ButtonCloseModal />)}
-  > {isTimer ? (<DivSubtitle />) : null}
-  > {isTimer ? (<ButtonDisable />) : null}
-```
 
 [Testing: Mock Data]
 
