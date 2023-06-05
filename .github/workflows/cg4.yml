@@ -1,0 +1,42 @@
+name: Project CI/CD
+
+on:
+  push:
+    branches:
+      - master  # This will run the workflow anytime there is a push to your master branch.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This specifies the type of runner that the workflow will run on. 
+
+    steps:
+    - name: Checkout Repo  # This step checks out a copy of your repository.
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js environment  # This step sets up Node.js on the runner.
+      uses: actions/setup-node@v2
+      with:
+        node-version: 'stable'  # This specifies that the stable version of Node.js should be used.
+
+    - name: Cache dependencies  # This step caches your dependencies to speed up future workflow runs.
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install Dependencies  # This step installs your npm dependencies.
+      run: npm ci
+
+    - name: Run Tests  # This step runs your tests.
+      run: npm test
+
+    - name: Build  # This step builds your project.
+      run: npm run build
+
+    - name: Deploy  # This step deploys your build to the gh-pages branch of your repo.
+      uses: JamesIves/github-pages-deploy-action@4.1.1
+      with:
+        branch: gh-pages  # This is the branch that the built project will be deployed to.
+        folder: build  # This is the folder that the built project is in.
