@@ -33,4 +33,4 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
         branch: gh-pages  # This is the branch that the built project will be deployed to.
-        folder: build  # This is the folder that the built project is in.
+        folder: public  # This is the folder that the built project is in.
