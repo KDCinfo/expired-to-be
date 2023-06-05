@@ -16,7 +16,7 @@ jobs:
     - name: Setup Node.js environment  # This step sets up Node.js on the runner.
       uses: actions/setup-node@v2
       with:
-        node-version: 'stable'  # This specifies that the stable version of Node.js should be used.
+        node-version: 16.2  # This specifies that the stable version of Node.js should be used.
 
     - name: Cache dependencies  # This step caches your dependencies to speed up future workflow runs.
       uses: actions/cache@v2
